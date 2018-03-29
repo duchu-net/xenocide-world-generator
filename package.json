@@ -1,10 +1,21 @@
 {
   "name": "xenocide-world-generator",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js --experimental-modules",
+    "dev2": "nodemon app.js --experimental-modules",
+
+    "dev": "npm run clean && cross-env WEBPACK_ENV=dev webpack --mode development --progress --colors --watch",
+    "build": "npm run clean && cross-env WEBPACK_ENV=production webpack --mode production --progress --colors",
+    "test2": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
+    "test": "mocha --compilers js:babel-core/register --colors -w ./src/**/*.spec.js",
+
+    "clean": "rimraf lib dist es",
+    "build:watch": "echo \"build && watch the COMMONJS version of the package - for other version, run specific tasks\" && npm run build:commonjs:watch",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:commonjs:watch": "npm run build:commonjs -- --watch"
   },
   "repository": {
     "type": "git",
@@ -15,5 +26,22 @@
   "bugs": {
     "url": "https://github.com/duchu-net/xenocide-world-generator/issues"
   },
-  "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme"
+  "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme",
+  "dependencies": {
+    "duchunet-utils": "git+https://github.com/duchu-net/duchunet-utils.git"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "cross-env": "^5.1.4",
+    "mocha": "^5.0.5",
+    "nodemon": "^1.17.2",
+    "rimraf": "^2.6.2",
+    "webpack": "^4.3.0",
+    "webpack-cli": "^2.0.13"
+  }
 }

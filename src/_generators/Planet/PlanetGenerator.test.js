@@ -1,0 +1,42 @@
+import expect from 'expect'
+import PlanetGenerator from './PlanetGenerator'
+import { SteppedAction } from 'duchunet-utils'
+
+
+describe('PlanetGenerator: model', () => {
+  describe('planet asynchronous', () => {
+    it ('should generate 2 planets', (done) => {
+      const action = new SteppedAction()
+      action.progressUpdater = (p) => {
+        console.log(p.getCurrentActionName(), (p.getProgress() * 100).toFixed(2) + '%')
+      }
+
+
+      action
+  		  .executeSubaction((action) => {
+          const planet = new PlanetGenerator({ model: { seed: 'dupa' } })
+          planet.generate(action)
+        }, 1)
+        .getResult((result) => {
+          console.log('generatePlanet result', result)
+          expect.objectContaining(result)
+        })
+
+  		  .executeSubaction((action) => {
+          const planet = new PlanetGenerator()
+          planet.generate(action)
+        }, 1)
+        .getResult((result) => {
+          console.log('generatePlanet result', result)
+          expect.objectContaining(result)
+        })
+
+        // FINALIZE ------------------------------------------------------------
+        .finalize((action) => {
+          done()
+        }, 0)
+        .execute()
+    }).timeout(10000)
+  })
+
+})
