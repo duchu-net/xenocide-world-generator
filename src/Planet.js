@@ -3,6 +3,8 @@ import CelestialBody from './CelestialBody'
 class Planet extends CelestialBody {
   name = null
   seed = null
+  mass = null
+  from_star = null
 
   // ORBIT
   semi_major_axis = 0 // (a) półoś wielka
@@ -18,9 +20,28 @@ class Planet extends CelestialBody {
   //   super()
   // }
 
-  generate() {
-    this.name = 'abc'
+  generate(args = {}) {
+    const {
+      seed,
+      name,
+    } = args
+
+    this.seed = seed || this.randomSeed()
+    this.name = name || this.randomName()
     return Promise.resolve(this)
+  }
+
+  randomName() {
+    return 'abc'
+  }
+
+  randomSeed() {
+    return 'abc123'
+  }
+
+  // BASED ON EARTH MASS
+  generateMass() {
+
   }
 }
 

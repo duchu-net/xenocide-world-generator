@@ -10,7 +10,7 @@
     "dev": "npm run clean && cross-env WEBPACK_ENV=dev webpack --mode development --progress --colors --watch",
     "build": "npm run clean && cross-env WEBPACK_ENV=production webpack --mode production --progress --colors",
     "test2": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
-    "test": "mocha --compilers js:babel-core/register --colors -w ./src/**/*.spec.js",
+    "test": "mocha --require babel-core/register --colors -w ./src/**/*.spec.js",
 
     "clean": "rimraf lib dist es",
     "build:watch": "echo \"build && watch the COMMONJS version of the package - for other version, run specific tasks\" && npm run build:commonjs:watch",
