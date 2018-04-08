@@ -1,3 +1,11 @@
+export const STAR_COUNT_DISTIBUTION_IN_SYSTEMS = {
+  1: 1,
+  2: 0.3,
+  3: 0.01,
+  4: 0.001,
+  5: 0.0001
+}
+
 export const SUN_AGE = 4.603e9 // 4603000000 YEARS
 export const SUN_TEMPERATURE = 5778 // (K)
 export const SPECTRAL_CLASSIFICATION = [
