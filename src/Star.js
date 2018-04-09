@@ -12,7 +12,7 @@ class Star extends CelestialBody {
   name = null
   stellar_class = null
   mass = null // masa (SUN SCALE)
-  diameter = null // średnica
+  // diameter = null // średnica
   radius = null // promień
   luminosity = null // jasność (SUN SCALE)
   temperature = null // (SUN SCALE)
@@ -62,8 +62,8 @@ class Star extends CelestialBody {
         this.matrice = matrice
 
         this.name = 'abc'
-        this.stellar_class = stellar_class != null ? stellar_class : this.generateStellarClassification()
-        this.mass = mass != null ? mass : this.generateMass()
+        this.stellar_class = stellar_class != null ? stellar_class : this.generateStellarClassification(args)
+        this.mass = mass != null ? mass : this.generateMass(args)
 
         this.luminosity = luminosity != null ? luminosity : this.calcLuminosity()
         // this.diameter = diameter != null ? diameter : this.calcDiameter()
@@ -166,18 +166,36 @@ class Star extends CelestialBody {
   }
 
   // STELLAR CLASSIFICATION
-  generateStellarClassification() {
+  generateStellarClassification(args = {}) {
     // IF MATRICE SET
     if (this.matrice) return this.matrice.class
+    let availableSpectralClassification = [...SPECTRAL_CLASSIFICATION]
+    // if (args.max_sol_mass != null) {
+    //   // console.log('$$', args.max_sol_mass);
+    //   availableSpectralClassification = availableSpectralClassification
+    //     .filter(asc => asc.min_sol_mass < args.max_sol_mass)
+    //   // availableSpectralClassification.slice(-1)[0].max_sol_mass = args.max_sol_mass
+    // }
+    // console.log(availableSpectralClassification.length);
+
     // OTHER WAY
-    const random = Math.floor(Math.random() * SPECTRAL_CLASSIFICATION.length)
-    return SPECTRAL_CLASSIFICATION[random].class
+    const random = Math.floor(Math.random() * availableSpectralClassification.length)
+    return availableSpectralClassification[random].class
   }
 
   // MASS
-  generateMass() {
+  generateMass(args = {}) {
     const star_matrice = this.getStarMatrice()
-    return Math.random() * star_matrice.max_sol_mass + star_matrice.min_sol_mass
+
+    let maxSolMass = star_matrice.max_sol_mass
+    // if (args.max_sol_mass != null
+    //   && star_matrice.max_sol_mass > args.max_sol_mass
+    //   && star_matrice.min_sol_mass < args.max_sol_mass
+    // ) {
+    //   console.log('generateMass', maxSolMass, args.max_sol_mass);
+    //   maxSolMass = args.max_sol_mass
+    // }
+    return Math.random() * maxSolMass + star_matrice.min_sol_mass
   }
 
   getStarMatrice() {

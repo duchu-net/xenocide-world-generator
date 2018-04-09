@@ -13,7 +13,7 @@ describe('Star', function() {
     star.generate({ mass: 1 })
       .then(star => {
         assert.ok(Boolean(star.name))
-        console.log(star);
+        // console.log(star);
         done()
       })
   })
@@ -22,7 +22,7 @@ describe('Star', function() {
     star.generate({ mass: 1.2 })
       .then(star => {
         assert.ok(Boolean(star.name))
-        console.log(star);
+        // console.log(star);
         done()
       })
   })
