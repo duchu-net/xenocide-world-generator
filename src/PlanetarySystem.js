@@ -1,5 +1,5 @@
 import weighted from './utils/weighted-random'
-import Group from './Group'
+import Subsystem from './Subsystem'
 import Star from './Star'
 import {
   STAR_COUNT_DISTIBUTION_IN_SYSTEMS,
@@ -11,7 +11,7 @@ import {
   PLANETARY_SYSTEMS_TYPES,
 } from './CONSTANTS'
 
-class PlanetSystem extends Group {
+class PlanetSystem extends Subsystem {
   name = null
   type = null
   system = [
@@ -22,6 +22,12 @@ class PlanetSystem extends Group {
   ]
   stars = []
   stars_count = null
+
+  schema = {
+    barycenter: {},
+    
+  }
+
 
   generate() {
     return Promise.resolve()
@@ -45,10 +51,10 @@ class PlanetSystem extends Group {
         return PLANETARY_SYSTEMS_TYPES.SINGLE_STAR
       }
       case (this.isBinaryStarPTypeSystem(system)): {
-        return PLANETARY_SYSTEMS_TYPES.MULTIPLE_BINARY_P_TYPE_STAR
+        return PLANETARY_SYSTEMS_TYPES.BINARY_P_TYPE_STAR
       }
       default: {
-        return PLANETARY_SYSTEMS_TYPES.MULTIPLE_P_TYPE_STAR
+        return PLANETARY_SYSTEMS_TYPES.MULTIPLE_S_TYPE_STAR
       }
     }
   }
@@ -60,13 +66,13 @@ class PlanetSystem extends Group {
         // console.log('isSingleStarSystem');
         return PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM
       }
-      case (PLANETARY_SYSTEMS_TYPES.MULTIPLE_BINARY_P_TYPE_STAR): {
+      case (PLANETARY_SYSTEMS_TYPES.BINARY_P_TYPE_STAR): {
         // console.log('isBinaryStarPTypeSystem');
         return PLANETS_COUNT_IN_BINARY_STAR_P_TYPE_SYSTEM
       }
       default: {
         // console.log('isBinaryStarSTypeSystem');
-        return PLANETARY_SYSTEMS_TYPES.MULTIPLE_P_TYPE_STAR
+        return PLANETARY_SYSTEMS_TYPES.MULTIPLE_S_TYPE_STAR
       }
     }
     // return

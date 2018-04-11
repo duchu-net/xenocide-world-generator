@@ -5,7 +5,7 @@ var outputFile = libraryName + '.js'
 
 module.exports = {
   devtool: 'source-map',
-  entry: __dirname + '/src/index.js',
+  entry: [__dirname + '/src/index.js'],
   output: {
     path: __dirname + '/lib',
     filename: outputFile,

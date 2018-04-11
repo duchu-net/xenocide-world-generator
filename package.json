@@ -6,12 +6,10 @@
   "scripts": {
     "start": "node app.js --experimental-modules",
     "dev2": "nodemon app.js --experimental-modules",
-
     "dev": "npm run clean && cross-env WEBPACK_ENV=dev webpack --mode development --progress --colors --watch",
     "build": "npm run clean && cross-env WEBPACK_ENV=production webpack --mode production --progress --colors",
     "test2": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
     "test": "mocha --require babel-core/register --colors -w ./src/**/*.spec.js",
-
     "clean": "rimraf lib dist es",
     "build:watch": "echo \"build && watch the COMMONJS version of the package - for other version, run specific tasks\" && npm run build:commonjs:watch",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
@@ -28,12 +26,15 @@
   },
   "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme",
   "dependencies": {
-    "duchunet-utils": "git+https://github.com/duchu-net/duchunet-utils.git"
+    "babel-runtime": "^6.26.0",
+    "duchunet-utils": "git+https://github.com/duchu-net/duchunet-utils.git",
+    "three": "^0.91.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
