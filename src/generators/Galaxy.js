@@ -26,11 +26,15 @@ class Galaxy {
   }
 
   static async Generate(spec, random) {
-    // const s = [...spec.Generate(random)]
-    const s = Array.from(spec.Generate(random))
-    // console.log('>>>',s);
-    if (s.length === 1 && s[0] == null) s.pop()
-    return new Galaxy(s)
+    try {
+      // const s = [...spec.Generate(random)]
+      const s = Array.from(spec.Generate(random))
+      // console.log('>>>',s);
+      if (s.length === 1 && s[0] == null) s.pop()
+      return new Galaxy(s)
+    } catch(err) {
+      console.log('ERR>', err);
+    }
   }
 }
 

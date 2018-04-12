@@ -19,6 +19,7 @@ describe('Galaxy', () => {
         assert.ok(galaxy.statistics.star_systems > 0)
         done()
       })
+      .catch(err => console.log('!', err))
   })
 
   it('should create Sphere Galaxy object', (done) => {
