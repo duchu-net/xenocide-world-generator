@@ -1,12 +1,12 @@
 {
   "name": "xenocide-world-generator",
-  "version": "0.0.1",
+  "version": "0.0.1-rc.1",
   "description": "",
   "main": "./lib/library.js",
   "scripts": {
     "dev": "npm run clean && cross-env WEBPACK_ENV=dev webpack --mode development --progress --colors --watch",
-    "build": "npm run clean && cross-env WEBPACK_ENV=production webpack --mode production --progress --colors",
-    "test2": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
+    "build": "cross-env WEBPACK_ENV=production webpack --mode production --progress --colors",
+    "build:watch": "npm run build -- --watch",
     "test": "mocha --require babel-core/register --colors -w ./src/**/*.spec.js",
     "test:now": "mocha --require babel-core/register --colors -w ./src/**/*.now.spec.js",
     "clean": "rimraf lib dist es",
