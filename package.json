@@ -2,25 +2,25 @@
   "name": "xenocide-world-generator",
   "version": "0.0.1",
   "description": "",
-  "main": "src/index.js",
+  "main": "./lib/library.js",
   "scripts": {
-    "start": "node app.js --experimental-modules",
-    "dev2": "nodemon app.js --experimental-modules",
     "dev": "npm run clean && cross-env WEBPACK_ENV=dev webpack --mode development --progress --colors --watch",
     "build": "npm run clean && cross-env WEBPACK_ENV=production webpack --mode production --progress --colors",
     "test2": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
     "test": "mocha --require babel-core/register --colors -w ./src/**/*.spec.js",
     "test:now": "mocha --require babel-core/register --colors -w ./src/**/*.now.spec.js",
     "clean": "rimraf lib dist es",
-    "build:watch": "echo \"build && watch the COMMONJS version of the package - for other version, run specific tasks\" && npm run build:commonjs:watch",
-    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
-    "build:commonjs:watch": "npm run build:commonjs -- --watch"
+    ":start": "node app.js --experimental-modules",
+    ":dev2": "nodemon app.js --experimental-modules",
+    ":build:watch": "echo \"build && watch the COMMONJS version of the package - for other version, run specific tasks\" && npm run build:commonjs:watch",
+    ":build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib --ignore spec.js",
+    ":build:commonjs:watch": "npm run build:commonjs -- --watch"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/duchu-net/xenocide-world-generator.git"
   },
-  "author": "",
+  "author": "Patryk Androsiuk (http://duchu.net)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/duchu-net/xenocide-world-generator/issues"

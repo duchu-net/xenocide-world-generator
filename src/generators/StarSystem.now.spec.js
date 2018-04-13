@@ -21,6 +21,6 @@ describe('StarSystem', () => {
         assert.ok(starSystem)
         done()
       })
-      .catch(err => console.log('!', err))
+      .catch(err => { console.log('!', err); done(); })
   })
 })
