@@ -1,3 +1,5 @@
+import StarSystem from './StarSystem'
+
 class Galaxy {
   // generationSettings = {
   //   shape: null,
@@ -28,9 +30,9 @@ class Galaxy {
   static async Generate(spec, random) {
     try {
       // const s = [...spec.Generate(random)]
+      // const stars = spec.Generate(random)
       const s = Array.from(spec.Generate(random))
-      // console.log('>>>',s);
-      if (s.length === 1 && s[0] == null) s.pop()
+      console.log('>>>',spec, s,'<<<');
       return new Galaxy(s)
     } catch(err) {
       console.log('ERR>', err);

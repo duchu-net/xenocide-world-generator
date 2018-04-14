@@ -26,6 +26,10 @@ class StarSystem {
     // console.log(this);
   }
 
+  Position(position) {
+    this.position = position
+    return this
+  }
   Offset(offset) {
     this.position.add(offset)
     return this
@@ -54,12 +58,13 @@ class StarSystem {
   static async Generate(random) {
     const stars = Array.from(StarSystem.GenerateStars(random))
       .sort((s1, s2) => s1.mass < s2.mass)
+    // console.log('stars', stars);
     const subsystem = await StarSystem.GenerateSubsystem(random, stars)
-    console.log(subsystem);
+    // console.log('subsystem', subsystem, stars.length);
     return new StarSystem(null, stars)
   }
 
-  static * GenerateStars(random) {
+  static async * GenerateStars(random) {
     try {
       const count = random.weighted(STAR_COUNT_DISTIBUTION_IN_SYSTEMS)
       if (count <= 0) return
@@ -72,7 +77,7 @@ class StarSystem {
     }
   }
   static async GenerateSubsystem(random, stars) {
-    return await StarSubsystem.Generate(stars, random)
+    return StarSubsystem.Generate(stars, random)
   }
   static async GeneratePlanets(random) {
 

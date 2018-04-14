@@ -16,7 +16,7 @@ describe('StarSystem', () => {
     // StarSystem.Generate(new Random(9985595)) // 3star
     // StarSystem.Generate(new Random(99855985)) // 2star
       .then(starSystem => {
-        // console.log('StarSystem', starSystem)
+        // console.log('$tarSystem', starSystem)
         // assert.ok(starSystem.statistics.star_systems > 0)
         assert.ok(starSystem)
         done()
