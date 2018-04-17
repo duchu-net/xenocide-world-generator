@@ -16,11 +16,19 @@ class Names {
     return Names.NamedStar(random)
   }
   static NamedStar(random) {
-    return random.choice(Names.names) + "'s Star";
+    return random.choice(Names.names) //+ "'s Star";
   }
 
-  static Generate(random) {
+  static Generate(random, count = 1) {
     return random.weighted(Names.namingStrategies)(random)
+
+    // var choices = [];
+    // while (choices.length < count) {
+    //   var newChoice = Names.Generate(random)
+    //   // if (choices.Add(newChoice))
+    //   choices.push(newChoice)
+    //   yield newChoice;
+    // }
   }
 }
 

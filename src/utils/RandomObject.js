@@ -37,8 +37,10 @@ class RandomObject {
     if (max != null) return this.random.integer(0, max)
     return this.random.next()
   }
+  unit() { return this.random.unit() }
   integer(min, max) { return this.random.integer(min, max) }
   real(min, max) { return this.random.real(min, max) }
+  seed() { return this.next() }
 
   NormallyDistributedSingle(standardDeviation, mean) {
     // *****************************************************

@@ -3,11 +3,19 @@ import { Vector3, Matrix4, Quaternion } from 'three'
 import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../CONSTANTS'
 import Star from './Star'
 import StarSubsystem from './StarSubsystem'
+import Random from '../utils/RandomObject'
+
 
 class StarSystem {
-  _position = null
-  _stars = []
+  // _position = null
+  // _stars = []
 
+  get name() { return this._name }
+  set name(name) { this._name = name }
+  get seed() { return this._seed }
+  set seed(seed) { this._seed = seed }
+  get random() { return this._random }
+  set random(random) { this._random = random }
   get position() { return this._position }
   set position(pos) {
     if (!pos instanceof Vector3) throw new TypeError('position must be a Vector3 instance')
@@ -19,15 +27,23 @@ class StarSystem {
     this._stars = stars
   }
 
-  constructor(position, stars) {
+  constructor(seed, { position, name, stars } = {}) {
+    this.seed = seed
+    this.random = new Random(seed)
+
     this.position = position || new Vector3()
     this.stars = stars || []
+    this.name = name || 'unknow'
     // return this
     // console.log(this);
   }
 
   Position(position) {
     this.position = position
+    return this
+  }
+  Subsystem(subsystem) {
+    this._subsystem = subsystem
     return this
   }
   Offset(offset) {
@@ -56,12 +72,15 @@ class StarSystem {
     return gs
   }
   static async Generate(random) {
-    const stars = Array.from(StarSystem.GenerateStars(random))
-      .sort((s1, s2) => s1.mass < s2.mass)
+    const stars = []
+    for await (let star of StarSystem.GenerateStars(random))
+      stars.push(star)
+    stars.sort((s1, s2) => s1.mass < s2.mass)
     // console.log('stars', stars);
     const subsystem = await StarSystem.GenerateSubsystem(random, stars)
     // console.log('subsystem', subsystem, stars.length);
     return new StarSystem(null, stars)
+      .Subsystem(subsystem)
   }
 
   static async * GenerateStars(random) {
@@ -73,7 +92,7 @@ class StarSystem {
         yield Star.Generate(random)
       }
     } catch(err) {
-      console.log('ERR>', err);
+      console.error('ERR>', err);
     }
   }
   static async GenerateSubsystem(random, stars) {

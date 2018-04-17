@@ -54,15 +54,21 @@ class Star {
 
   constructor(mass) {
     this.mass = mass
-    this.radius = Star.calcRadius(this.mass)
-    this.volume = Star.calcVolume(this.radius)
-    this.density = Star.calcDensity(this.mass, this.radius)
-    this.luminosity = Star.calcLuminosity(this.mass)
-    this.frost_line = Star.calcFrostLine(this.luminosity)
-    this.temperature = Star.calcTemperature(this.luminosity, this.radius)
-    this.surface_area = Star.calcSurfaceArea(this.radius)
-    this.circumference = Star.calcCircumference(this.radius)
-    this.main_sequence_lifetime = Star.calcMainSequenceLifetime(this.mass, this.luminosity)
+    this.recalculate()
+  }
+
+  recalculate() {
+    if (this.mass) {
+      this.radius = Star.calcRadius(this.mass)
+      this.volume = Star.calcVolume(this.radius)
+      this.density = Star.calcDensity(this.mass, this.radius)
+      this.luminosity = Star.calcLuminosity(this.mass)
+      this.frost_line = Star.calcFrostLine(this.luminosity)
+      this.temperature = Star.calcTemperature(this.luminosity, this.radius)
+      this.surface_area = Star.calcSurfaceArea(this.radius)
+      this.circumference = Star.calcCircumference(this.radius)
+      this.main_sequence_lifetime = Star.calcMainSequenceLifetime(this.mass, this.luminosity)
+    }
   }
 
   // converters
@@ -106,6 +112,35 @@ class Star {
   }
   static calcSurfaceArea(radius) {
     return 4 * Math.PI * Math.pow(radius, 2)
+  }
+
+  generateMass(random) {
+    const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
+    const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)
+    return mass
+  }
+
+  Name(name) {
+    this.name = name
+    return this
+  }
+
+  Generate(random = this.random) {
+    const genList = [
+      ['mass', this.generateMass],
+      // ['seed', this.generateSeed],
+      // ['name', this.generateName],
+      // ['position', this.generatePosition],
+      // ['stars', (random) => [...this.generateStars(random)].sort((a, b) => a.mass < b.mass)],
+      // [''],
+      // ['subsystem', this.generateSubsystem],
+    ]
+    for (const [key, fun] of genList) {
+      if (this[key] == null) this[key] = fun(random)
+      // console.log(key, this[key]);
+    }
+    this.recalculate()
+    return this
   }
 
   static Generate(random) {

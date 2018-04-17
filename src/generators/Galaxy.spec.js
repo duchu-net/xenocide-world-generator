@@ -12,8 +12,8 @@ describe('Galaxy', () => {
     assert.ok(new Galaxy() instanceof Galaxy)
   })
 
-  it('should create Grid Galaxy object', (done) => {
-    Galaxy.Generate(new Grid(15, 10), new Random(123))
+  it('should create default Grid Galaxy object', (done) => {
+    Galaxy.Generate()
       .then(galaxy => {
         console.log('Grid', galaxy.statistics, galaxy)
         assert.ok(galaxy.statistics.star_systems > 0)
@@ -21,6 +21,16 @@ describe('Galaxy', () => {
       })
       .catch(err => console.log('!', err))
   })
+
+  // it('should create Grid Galaxy object', (done) => {
+  //   Galaxy.Generate(new Grid(15, 10), new Random(123))
+  //     .then(galaxy => {
+  //       console.log('Grid', galaxy.statistics, galaxy)
+  //       assert.ok(galaxy.statistics.star_systems > 0)
+  //       done()
+  //     })
+  //     .catch(err => console.log('!', err))
+  // })
 
   // it('should create Sphere Galaxy object', (done) => {
   //   Galaxy.Generate(new Sphere(1500), new Random(999))
