@@ -28,7 +28,6 @@ class RandomObject {
     if (!Array.isArray(list)) {
       list = Object.entries(list).map(e => ([e[1], e[0]]))
     }
-    // console.log(list, this.choice(list));
     return this.choice(list)[1]
   }
 
@@ -56,6 +55,28 @@ class RandomObject {
     var x2 = 2.0 * Math.PI * u2;
     var z1 = x1 * Math.sin(x2) //random normal(0,1)
     return z1 * standardDeviation + mean
+  }
+
+  NormallyDistributedSingle4(standardDeviation, mean, min, max) {
+      var nMax = (max - mean) / standardDeviation;
+      var nMin = (min - mean) / standardDeviation;
+      var nRange = nMax - nMin;
+      var nMaxSq = nMax * nMax;
+      var nMinSq = nMin * nMin;
+      var subFrom = nMinSq;
+      if (nMin < 0 && 0 < nMax) subFrom = 0;
+      else if (nMax < 0) subFrom = nMaxSq;
+
+      var sigma = 0.0;
+      let u;
+      let z;
+      do {
+        z = nRange * this.unit() + nMin; // uniform[normMin, normMax]
+        sigma = Math.exp((subFrom - z * z) / 2);
+        u = this.unit();
+      } while (u > sigma);
+
+      return z * standardDeviation + mean;
   }
 }
 

@@ -48,7 +48,7 @@ class Sphere {
 //                );
 //                var d = pos.Length() / _size;
 //                var m = d * 2000 + (1 - d) * 15000;
-//                var t = random.NormallyDistributedSingle(4000, m, 1000, 40000);
+//                var t = random.NormallyDistributedSingle4(4000, m, 1000, 40000);
 //
 //                yield return new Star(
 //                    pos,

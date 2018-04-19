@@ -103,7 +103,7 @@ class Spiral {
           var clsScaleDev = ArmClusterScaleDeviation * Size;
           var clsScaleMin = MinArmClusterScale * Size;
           var clsScaleMax = MaxArmClusterScale * Size;
-          var cSize = random.NormallyDistributedSingle(clsScaleDev, clsScaleMin * 0.5 + clsScaleMax * 0.5, clsScaleMin, clsScaleMax);
+          var cSize = random.NormallyDistributedSingle4(clsScaleDev, clsScaleMin * 0.5 + clsScaleMax * 0.5, clsScaleMin, clsScaleMax);
 
           const densityMean = 0.00025
           const stars = new Sphere(cSize, densityMean, null, 1, 1, 1).Generate(random);
