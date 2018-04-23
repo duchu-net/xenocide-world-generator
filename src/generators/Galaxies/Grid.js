@@ -8,7 +8,7 @@ class Grid {
   _spacing = null
 
   constructor(size, spacing) {
-    this._size = size || 10
+    this._size = size || 5
     this._spacing = spacing || 1
   }
 
@@ -29,7 +29,7 @@ class Grid {
           //   .Position(new Vector3(i * _spacing, j * _spacing, k * _spacing))
 
           yield new StarSystem(
-            new Vector3(i * _spacing, j * _spacing, k * _spacing),
+            null, { position: new Vector3(i * _spacing, j * _spacing, k * _spacing) },
             // ,StarName.Generate(random)
           )
             .Offset(new Vector3(-_size/2, -_size/2, -_size/2))

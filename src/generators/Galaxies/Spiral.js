@@ -35,7 +35,10 @@ class Spiral {
     this.CentralVoidSizeDeviation = 7;
   }
 
-  * Generate(random) {
+  // * GenerateShape(random) {
+  //   return this.Generate(random)
+  // }
+  * GenerateShape(random) {
     const {
       CentralVoidSizeDeviation,
       CentralVoidSizeMean,
@@ -83,7 +86,8 @@ class Spiral {
     } = this
 
     try {
-      const arms = random.Next(MinimumArms, MaximumArms);
+      const arms = random.integer(MinimumArms, MaximumArms);
+      console.log('arms', arms);
       const armAngle = ((Math.PI * 2) / arms);
 
       const maxClusters = (Size / Spacing) / arms;

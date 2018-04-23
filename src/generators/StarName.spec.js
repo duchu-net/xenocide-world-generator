@@ -10,7 +10,7 @@ describe('StarName', () => {
   })
 
   it('should create StarName object', (done) => {
-    StarName.Generate(new Random('1234')) // 5star
+    StarName.Generate(new Random('1234'))
       .then(starSystem => {
         // console.log('$tarSystem', starSystem)
         assert.ok(starSystem)

@@ -33,20 +33,20 @@ describe('Galaxy', () => {
   // })
 
   // it('should create Sphere Galaxy object', (done) => {
-  //   Galaxy.Generate(new Sphere(1500), new Random(999))
+  //   Galaxy.Generate(new Sphere(), new Random(999))
   //     .then(galaxy => {
   //       console.log('Sphere', galaxy.statistics)
   //       assert.ok(galaxy.statistics.star_systems > 0)
   //       done()
   //     })
   // })
-  //
-  // it('should create Spiral Galaxy object', (done) => {
-  //   Galaxy.Generate(new Spiral(), new Random(999))
-  //     .then(galaxy => {
-  //       console.log('Spiral', galaxy.statistics)
-  //       assert.ok(galaxy.statistics.star_systems > 0)
-  //       done()
-  //     })
-  // })
+
+  it('should create Spiral Galaxy object', (done) => {
+    Galaxy.Generate(new Spiral(), new Random(999))
+      .then(galaxy => {
+        console.log('Spiral', galaxy.statistics)
+        assert.ok(galaxy.statistics.star_systems > 0)
+        done()
+      })
+  })
 })

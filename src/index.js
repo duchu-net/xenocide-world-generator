@@ -1,8 +1,9 @@
 import Galaxy from './generators/Galaxy'
 import Grid from './generators/Galaxies/Grid'
+import Spiral from './generators/Galaxies/Spiral'
 import Star from './generators/Star'
 import Random from './utils/RandomObject'
-export { Galaxy, Grid, Star, Random }
+export { Galaxy, Grid, Spiral, Star, Random }
 
 // import GalaxyGenerator from './generators/Galaxy/GalaxyGenerator'
 // import { SteppedAction } from 'duchunet-utils'

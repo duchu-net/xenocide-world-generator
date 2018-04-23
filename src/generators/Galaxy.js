@@ -42,11 +42,11 @@ class Galaxy {
     return this.star_systems
   }
 
-  GenerateUniqNames() {
+  GenerateUniqNames(random) {
     // return Names.Generate
-    const random = new Random()
+    // const random = new Random()
     // return Array(this.star_systems.length).map(() => Names.Generate(random))
-    this.star_systems.forEach(ss => ss.name = Names.Generate(random))
+    this.star_systems.forEach(ss => ss.Name(Names.Generate(random)))
     return this
   }
   GenerateStars(shape) {
@@ -55,9 +55,13 @@ class Galaxy {
     return this
   }
 
-  GenerateSystems(systems) {
+  async GenerateSystems(random, systems) {
     // const protoStars = [...shape.Generate(this.random)]
-    this.star_systems = systems.map(ps => new PlanetarySystem('123', ps))
+    // for await (const system of systems)
+    const star_systems = []
+    for (const system of systems) star_systems.push(await new PlanetarySystem().Position(system.position).Generate(random))
+    // this.star_systems = systems.map(ps => new PlanetarySystem().Name(ps.name).Generate(random))
+    this.star_systems = star_systems
     return this
   }
 
@@ -70,9 +74,14 @@ class Galaxy {
       // const stars = spec.Generate(random)
       // const systems = Array.from(spec.Generate(random))
       // console.log('>>>',spec, systems,'<<<');
-      return new Galaxy('seed')
-        .GenerateSystems(shape)
-        .GenerateUniqNames()
+      const galaxy = new Galaxy('seed')
+      await galaxy.GenerateSystems(random, shape)
+      await galaxy.GenerateUniqNames(random)
+      return galaxy
+
+      // return new Galaxy('seed')
+      //   .GenerateSystems(random, shape)
+      //   .GenerateUniqNames()
     } catch(err) {
       console.error('ERR>', err);
     }

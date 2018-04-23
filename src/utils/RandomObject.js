@@ -23,12 +23,17 @@ class RandomObject {
     return list[this.next(list.length-1)]
   }
   weighted(list) {
-    // TODO - now return randomly xD
     if (typeof list !== 'object') throw new TypeError('list must be array or object')
     if (!Array.isArray(list)) {
       list = Object.entries(list).map(e => ([e[1], e[0]]))
     }
-    return this.choice(list)[1]
+
+    const sum = list.reduce((o, c) => o += c[0], 0)
+    let num = this.real(0, sum)
+    for (let i=0; i<list.length; i++) {
+      num -= list[i][0]
+      if (num < 0) return list[i][1]
+    }
   }
 
   Next(max) { return this.next(max) }
@@ -47,34 +52,34 @@ class RandomObject {
     // *****************************************************
     // var u1 = random.NextDouble() //these are uniform(0,1) random doubles
     // var u2 = random.NextDouble()
-    var u1 = this.random.unit() //these are uniform(0,1) random doubles
-    var u2 = this.random.unit()
+    const u1 = this.random.unit() //these are uniform(0,1) random doubles
+    const u2 = this.random.unit()
     // console.log('@@', u1, u2);
 
-    var x1 = Math.sqrt(-2.0 * Math.log(u1))
-    var x2 = 2.0 * Math.PI * u2;
-    var z1 = x1 * Math.sin(x2) //random normal(0,1)
+    const x1 = Math.sqrt(-2.0 * Math.log(u1))
+    const x2 = 2.0 * Math.PI * u2;
+    const z1 = x1 * Math.sin(x2) //random normal(0,1)
     return z1 * standardDeviation + mean
   }
 
   NormallyDistributedSingle4(standardDeviation, mean, min, max) {
-      var nMax = (max - mean) / standardDeviation;
-      var nMin = (min - mean) / standardDeviation;
-      var nRange = nMax - nMin;
-      var nMaxSq = nMax * nMax;
-      var nMinSq = nMin * nMin;
-      var subFrom = nMinSq;
+      const nMax = (max - mean) / standardDeviation;
+      const nMin = (min - mean) / standardDeviation;
+      const nRange = nMax - nMin;
+      const nMaxSq = nMax * nMax;
+      const nMinSq = nMin * nMin;
+      let subFrom = nMinSq;
       if (nMin < 0 && 0 < nMax) subFrom = 0;
       else if (nMax < 0) subFrom = nMaxSq;
 
-      var sigma = 0.0;
+      let sigma = 0.0;
       let u;
       let z;
       do {
         z = nRange * this.unit() + nMin; // uniform[normMin, normMax]
         sigma = Math.exp((subFrom - z * z) / 2);
         u = this.unit();
-      } while (u > sigma);
+      } while (u > sigma)
 
       return z * standardDeviation + mean;
   }

@@ -11,11 +11,14 @@ describe('PlanetarySystem', () => {
   })
 
   it('should create PlanetarySystem object', (done) => {
-    const system = new PlanetarySystem()
-      .Generate(new Random('lol1'))
-    console.log('>>',system,'<<');
-    assert.ok(true)
-    done()
+    new PlanetarySystem()
+      .Generate(new Random(5248964))
+      .then(system => {
+        // console.log('>>',system,'<<');
+        // console.log('>>',system._subsystem,'<<');
+        assert.ok(system)
+        done()
+      })
     // // PlanetarySystem.Generate(new Random(99)) // 1star
     // PlanetarySystem.Generate(new Random(998559)) // 5star
     // // PlanetarySystem.Generate(new Random(9985595)) // 3star

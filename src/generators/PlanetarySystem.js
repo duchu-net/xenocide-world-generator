@@ -11,12 +11,17 @@ import Star from './Star'
 
 
 class PlanetarySystem {
+  _luminosity = null
+
+  // GETTERS & SETTERS =========================================================
   get seed() { return this._seed }
   set seed(seed) {
     this._seed = seed || new Date().getTime()
   }
   get name() { return this._name }
   set name(name) { this._name = name }
+  get luminosity() { return this._luminosity }
+  set luminosity(luminosity) { this._luminosity = luminosity }
   get position() { return this._position }
   set position(position) { this._position = position }
   get star_mass() { return this._star_mass }
@@ -29,6 +34,7 @@ class PlanetarySystem {
     if (this._random == null) this._random = new Random(this.seed)
     return this._random
   }
+  // END GETTERS & SETTERS =====================================================
 
   constructor(props = {}, random) {
     this.seed = props.seed
@@ -54,7 +60,7 @@ class PlanetarySystem {
     } catch(err) { console.error(err) }
   }
   generateSubsystem(random, stars) {
-    return new PlanetarySubsystem(stars)
+    return PlanetarySubsystem.buildTree(stars)
       .Generate(random)
   }
   // generateSeed(random) {
@@ -72,21 +78,31 @@ class PlanetarySystem {
     }
     if (this.subsystem) {
       this.star_mass = this.subsystem.mass
+      this.luminosity = this.subsystem.luminosity
     }
   }
 
-  Generate(random = this.random) {
+  Name(name) {
+    this.name = name
+    return this
+  }
+  Position(position) {
+    this.position = position
+    return this
+  }
+
+  async Generate(random = this.random) {
     const genList = [
       // ['seed', this.generateSeed],
       ['name', this.generateName],
       ['position', this.generatePosition],
-      ['stars', (random) => [...this.generateStars(random)].sort((a, b) => a.mass < b.mass)],
+      ['stars', (random) => [...this.generateStars(random)].sort((a, b) => a.mass < b.mass).map((s, i) => s.MassOrder(i))],
       // [''],
       ['subsystem', random => this.generateSubsystem(random, this.stars)],
     ]
     for (const [key, fun] of genList) {
       if (this[key] == null) this[key] = fun(random)
-      console.log(key, this[key]);
+      // console.log(key, this[key]);
     }
     this.recalculate()
     return this

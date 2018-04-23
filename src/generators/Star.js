@@ -5,7 +5,8 @@ import {
  } from '../CONSTANTS'
 
 class Star {
-  // body_type = 'star'
+  body_type = 'STAR'
+
   // name = null
   // stellar_class = null
   _mass = null // masa (SUN SCALE)
@@ -21,8 +22,10 @@ class Star {
   // circumference = null // obwód
   // surface_area = null // powierzchnia
   // frost_line = null // linia zmarźliny
+  _inner_limit = null
+  _outer_limit = null
 
-
+  // GETTERS & SETTERS =========================================================
   get mass() { return this._mass }
   set mass(mass) {
     this._mass = mass
@@ -44,13 +47,18 @@ class Star {
   get density() { return this._density }
   set density(den) { this._density = den }
   get frost_line() { return this._frost_line }
-  set frost_line(den) { this._frost_line = den }
+  set frost_line(fl) { this._frost_line = fl }
   get main_sequence_lifetime() { return this._main_sequence_lifetime }
-  set main_sequence_lifetime(den) { this._main_sequence_lifetime = den }
+  set main_sequence_lifetime(msl) { this._main_sequence_lifetime = msl }
   get circumference() { return this._circumference }
-  set circumference(den) { this._circumference = den }
+  set circumference(cir) { this._circumference = cir }
   get surface_area() { return this._surface_area }
-  set surface_area(den) { this._surface_area = den }
+  set surface_area(sa) { this._surface_area = sa }
+  get inner_limit() { return this._inner_limit }
+  set inner_limit(il) { this._inner_limit = il }
+  get outer_limit() { return this._outer_limit }
+  set outer_limit(ol) { this._outer_limit = ol }
+  // END GETTERS & SETTERS =====================================================
 
   constructor(mass) {
     this.mass = mass
@@ -63,14 +71,56 @@ class Star {
       this.volume = Star.calcVolume(this.radius)
       this.density = Star.calcDensity(this.mass, this.radius)
       this.luminosity = Star.calcLuminosity(this.mass)
+      this.inner_limit = Star.calcInnerLimit(this.mass)
+      this.outer_limit = Star.calcOuterLimit(this.mass)
       this.frost_line = Star.calcFrostLine(this.luminosity)
       this.temperature = Star.calcTemperature(this.luminosity, this.radius)
       this.surface_area = Star.calcSurfaceArea(this.radius)
       this.circumference = Star.calcCircumference(this.radius)
       this.main_sequence_lifetime = Star.calcMainSequenceLifetime(this.mass, this.luminosity)
+      this.habitable_zone = Star.calcHabitableZone(this.luminosity)
+      this.habitable_zone_start = Star.calcHabitableZoneStart(this.luminosity)
+      this.habitable_zone_end = Star.calcHabitableZoneEnd(this.luminosity)
     }
   }
 
+
+
+  generateMass(random) {
+    const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
+    const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)
+    return mass
+  }
+
+  Name(name) {
+    this.name = name
+    return this
+  }
+  MassOrder(order) {
+    this.mass_order = order
+    return this
+  }
+
+  Generate(random = this.random) {
+    const genList = [
+      ['mass', this.generateMass],
+      // ['seed', this.generateSeed],
+      // ['name', this.generateName],
+      // ['position', this.generatePosition],
+      // ['stars', (random) => [...this.generateStars(random)].sort((a, b) => a.mass < b.mass)],
+      // [''],
+      // ['subsystem', this.generateSubsystem],
+    ]
+    for (const [key, fun] of genList) {
+      if (this[key] == null) this[key] = fun(random)
+      // console.log(key, this[key]);
+    }
+    this.recalculate()
+    return this
+  }
+
+
+  // STATICS ===================================================================
   // converters
   static solTemperatureToKelvin(temp = 1) {
     return parseInt(temp * SUN_TEMPERATURE)
@@ -113,42 +163,28 @@ class Star {
   static calcSurfaceArea(radius) {
     return 4 * Math.PI * Math.pow(radius, 2)
   }
-
-  generateMass(random) {
-    const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
-    const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)
-    return mass
+  static calcInnerLimit(mass) {
+    return 0.1 * mass
   }
-
-  Name(name) {
-    this.name = name
-    return this
+  static calcOuterLimit(mass) {
+    return 40 * mass
   }
-
-  Generate(random = this.random) {
-    const genList = [
-      ['mass', this.generateMass],
-      // ['seed', this.generateSeed],
-      // ['name', this.generateName],
-      // ['position', this.generatePosition],
-      // ['stars', (random) => [...this.generateStars(random)].sort((a, b) => a.mass < b.mass)],
-      // [''],
-      // ['subsystem', this.generateSubsystem],
-    ]
-    for (const [key, fun] of genList) {
-      if (this[key] == null) this[key] = fun(random)
-      // console.log(key, this[key]);
-    }
-    this.recalculate()
-    return this
+  static calcHabitableZone(luminosity) {
+    return Math.sqrt(luminosity)
   }
-
+  static calcHabitableZoneStart(luminosity) {
+    return Math.sqrt(luminosity/1.1)
+  }
+  static calcHabitableZoneEnd(luminosity) {
+    return Math.sqrt(luminosity/0.53)
+  }
   static Generate(random) {
     const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
     const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)
     // console.log(matrice);
     return new Star(mass)
   }
+  // END STATICS ===============================================================
 }
 
 export default Star

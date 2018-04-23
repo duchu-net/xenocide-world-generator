@@ -26,7 +26,7 @@ class StarName {
     [1, StarName.WithDecoration(1, StarName.WithDecoration(0.001, StarName.PlainMarkov))],
     [0.05, r => StarName.Letter(r) + '-' + StarName.Integer(r)],
     [0.01, StarName.NamedStar],
-    // [0.01, r => r.choice(StarName.specialLocations)]
+    [0.01, r => r.choice(StarName.specialLocations)]
   ]
   static specialLocations = [
     "Epsilon Eridani", "San Martin", "Seaford Nine", "Proctor Three", "Smoking Frog", "First of the Sun", "Xendi Sabu", "Bela Tegeuse"
@@ -80,11 +80,11 @@ class StarName {
   static WithDecoration(probability, func) {
     return (r) => {
       // console.log('WithDecoration');
-      var result = func(r);
+      const result = func(r);
       if (r.unit() > probability) return result;
 
-      var prefix = r.weighted(StarName._prefixStrategies)(r) + " ";
-      var suffix = " " + r.weighted(StarName._suffixStrategies)(r);
+      const prefix = r.weighted(StarName._prefixStrategies)(r) + " ";
+      const suffix = " " + r.weighted(StarName._suffixStrategies)(r);
 
       switch (r.weighted([
         [0.4, "neither"],
@@ -128,7 +128,7 @@ class StarName {
   static async GenerateCount(random, count = 1) {
     const names = []
     while (names.length<count) {
-      const name = (await StarName.Generate(random)).trim()
+      const name = await StarName.Generate(random)
       if (names.indexOf(name) === -1) names.push(name)
     }
     // console.log('>>', names, '<<');

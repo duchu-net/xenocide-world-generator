@@ -41,7 +41,8 @@ class Sphere {
       var m = d * 2000 + (1 - d) * 15000;
       var t = random.NormallyDistributedSingle4(4000, m, 1000, 40000)
       // console.log('@@', t); //temperature
-      yield new StarSystem(pos)
+      yield new StarSystem(null, { position: pos })
+
     //
     //   yield return new Star(
     //     pos,
