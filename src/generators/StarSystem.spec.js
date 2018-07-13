@@ -10,17 +10,21 @@ describe('StarSystem', () => {
     assert.ok(new StarSystem() instanceof StarSystem)
   })
 
-  it('should create StarSystem object', (done) => {
-    // StarSystem.Generate(new Random(99)) // 1star
-    StarSystem.Generate(new Random(998559)) // 5star
-    // StarSystem.Generate(new Random(9985595)) // 3star
-    // StarSystem.Generate(new Random(99855985)) // 2star
-      .then(starSystem => {
-        // console.log('$tarSystem', starSystem)
-        // assert.ok(starSystem.statistics.star_systems > 0)
-        assert.ok(starSystem)
-        done()
-      })
-      .catch(err => { console.log('!', err); done(); })
-  })
+  it('should create StarSystem object', async () => {
+    const system = await new StarSystem({ seed: 1530887055549 }).build()
+    // for (let planet of system.generatePlanets())
+    //   await planet.build()
+    console.log('* system', system.celestial_objects)
+    // // StarSystem.Generate(new Random(99)) // 1star
+    // StarSystem.Generate(new Random(998559)) // 5star
+    // // StarSystem.Generate(new Random(9985595)) // 3star
+    // // StarSystem.Generate(new Random(99855985)) // 2star
+    //   .then(starSystem => {
+    //     // console.log('$tarSystem', starSystem)
+    //     // assert.ok(starSystem.statistics.star_systems > 0)
+    //     assert.ok(starSystem)
+    //     done()
+    //   })
+    //   .catch(err => { console.log('!', err); done(); })
+  }).timeout(5000)
 })

@@ -1,9 +1,14 @@
+// var window = document.createWindow()
+// var jsdom = require('jsdom')
+//   , document = jsdom.jsdom('<!doctype html><html><head></head><body></body></html>')
+//   , window = document.createWindow();
 import Galaxy from './generators/Galaxy'
+import System from './generators/PlanetarySystem'
 import Grid from './generators/Galaxies/Grid'
 import Spiral from './generators/Galaxies/Spiral'
 import Star from './generators/Star'
 import Random from './utils/RandomObject'
-export { Galaxy, Grid, Spiral, Star, Random }
+export { Galaxy, System, Grid, Spiral, Star, Random }
 
 // import GalaxyGenerator from './generators/Galaxy/GalaxyGenerator'
 // import { SteppedAction } from 'duchunet-utils'

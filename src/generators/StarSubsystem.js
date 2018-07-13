@@ -1,5 +1,5 @@
 // import Vector3 from '../utils/Vector3'
-import { Vector3, Matrix4, Quaternion } from 'three'
+import { Vector3, Matrix4, Quaternion } from 'three-math'
 import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../CONSTANTS'
 import Star from './Star'
 

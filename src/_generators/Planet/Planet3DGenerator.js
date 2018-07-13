@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import * as THREE from 'three-math'
 // import SteppedAction from './helpers/stepped-action'
 import { SteppedAction } from 'duchunet-utils'
 import XorShift128 from './helpers/xor-shift128'

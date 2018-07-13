@@ -1,5 +1,5 @@
 import Random from '../utils/RandomObject'
-import { Vector3 } from 'three'
+import { Vector3 } from 'three-math'
 import { GREEK_LETTERS_NAMES, GREEK_LETTERS } from '../utils/alphabet'
 import Names from './Names'
 import StarSystem from './StarSystem'
@@ -14,22 +14,12 @@ class PlanetarySystem {
   _luminosity = null
 
   // GETTERS & SETTERS =========================================================
-  get seed() { return this._seed }
-  set seed(seed) {
-    this._seed = seed || new Date().getTime()
-  }
-  get name() { return this._name }
-  set name(name) { this._name = name }
   get luminosity() { return this._luminosity }
   set luminosity(luminosity) { this._luminosity = luminosity }
-  get position() { return this._position }
-  set position(position) { this._position = position }
   get star_mass() { return this._star_mass }
   set star_mass(star_mass) { this._star_mass = star_mass }
   get subsystem() { return this._subsystem }
   set subsystem(subsystem) { this._subsystem = subsystem }
-  get stars() { return this._stars }
-  set stars(stars) { this._stars = stars }
   get random() {
     if (this._random == null) this._random = new Random(this.seed)
     return this._random
@@ -42,13 +32,41 @@ class PlanetarySystem {
     this.position = props.position //|| new Vector3()
   }
 
-  generateName(random) {
+  async build() {
+    await this.generateName()
+    await this.generatePosition()
+    await this.generateStars()
+    return this
+  }
+
+  async generateName(force = false) {
+    const name = await PlanetarySystem.generateName(this.random)
+    if (!this.name || force) this.name = name
+    return name
+  }
+  static async generateName(random) {
     return Names.Generate(random)
   }
-  generatePosition(random) {
+
+  async generatePosition(force = false) {
+    const position = await PlanetarySystem.generatePosition(this.random)
+    if (!this.position || force) this.position = position
+    return position
+  }
+  static async generatePosition(random) {
     return new Vector3()
   }
-  * generateStars(random) {
+
+  async generateStars(force = false) {
+    let stars = []
+    for (let star of PlanetarySystem.generateStars(this.random)) {
+      stars.push(star)
+    }
+    stars = stars.sort((a, b) => a.mass < b.mass)
+    if (!this.stars || force) this.stars = stars
+    return this.stars
+  }
+  static * generateStars(random) {
     try {
       const count = random.weighted(STAR_COUNT_DISTIBUTION_IN_SYSTEMS)
       if (count <= 0) return

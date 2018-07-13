@@ -1,7 +1,7 @@
 import React from 'react'
 import SphereModel from '../SphereModel'
 import Model from '../Model'
-import * as THREE from 'three'
+import * as THREE from 'three-math'
 
 
 class Region extends Model {

@@ -48,7 +48,7 @@ class PlanetarySubsystem {
 
   // FOR BINARY STAR: 0.15 - 6 AU (FOR HABITABLE GET EXTREME LOW VALUE)
   generateAverageSeparation(random) {
-    console.log('generateAverageSeparation');
+    // console.log('generateAverageSeparation');
     // // if (this.subtype == null) this.checkSubtype()
     // switch (this.subtype) {
     //   case ('BINARY_STAR'): return 1

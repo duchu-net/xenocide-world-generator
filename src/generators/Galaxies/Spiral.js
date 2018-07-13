@@ -1,5 +1,5 @@
 // import Vector3 from '../../utils/Vector3'
-import { Vector3 } from 'three'
+import { Vector3 } from 'three-math'
 import StarSystem from '../StarSystem'
 import Sphere from './Sphere'
 import Cluster from './Cluster'

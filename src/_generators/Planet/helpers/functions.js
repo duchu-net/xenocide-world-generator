@@ -1,22 +1,22 @@
 // import config from '../scmap/config';
 const config = {};
 
-import * as THREE from 'three';
+import * as THREE from 'three-math';
 
 function hasLocalStorage() {
-	try {
-		return 'localStorage' in window && window.localStorage !== null;
-	} catch(e) {
+	// try {
+	// 	return 'localStorage' in window && window.localStorage !== null;
+	// } catch(e) {
 		return false;
-	}
+	// }
 }
 
 function hasSessionStorage() {
-	try {
-		return 'sessionStorage' in window && window.sessionStorage !== null;
-	} catch(e) {
+	// try {
+	// 	return 'sessionStorage' in window && window.sessionStorage !== null;
+	// } catch(e) {
 		return false;
-	}
+	// }
 }
 
 function humanSort( a, b ) {

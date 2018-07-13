@@ -49,9 +49,9 @@ export const STAR_COUNT_DISTIBUTION_IN_BINARY_SUBSYSTEMS = {
 export const STAR_COUNT_DISTIBUTION_IN_SYSTEMS = {
   1: 1,
   2: 0.2,
-  3: 0.05,
-  4: 0.01,
-  5: 0.005
+  // 3: 0.05,
+  // 4: 0.01,
+  // 5: 0.005
 }
 
 export const SUN_AGE = 4.603e9 // 4603000000 YEARS

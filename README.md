@@ -9,19 +9,20 @@ JS (EcmaScript) world generator for 4X like games in 3D space
 
 #### Example
 ```js
-import { Star, Galaxy, Grid, Random } from 'xenocide-world-generator'
-// Galaxy
-const galaxy = Galaxy.Generate(new Grid(), new Random('seed123'))
-console.log(galaxy)
-// StarSystem
-// TODO
-// Single Star
-const star = Star.Generate(new Random('seed123'))
-console.log(star)
-// Star with mass (in solar masses unit)
-console.log(new Star(1.2))
-// Planet
-// TODO
+const { Galaxy } = require('xenocide-world-generator')
+
+const galaxy = await new Galaxy().build()
+console.log('* Galaxy generated:', galaxy);
+for (let system of galaxy.generateSystems()) {
+  await system.build()
+  console.log('** System generated:', system);
+  for (let star of system.generateStars()) {
+    console.log('*** Star generated:', star);
+  }
+  for (let planet of system.generatePlanets()) {
+    console.log('*** Planet generated:', planet);
+  }
+}
 ```
 
 #### Inspired by

@@ -1,6 +1,6 @@
 import React from 'react'
 import SphereModel from '../SphereModel'
-import * as THREE from 'three'
+import * as THREE from 'three-math'
 import Planet3DGenerator from './Planet3DGenerator'
 import Region from './Region'
 

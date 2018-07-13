@@ -15,6 +15,7 @@ class RandomObject {
       default: this.random = new XorShift128()
     }
     // this._random = random || new XorShift128(254158958941485)
+    return this
   }
 
   choice(list) {

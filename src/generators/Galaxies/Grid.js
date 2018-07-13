@@ -1,7 +1,7 @@
 import StarSystem from '../StarSystem'
 import Names from '../Names'
 // import Vector3 from '../../utils/Vector3'
-import { Vector3 } from 'three'
+import { Vector3 } from 'three-math'
 
 class Grid {
   _size = null
@@ -19,22 +19,22 @@ class Grid {
     for (let i = 0; i < count; i++) {
       for (let j = 0; j < count; j++) {
         for (let k = 0; k < count; k++) {
-          // yield {
-          //   position: new Vector3(i * _spacing, j * _spacing, k * _spacing)
-          //     .add(new Vector3(-_size/2, -_size/2, -_size/2)),
-          //   temperature: null
-          // }
+          yield {
+            position: new Vector3(i * _spacing, j * _spacing, k * _spacing)
+              .add(new Vector3(-_size/2, -_size/2, -_size/2)),
+            temperature: null
+          }
 
-          // const starSystem = StarSystem.Generate(random)
-          //   .Position(new Vector3(i * _spacing, j * _spacing, k * _spacing))
-
-          yield new StarSystem(
-            null, { position: new Vector3(i * _spacing, j * _spacing, k * _spacing) },
-            // ,StarName.Generate(random)
-          )
-            .Offset(new Vector3(-_size/2, -_size/2, -_size/2))
-          // console.log('$',starSystem);
-          // yield starSystem
+          // // const starSystem = StarSystem.Generate(random)
+          // //   .Position(new Vector3(i * _spacing, j * _spacing, k * _spacing))
+          //
+          // yield new StarSystem(
+          //   null, { position: new Vector3(i * _spacing, j * _spacing, k * _spacing) },
+          //   // ,StarName.Generate(random)
+          // )
+          //   .Offset(new Vector3(-_size/2, -_size/2, -_size/2))
+          // // console.log('$',starSystem);
+          // // yield starSystem
         }
       }
     }

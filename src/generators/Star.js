@@ -1,68 +1,90 @@
+import RandomObject from '../utils/RandomObject'
+import SteppedAction from '../utils/SteppedAction'
+// import Generator from './Generator'
+import CelestialObject from './CelestialObject'
 import {
   SPECTRAL_CLASSIFICATION,
   SUN_TEMPERATURE,
   SUN_AGE,
  } from '../CONSTANTS'
 
-class Star {
+
+class Star extends CelestialObject {
+  type = 'STAR'
+  habitable = false
+
   body_type = 'STAR'
+  model = {}
 
   // name = null
   // stellar_class = null
-  _mass = null // masa (SUN SCALE)
+  // mass = null // masa (SUN SCALE)
   // diameter = null // średnica
-  _luminosity = null // jasność (SUN SCALE)
-  _radius = null // promień
-  _temperature = null // (SUN SCALE)
-  // temperature_k= null // (K) /int
-  _volume = null // objętość
-  // density = null // gęstość
+  luminosity = null // jasność (SUN SCALE)
+  radius = null // promień
+  temperature = null // (SUN SCALE)
+  temperature_k= null // (K) /int
+  volume = null // objętość
+  density = null // gęstość
   // main_sequence_lifetime = null
   // main_sequence_lifetime_y = null // (Y) /int
   // circumference = null // obwód
   // surface_area = null // powierzchnia
   // frost_line = null // linia zmarźliny
-  _inner_limit = null
-  _outer_limit = null
+  inner_limit = null
+  outer_limit = null
 
   // GETTERS & SETTERS =========================================================
-  get mass() { return this._mass }
-  set mass(mass) {
-    this._mass = mass
-  }
-  get luminosity() {
-    // if (this._luminosity == null)
-    //   this.luminosity = Star.calcLuminosity(this.mass)
-    return this._luminosity
-  }
-  set luminosity(lum) {
-    this._luminosity = lum
-  }
-  get radius() { return this._radius }
-  set radius(rad) { this._radius = rad }
-  get temperature() { return this._temperature }
-  set temperature(temp) { this._temperature = temp }
-  get volume() { return this._volume }
-  set volume(vol) { this._volume = vol }
-  get density() { return this._density }
-  set density(den) { this._density = den }
-  get frost_line() { return this._frost_line }
-  set frost_line(fl) { this._frost_line = fl }
-  get main_sequence_lifetime() { return this._main_sequence_lifetime }
-  set main_sequence_lifetime(msl) { this._main_sequence_lifetime = msl }
-  get circumference() { return this._circumference }
-  set circumference(cir) { this._circumference = cir }
-  get surface_area() { return this._surface_area }
-  set surface_area(sa) { this._surface_area = sa }
-  get inner_limit() { return this._inner_limit }
-  set inner_limit(il) { this._inner_limit = il }
-  get outer_limit() { return this._outer_limit }
-  set outer_limit(ol) { this._outer_limit = ol }
+  // get mass() { return this._mass }
+  // set mass(mass) {
+  //   this._mass = mass
+  // }
+  // get luminosity() {
+  //   // if (this._luminosity == null)
+  //   //   this.luminosity = Star.calcLuminosity(this.mass)
+  //   return this._luminosity
+  // }
+  // set luminosity(lum) {
+  //   this._luminosity = lum
+  // }
+  // get radius() { return this._radius }
+  // set radius(rad) { this._radius = rad }
+  // get temperature() { return this._temperature }
+  // set temperature(temp) { this._temperature = temp }
+  // get volume() { return this._volume }
+  // set volume(vol) { this._volume = vol }
+  // get density() { return this._density }
+  // set density(den) { this._density = den }
+  // get frost_line() { return this._frost_line }
+  // set frost_line(fl) { this._frost_line = fl }
+  // get main_sequence_lifetime() { return this._main_sequence_lifetime }
+  // set main_sequence_lifetime(msl) { this._main_sequence_lifetime = msl }
+  // get circumference() { return this._circumference }
+  // set circumference(cir) { this._circumference = cir }
+  // get surface_area() { return this._surface_area }
+  // set surface_area(sa) { this._surface_area = sa }
+  // get inner_limit() { return this._inner_limit }
+  // set inner_limit(il) { this._inner_limit = il }
+  // get outer_limit() { return this._outer_limit }
+  // set outer_limit(ol) { this._outer_limit = ol }
   // END GETTERS & SETTERS =====================================================
 
-  constructor(mass) {
-    this.mass = mass
+  constructor(props = {}) {
+    super(props, 'STAR')
     this.recalculate()
+  }
+
+  setDesignation(designation) {
+    if (!designation) {
+      const { system = {}, system_sequence } = this
+      if (system && system_sequence != null) {
+        designation = `${system.designation || system.name} ${system_sequence}`
+      } else {
+        designation = system.designation || system.name
+      }
+    }
+    this.designation = designation
+    this.makeCode()
   }
 
   recalculate() {
@@ -79,8 +101,9 @@ class Star {
       this.circumference = Star.calcCircumference(this.radius)
       this.main_sequence_lifetime = Star.calcMainSequenceLifetime(this.mass, this.luminosity)
       this.habitable_zone = Star.calcHabitableZone(this.luminosity)
-      this.habitable_zone_start = Star.calcHabitableZoneStart(this.luminosity)
-      this.habitable_zone_end = Star.calcHabitableZoneEnd(this.luminosity)
+      this.habitable_zone_inner = Star.calcHabitableZoneStart(this.luminosity)
+      this.habitable_zone_outer = Star.calcHabitableZoneEnd(this.luminosity)
+      this.makeCode()
     }
   }
 
@@ -92,10 +115,10 @@ class Star {
     return mass
   }
 
-  Name(name) {
-    this.name = name
-    return this
-  }
+  // Name(name) {
+  //   this.name = name
+  //   return this
+  // }
   MassOrder(order) {
     this.mass_order = order
     return this
@@ -119,6 +142,40 @@ class Star {
     return this
   }
 
+  static async generateMass(random) {
+    // return 1
+    // props.action.provideResult(1)
+    return 1
+  }
+
+  async GenerateAsync() {
+    const star = this.model
+    const seed = this.getSeed()
+    const random = new RandomObject(seed)
+
+    return new Promise((resolve, reject) => {
+      const action = new SteppedAction((action) => {
+        console.log(action.getCurrentActionName(), action.getProgress());
+      })
+        .executeSubaction((action) => {
+          Star.generateMass(random).then(result => { console.log('##',result);action.provideResult(result) })
+        }, 1, "Generating Star Mass")
+        .getResult((result) => {
+          console.log('result',result)
+          star.mass = result
+          star.seed = seed
+          // star.originalSeed = originalSeed
+        })
+        .finalize((action) => {
+          console.warn('FINISH!!! :D');
+          // this.activeAction = null
+          //ui.progressPanel.hide()
+          resolve(star)
+        }, 0)
+        .execute()
+    })
+
+  }
 
   // STATICS ===================================================================
   // converters
@@ -178,11 +235,12 @@ class Star {
   static calcHabitableZoneEnd(luminosity) {
     return Math.sqrt(luminosity/0.53)
   }
-  static Generate(random) {
+  static Generate(random, buildData) {
     const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
     const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)
     // console.log(matrice);
-    return new Star(mass)
+    const star = new this({ mass, ...buildData })
+    return star
   }
   // END STATICS ===============================================================
 }
