@@ -2,6 +2,7 @@ import RandomObject from '../utils/RandomObject'
 import SteppedAction from '../utils/SteppedAction'
 // import Generator from './Generator'
 import CelestialObject from './CelestialObject'
+import { GREEK_LETTERS } from '../utils/alphabet'
 import {
   SPECTRAL_CLASSIFICATION,
   SUN_TEMPERATURE,
@@ -78,7 +79,7 @@ class Star extends CelestialObject {
     if (!designation) {
       const { system = {}, system_sequence } = this
       if (system && system_sequence != null) {
-        designation = `${system.designation || system.name} ${system_sequence}`
+        designation = `${system.designation || system.name} ${GREEK_LETTERS[system_sequence]}`
       } else {
         designation = system.designation || system.name
       }
@@ -103,7 +104,7 @@ class Star extends CelestialObject {
       this.habitable_zone = Star.calcHabitableZone(this.luminosity)
       this.habitable_zone_inner = Star.calcHabitableZoneStart(this.luminosity)
       this.habitable_zone_outer = Star.calcHabitableZoneEnd(this.luminosity)
-      this.makeCode()
+      // this.makeCode()
     }
   }
 

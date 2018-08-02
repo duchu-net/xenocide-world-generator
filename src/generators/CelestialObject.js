@@ -1,7 +1,9 @@
+import Random from '../utils/RandomObject'
+
 class CelestialObject {
   static id = 0
   id = null
-  // name = null
+  name = null
   type = null // ONE OF [STAR,PLANET,SATELLITE,ASTEROID_BELT,MANMADE]
   parent = null
   parent_id = null
@@ -16,12 +18,18 @@ class CelestialObject {
 
   constructor(props = {}, type) {
     Object.assign(this, props)
+    this.setSeed(props.seed)
     this.setId(props.id)
     this.setType(props.type || type)
     this.setParent(props.parent)
     this.setSystem(props.system)
     // this.setName(props.name)
     this.setDesignation(props.designation)
+  }
+
+  setSeed(seed) {
+    this.seed = seed || Date.now()
+    this.random = new Random(this.seed)
   }
 
   setType(type) {

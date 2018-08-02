@@ -30,7 +30,8 @@ class RandomObject {
     }
 
     const sum = list.reduce((o, c) => o += c[0], 0)
-    let num = this.real(0, sum)
+    let num = this.random.real(0, sum)
+    console.log(sum, num)
     for (let i=0; i<list.length; i++) {
       num -= list[i][0]
       if (num < 0) return list[i][1]

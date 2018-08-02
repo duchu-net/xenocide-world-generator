@@ -3,7 +3,8 @@
 //   , document = jsdom.jsdom('<!doctype html><html><head></head><body></body></html>')
 //   , window = document.createWindow();
 import Galaxy from './generators/Galaxy'
-import System from './generators/PlanetarySystem'
+// import System from './generators/PlanetarySystem'
+import System from './generators/StarSystem'
 import Grid from './generators/Galaxies/Grid'
 import Spiral from './generators/Galaxies/Spiral'
 import Star from './generators/Star'

@@ -11,10 +11,12 @@ describe('StarSystem', () => {
   })
 
   it('should create StarSystem object', async () => {
-    const system = await new StarSystem({ seed: 1530887055549 }).build()
-    // for (let planet of system.generatePlanets())
+    const system = await new StarSystem({ seed: 153088705549 }).build()
+    for (let star of system.generateStars()) {}
+    for (let planet of system.generatePlanets()) {}
+
     //   await planet.build()
-    console.log('* system', system.celestial_objects)
+    console.log('* system', system)
     // // StarSystem.Generate(new Random(99)) // 1star
     // StarSystem.Generate(new Random(998559)) // 5star
     // // StarSystem.Generate(new Random(9985595)) // 3star

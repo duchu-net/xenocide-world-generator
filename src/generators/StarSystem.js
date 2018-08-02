@@ -1,29 +1,34 @@
 // import Vector3 from '../utils/Vector3'
 import { Vector3, Matrix4, Quaternion } from 'three-math'
-import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../CONSTANTS'
+import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS, PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM } from '../CONSTANTS'
 import Star from './Star'
 import StarSubsystem from './StarSubsystem'
 import Planet from './Planet'
 import Random from '../utils/RandomObject'
+import { toRoman } from '../utils/alphabet'
 import Names from './Names'
 
 
 class StarSystem {
   type = null // SINGLE_STAR, BINARY
   code = null
+  name = null
+  habitable = null // fill after planet generation
   habitable_zone_inner = null
   habitable_zone_outer = null
   frost_line = null
   description = null
   celestial_objects = []
 
-  constructor({ seed, position, name, stars, planets } = {}) {
+  constructor(props = {}) {
+    Object.assign(this, props)
+    const { seed, position, name, stars, planets } = props
     this.setSeed(seed)
     this.setName(name)
     this.setPosition(position)
     this.stars = stars || []
     this.planets = planets || []
-    this.seeds = {}
+    // this.seeds = {}
     //   stars: null,
     //   planets: null,
     // return this
@@ -31,11 +36,14 @@ class StarSystem {
   }
 
   setSeed(seed) {
-    this.seed = seed || Date.now()
+    if (this.seed == null) {
+      this.seed = seed || Date.now()
+    }
     this.random = new Random(this.seed)
     this.generateSeeds()
   }
   generateSeeds() {
+    if (this.seeds && this.seeds.planets) return this.seeds
     this.seeds = {
       stars: this.random.next(),
       planets: this.random.next(),
@@ -59,27 +67,102 @@ class StarSystem {
   }
   * generateStars() {
     try {
-      for (let star of StarSystem.GenerateStars(this.random, this)) {
+      const random = new Random(this.seeds.stars)
+      for (let star of StarSystem.GenerateStars(random, this)) {
         this.stars.push(star)
         this.celestial_objects.push(star)
         yield star
       }
       this.stars.sort((s1, s2) => s1.mass < s2.mass)
+      this.fillStarInfo()
     } catch (e) { console.warn(e) }
+  }
+  getStars() {
+    return this.celestial_objects.filter(o => o.type == 'STAR')
+  }
+  getPlanets() {
+    return this.celestial_objects.filter(o => o.type == 'PLANET')
+  }
+  fillPlanetInfo() {
+    const planets = this.getPlanets()
+    this.planetGenerationData = {
+      planets_count: planets.length,
+    }
+    Object.assign(this, this.planetGenerationData)
+  }
+  fillStarInfo() {
+    const stars = this.getStars()
+    // this.stars_count = stars.length
+    let type = null
+    switch (stars.length) {
+      case 1: type = 'SINGLE_STAR'; break;
+      case 2: type = 'BINARY_STAR'; break;
+      default: type = 'MULTIPLE_STAR';
+    }
+    const star = stars[0]
+    this.starGenerationData = {
+      type: type,
+      stars_count: stars.length,
+      inner_limit: star.inner_limit,
+      outer_limit: star.outer_limit,
+      frost_line: star.frost_line,
+      habitable_zone: star.habitable_zone,
+      habitable_zone_inner: star.habitable_zone_inner,
+      habitable_zone_outer: star.habitable_zone_outer,
+      star_color: '#ed830b',
+    }
+    Object.assign(this, this.starGenerationData)
+  }
+  flushStarGenerationData() {
+    return this.starGenerationData
+  }
+  flushPlanetGenerationData() {
+    return this.planetGenerationData
+  }
+
+  * generateProtoPlanets() {
+    const random = new Random(this.seeds.planets)
+    const planet_count = random.weighted(PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM)
+    const used_seeds = []
+    const zones = []
+    const zonesNames = ['inner', 'habitable', 'outer']
+    let maxInInner = 4
+    let maxInHabitable = 3
+    for (let i=0; i<planet_count; i++) {
+      const tempZones = []
+      if (maxInInner != 0) tempZones.push('inner')
+      if (maxInHabitable != 0) tempZones.push('habitable')
+      tempZones.push('outer')
+      const choice = this.habitable && i==0 ? 'habitable' : random.choice(tempZones)
+      // if (this.habitable && i==0)
+      if (choice == 'inner') maxInInner--
+      if (choice == 'habitable') maxInHabitable--
+      zones.push(choice)
+    }
+    zones.sort((a,b) => zonesNames.indexOf(a) - zonesNames.indexOf(b))
+    const habitableIndex = zones.indexOf('habitable')
+    // console.log('zones', zones);
+    for (let i=0; i<planet_count; i++) {
+      // CHECK UNIQUE SEED
+      let planetSeed = random.next()
+      while (used_seeds.find(o => o == planetSeed)) planetSeed = random.next()
+      used_seeds.push(planetSeed)
+
+      const designation = `${this.name} ${toRoman(i+1)}`
+      yield {
+        seed: planetSeed,
+        zone: zones[i],
+        subtype: this.habitable && i === habitableIndex ? 'earth' : null,
+        designation: designation,
+      }
+    }
   }
   * generatePlanets() {
     try {
-      const { random } = this
-      const planet_count = 5
-      for (let i=0; i<planet_count; i++) {
-        // CHECK UNIQUE SEED
-        let planetSeed = random.next()
-        while (this.planets.find(o => o.seed == planetSeed)) planetSeed = random.next()
+      for (let protoPlanet of this.generateProtoPlanets()) {
         // CREATE PLANET
         const planet = new Planet({
-          seed: planetSeed,
-          name: `planet_${i+1}`,
-          designation: `${this.name} ${i+1}`,
+          ...protoPlanet,
           system: this,
         })
         this.planets.push(planet)
@@ -87,6 +170,7 @@ class StarSystem {
         // console.log('_planet',planet);
         yield planet
       }
+      this.fillPlanetInfo()
     } catch (e) { console.warn(e) }
   }
 
@@ -140,6 +224,7 @@ class StarSystem {
   static * GenerateStars(random, system) {
     try {
       const count = random.weighted(STAR_COUNT_DISTIBUTION_IN_SYSTEMS)
+      // console.log('count', count, STAR_COUNT_DISTIBUTION_IN_SYSTEMS);
       if (count <= 0) return
 
       for (let i=0; i<count; i++) {
