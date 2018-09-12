@@ -109,7 +109,7 @@ class StarSystem {
       habitable_zone: star.habitable_zone,
       habitable_zone_inner: star.habitable_zone_inner,
       habitable_zone_outer: star.habitable_zone_outer,
-      star_color: '#ed830b',
+      star_color: star.color,
     }
     Object.assign(this, this.starGenerationData)
   }

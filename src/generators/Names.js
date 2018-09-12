@@ -1,4 +1,7 @@
+import ModelBuilder from '../utils/MarkovNames/MarkovModelBuilder'
+
 class Names {
+  static _markov = null
   static get namingStrategies() {
     return [
       [1, Names.PlainMarkov],
@@ -12,8 +15,12 @@ class Names {
             "Maryellen","Johnetta","Eleanora","Arline","Rae","Caprice"]
 
   static PlainMarkov(random) {
-    // TODO
-    return Names.NamedStar(random)
+    if (!Names._markov) {
+      const m = new ModelBuilder(2);
+      m.TeachArray(Names.names);
+      Names._markov = m.toModel();
+    }
+    return Names._markov.Generate(random)
   }
   static NamedStar(random) {
     return random.choice(Names.names) //+ "'s Star";

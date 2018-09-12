@@ -36,7 +36,8 @@ class Galaxy {
     this.props = Object.assign({}, Galaxy.defaultProps, props)
 
     this.seed = this.props.seed || Date.now()
-    this.name = this.props.name
+    this.setName(this.props.name)
+    // this.name = this.props.name
 
     this.classification = this.props.classification
     this.position = this.props.position
@@ -48,6 +49,11 @@ class Galaxy {
     await this.generateName()
     await this.generateClassification()
     return this
+  }
+
+  setName(name) {
+    this.name = name //|| Names.Generate(this.random)
+    this.code = this.name.toUpperCase()
   }
   async generateName() {
     const name = 'abc' // must be generateted with random
@@ -112,10 +118,17 @@ class Galaxy {
     for (let system of shape.Generate(random)) {
       // CHECK UNIQUE SEED
       let systemSeed = random.next()
-      while (this.objects.find(o => o.seed == systemSeed)) systemSeed = random.next()
+      while (this.star_systems.find(o => o.seed == systemSeed)) systemSeed = random.next()
+      let systemName = Names.Generate(random)
+      while (this.star_systems.find(o => {
+        // console.log();
+        // console.log(o.name, systemName, o.name.toLowerCase() == systemName.toLowerCase());
+        return o.name.toLowerCase() == systemName.toLowerCase()
+      })) systemName = Names.Generate(random)
       // CREATE SYSTEM
       // console.log('*', system);
       const ss = new StarSystem({
+        name: systemName,
         seed: systemSeed,
         position: { ...system.position },
         temperature: system.temperature,

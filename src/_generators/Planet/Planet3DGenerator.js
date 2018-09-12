@@ -1,6 +1,7 @@
 import * as THREE from 'three-math'
 // import SteppedAction from './helpers/stepped-action'
-import { SteppedAction } from 'duchunet-utils'
+// import { SteppedAction } from 'duchunet-utils'
+import SteppedAction from '../../utils/SteppedAction'
 import XorShift128 from './helpers/xor-shift128'
 import { hashString, adjustRange, slerp, calculateTriangleArea, randomUnitVector } from './helpers/functions'
 import Tile from './Tile'

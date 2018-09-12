@@ -8,6 +8,7 @@ import {
   SUN_TEMPERATURE,
   SUN_AGE,
  } from '../CONSTANTS'
+ import { getStarColor } from './utils/StarColor'
 
 
 class Star extends CelestialObject {
@@ -24,6 +25,7 @@ class Star extends CelestialObject {
   luminosity = null // jasność (SUN SCALE)
   radius = null // promień
   temperature = null // (SUN SCALE)
+  color = null // HEX RGB
   temperature_k= null // (K) /int
   volume = null // objętość
   density = null // gęstość
@@ -98,6 +100,7 @@ class Star extends CelestialObject {
       this.outer_limit = Star.calcOuterLimit(this.mass)
       this.frost_line = Star.calcFrostLine(this.luminosity)
       this.temperature = Star.calcTemperature(this.luminosity, this.radius)
+      this.color = Star.calcColor(this.temperature)
       this.surface_area = Star.calcSurfaceArea(this.radius)
       this.circumference = Star.calcCircumference(this.radius)
       this.main_sequence_lifetime = Star.calcMainSequenceLifetime(this.mass, this.luminosity)
@@ -107,6 +110,8 @@ class Star extends CelestialObject {
       // this.makeCode()
     }
   }
+
+
 
 
 
@@ -202,6 +207,10 @@ class Star extends CelestialObject {
   }
   static calcTemperature(luminosity, radius) {
     return Math.pow(luminosity / Math.pow(radius, 2), 1/4)
+  }
+  static calcColor(temperature) {
+    const kelvins = this.solTemperatureToKelvin(temperature)
+    return getStarColor(kelvins)
   }
   static calcVolume(radius) {
     return 4/3 * Math.PI * Math.pow(radius, 3)

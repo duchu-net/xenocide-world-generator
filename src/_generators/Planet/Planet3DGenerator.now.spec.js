@@ -1,6 +1,10 @@
-import expect from 'expect'
+// import expect from 'expect'
+import assert from 'assert'
 import Planet3DGenerator from './Planet3DGenerator'
-import { SteppedAction } from 'duchunet-utils'
+// import { SteppedAction } from 'duchunet-utils'
+import SteppedAction from '../../utils/SteppedAction'
+var fs = require('fs');
+
 
 
 describe('Planet3DGenerator: model', () => {
@@ -103,7 +107,10 @@ describe('Planet3DGenerator: model', () => {
         }, 1)
         .getResult((result) => {
           console.log('getResult10', result.topology.tiles)
-          expect.objectContaining(result)
+          var json = JSON.stringify(result.topology);
+          fs.writeFile('myjsonfile.json', json, 'utf8', () => console.log('save done!'));
+          // expect.objectContaining(result)
+          assert.ok(typeof result == 'object')
         })
 
         // FINALIZE ------------------------------------------------------------
