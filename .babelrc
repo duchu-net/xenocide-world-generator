@@ -1,17 +1,31 @@
 {
-  "presets": ["es2015", "stage-0"],
+  "comments": false,
+  "presets": ["env", "stage-0"],
   "plugins": [
+    ["transform-class-properties", { "spec": true }],
     ["transform-runtime", {
       "polyfill": false,
       "regenerator": true
     }]
   ],
   "env": {
+    "test": {
+      "presets": [
+        ["env",{
+          "targets": {"node": "current"}
+        }]
+      ]
+    },
     "commonjs": {
+      "ignore": ["node_modules"],
+      "plugins": ["transform-class-properties"],
       "presets": [
         ["env", {
-          "useBuiltIns": false
-        }]
+          "useBuiltIns": true,
+          "modules": "commonjs",
+          "debug": true,
+          "forceAllTransforms": true
+        }],["stage-0"]
       ]
     },
     "es": {

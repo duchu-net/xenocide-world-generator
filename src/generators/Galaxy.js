@@ -16,7 +16,7 @@ const GALAXY = {
 class Galaxy {
   static defaultProps = {
     seed: null,
-    name: 'no_name',
+    name: 'no name',
     classification: 'grid',
     position: new Vector3(),
   }
@@ -53,7 +53,7 @@ class Galaxy {
 
   setName(name) {
     this.name = name //|| Names.Generate(this.random)
-    this.code = this.name.toUpperCase()
+    this.code = `GALAXY.${this.name.toUpperCase().replace(new RegExp(' ', 'g'), '')}`
   }
   async generateName() {
     const name = 'abc' // must be generateted with random

@@ -25,6 +25,15 @@ class Border{
 	toString(){
 		return "Border " + this.id.toFixed(0);
 	}
+
+	toJSON(key) {
+		return {
+			id: this.id,
+			corners: this.corners.map(corner => corner.id),
+			borders: this.borders.map(border => border.id),
+			tiles: this.tiles.map(tile => tile.id)
+		}
+	}
 }
 
 export default Border;

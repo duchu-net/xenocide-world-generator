@@ -1,15 +1,20 @@
-import { objects, random as randomUtils, SteppedAction } from 'duchunet-utils'
+// import { objects, random as randomUtils, SteppedAction } from 'duchunet-utils'
+import * as objects from '../utils/objects'
+import XorShift128 from '../utils/XorShift128'
+import SteppedAction from '../utils/SteppedAction'
 
 
 class Generator {
   getDefaultProps() {
     return {
+      ...this.constructor.defaultProps,
       model: {},
     }
   }
 
   constructor(props = {}, random) {
     this.props = objects.assignDeep({}, this.getDefaultProps(), props)
+    console.log(this.props);
     this.generatedModel = objects.assignDeep({}, this.getDefaultProps().model, props.model)
 
     this.multiple_factor = 10
@@ -33,7 +38,7 @@ class Generator {
       this.generatedModel.seed = seed
     }
     this.intSeed = seed
-		this.random = new randomUtils.XorShift128(seed)
+		this.random = new XorShift128(seed)
   }
 
 

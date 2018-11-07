@@ -17,7 +17,7 @@ class CelestialObject {
   size = null
 
   constructor(props = {}, type) {
-    Object.assign(this, props)
+    Object.assign(this, props, props.extends || {})
     this.setSeed(props.seed)
     this.setId(props.id)
     this.setType(props.type || type)

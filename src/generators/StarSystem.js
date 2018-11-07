@@ -7,6 +7,7 @@ import Planet from './Planet'
 import Random from '../utils/RandomObject'
 import { toRoman } from '../utils/alphabet'
 import Names from './Names'
+import PlanetOrbitGenerator from './Planet/PlanetOrbitGenerator'
 
 
 class StarSystem {
@@ -142,20 +143,38 @@ class StarSystem {
     zones.sort((a,b) => zonesNames.indexOf(a) - zonesNames.indexOf(b))
     const habitableIndex = zones.indexOf('habitable')
     // console.log('zones', zones);
-    for (let i=0; i<planet_count; i++) {
-      // CHECK UNIQUE SEED
+    const planetOrbits = new PlanetOrbitGenerator(this)
+    for (const orbit of planetOrbits.generateOrbits()) {
       let planetSeed = random.next()
       while (used_seeds.find(o => o == planetSeed)) planetSeed = random.next()
       used_seeds.push(planetSeed)
 
-      const designation = `${this.name} ${toRoman(i+1)}`
+      const designation = `${this.name} ${toRoman(orbit.from_star)}`
       yield {
+        ...orbit,
+        // type: undefined,
+        // subtype: orbit.type,
         seed: planetSeed,
-        zone: zones[i],
-        subtype: this.habitable && i === habitableIndex ? 'earth' : null,
+        orbit: orbit,
+        // zone: zones[i],
+        // subtype: this.habitable && i === habitableIndex ? 'earth' : null,
         designation: designation,
       }
     }
+    // for (let i=0; i<planet_count; i++) {
+    //   // CHECK UNIQUE SEED
+    //   let planetSeed = random.next()
+    //   while (used_seeds.find(o => o == planetSeed)) planetSeed = random.next()
+    //   used_seeds.push(planetSeed)
+    //
+    //   const designation = `${this.name} ${toRoman(i+1)}`
+    //   yield {
+    //     seed: planetSeed,
+    //     zone: zones[i],
+    //     subtype: this.habitable && i === habitableIndex ? 'earth' : null,
+    //     designation: designation,
+    //   }
+    // }
   }
   * generatePlanets() {
     try {

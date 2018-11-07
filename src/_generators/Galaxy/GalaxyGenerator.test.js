@@ -1,6 +1,6 @@
 import expect from 'expect'
 import GalaxyGenerator from './GalaxyGenerator'
-import { SteppedAction } from 'duchunet-utils'
+// import { SteppedAction } from 'duchunet-utils'
 
 
 describe('GalaxyGenerator: model', () => {

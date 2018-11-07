@@ -23,7 +23,7 @@ class Names {
     return Names._markov.Generate(random)
   }
   static NamedStar(random) {
-    return random.choice(Names.names) //+ "'s Star";
+    return random.choice(Names.names).toLowerCase() //+ "'s Star";
   }
 
   static Generate(random, count = 1) {

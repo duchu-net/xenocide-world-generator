@@ -1,6 +1,6 @@
-import * as THREE from 'three-math'
+// import * as THREE from 'three-math'
+import * as THREE from 'three'
 // import SteppedAction from './helpers/stepped-action'
-// import { SteppedAction } from 'duchunet-utils'
 import SteppedAction from '../../utils/SteppedAction'
 import XorShift128 from './helpers/xor-shift128'
 import { hashString, adjustRange, slerp, calculateTriangleArea, randomUnitVector } from './helpers/functions'
@@ -15,7 +15,7 @@ import Generator from '../Generator'
 class Planet3DGenerator extends Generator {
   static defaultProps = {
     generationSettings: {
-      subdivisions: 20, //detail_level
+      subdivisions: 10, //detail_level
       distortionLevel: 100, // CONST?? --- |
       plateCount: 7,
       oceanicRate: 70 / 100,
@@ -168,7 +168,7 @@ class Planet3DGenerator extends Generator {
         this.generatePlanetTerrain(planet, plateCount, oceanicRate, heatLevel, moistureLevel, random, action);
       }, 8, "Generating Terrain")
       .executeSubaction((action) => {
-        // this.generatePlanetRenderData(planet.topology, random, action);
+        this.generatePlanetRenderData(planet.topology, random, action);
       }, 1, "Building Visuals")
       .getResult((result) => {
       	planet.renderData = result
@@ -651,7 +651,7 @@ class Planet3DGenerator extends Generator {
     	action.executeSubaction(function (action){
     			for (var i = 0; i < mesh.nodes.length; ++i){
     				plane.setFromNormalAndCoplanarPoint(mesh.nodes[i].p, origin);
-    				pointShifts[i] = mesh.nodes[i].p.clone().add(plane.projectPoint(pointShifts[i])).normalize();
+    				pointShifts[i] = mesh.nodes[i].p.clone().add(plane.projectPoint(pointShifts[i], new THREE.Vector3())).normalize();
     			}
     	}, mesh.nodes.length / 10);
 
@@ -915,6 +915,7 @@ class Planet3DGenerator extends Generator {
   				}
   				tile.area = area;
   				tile.normal = tile.position.clone().normalize();
+          this.maxDistanceToCorner = maxDistanceToCorner
   				tile.boundingSphere = new THREE.Sphere(tile.averagePosition, maxDistanceToCorner);
   			}
   	});
@@ -1049,6 +1050,7 @@ class Planet3DGenerator extends Generator {
   	action.executeSubaction( (action) => {
   			var failedCount = 0;
   			while (plates.length < plateCount && failedCount < 10000){
+          const index = plates.length
   				var corner = topology.corners[random.integerExclusive(0, topology.corners.length)];
   				var adjacentToExistingPlate = false;
   				for (var i = 0; i < corner.tiles.length; ++i){
@@ -1065,6 +1067,7 @@ class Planet3DGenerator extends Generator {
 
   				var oceanic = (random.unit() < oceanicRate);
   				var plate = new Plate(
+            index,
   					new THREE.Color(random.integer(0, 0xFFFFFF)),
   					randomUnitVector(random),
   					random.realInclusive(-Math.PI / 30, Math.PI / 30),
@@ -1908,6 +1911,398 @@ class Planet3DGenerator extends Generator {
   	}
   }
   // END GENERATE TERRAIN ====================================================
+
+
+
+
+
+  //##########################################################################
+  /*
+  *
+  */
+  generatePlanetRenderData(topology, random, action){
+  	var renderData = {};
+
+  	action
+  	.executeSubaction( (action) => {
+              this.buildSurfaceRenderObject(topology.tiles, random, action);
+      }, 8, "Building Surface Visuals")
+      .getResult( (result) => {
+              renderData.surface = result;
+      })
+      .executeSubaction( (action) => {
+              this.buildPlateBoundariesRenderObject(topology.borders, action);
+      }, 1, "Building Plate Boundary Visuals")
+      .getResult( (result) => {
+              renderData.plateBoundaries = result;
+      })
+      .executeSubaction( (action) => {
+              this.buildPlateMovementsRenderObject(topology.tiles, action);
+      }, 2, "Building Plate Movement Visuals")
+      .getResult( (result) => {
+              renderData.plateMovements = result;
+      })
+      .executeSubaction( (action) => {
+              this.buildAirCurrentsRenderObject(topology.corners, action);
+      }, 2, "Building Air Current Visuals")
+      .getResult( (result) => {
+              renderData.airCurrents = result;
+      });
+
+      action.provideResult(renderData);
+  }
+
+  //##########################################################################
+  buildSurfaceRenderObject(tiles, random, action){
+  	var planetGeometry = new THREE.Geometry();
+  	var terrainColors = [];
+  	var plateColors = [];
+  	var elevationColors = [];
+  	var temperatureColors = [];
+  	var moistureColors = [];
+
+  	//$add player
+  	var playerColors = [];
+  	//
+
+  	var i = 0;
+  	action.executeSubaction( (action) => {
+  			if (i >= tiles.length)
+  				return;
+
+  			var tile = tiles[i];
+
+  			var colorDeviance = new THREE.Color(random.unit(), random.unit(), random.unit());
+  			var terrainColor;
+  			if (tile.elevation <= 0){
+  				var normalizedElevation = Math.min(-tile.elevation, 1);
+  				if (tile.biome === "ocean")
+  					terrainColor = new THREE.Color(0x0066FF).lerp(new THREE.Color(0x0044BB), Math.min(-tile.elevation, 1)).lerp(colorDeviance, 0.10);
+  				else if (tile.biome === "oceanGlacier")
+  					terrainColor = new THREE.Color(0xDDEEFF).lerp(colorDeviance, 0.10);
+  				else
+  					terrainColor = new THREE.Color(0xFF00FF);
+  			} else if (tile.elevation < 0.6){
+  				var normalizedElevation = tile.elevation / 0.6;
+  				if (tile.biome === "desert")
+  					terrainColor = new THREE.Color(0xDDDD77).lerp(new THREE.Color(0xBBBB55), normalizedElevation).lerp(colorDeviance, 0.10);
+  				else if (tile.biome === "rainForest")
+  					terrainColor = new THREE.Color(0x44DD00).lerp(new THREE.Color(0x229900), normalizedElevation).lerp(colorDeviance, 0.20);
+  				else if (tile.biome === "rocky")
+  					terrainColor = new THREE.Color(0xAA9977).lerp(new THREE.Color(0x887755), normalizedElevation).lerp(colorDeviance, 0.15);
+  				else if (tile.biome === "plains")
+  					terrainColor = new THREE.Color(0x99BB44).lerp(new THREE.Color(0x667722), normalizedElevation).lerp(colorDeviance, 0.10);
+  				else if (tile.biome === "grassland")
+  					terrainColor = new THREE.Color(0x77CC44).lerp(new THREE.Color(0x448822), normalizedElevation).lerp(colorDeviance, 0.15);
+  				else if (tile.biome === "swamp")
+  					terrainColor = new THREE.Color(0x77AA44).lerp(new THREE.Color(0x446622), normalizedElevation).lerp(colorDeviance, 0.25);
+  				else if (tile.biome === "deciduousForest")
+  					terrainColor = new THREE.Color(0x33AA22).lerp(new THREE.Color(0x116600), normalizedElevation).lerp(colorDeviance, 0.10);
+  				else if (tile.biome === "tundra")
+  					terrainColor = new THREE.Color(0x9999AA).lerp(new THREE.Color(0x777788), normalizedElevation).lerp(colorDeviance, 0.15);
+  				else if (tile.biome === "landGlacier")
+  					terrainColor = new THREE.Color(0xDDEEFF).lerp(colorDeviance, 0.10);
+  				else
+  					terrainColor = new THREE.Color(0xFF00FF);
+  			} else if (tile.elevation < 0.8){
+  				var normalizedElevation = (tile.elevation - 0.6) / 0.2;
+  				if (tile.biome === "tundra")
+  					terrainColor = new THREE.Color(0x777788).lerp(new THREE.Color(0x666677), normalizedElevation).lerp(colorDeviance, 0.10);
+  				else if (tile.biome === "coniferForest")
+  					terrainColor = new THREE.Color(0x338822).lerp(new THREE.Color(0x116600), normalizedElevation).lerp(colorDeviance, 0.10);
+  				else if (tile.biome === "snow")
+  					terrainColor = new THREE.Color(0xEEEEEE).lerp(new THREE.Color(0xDDDDDD), normalizedElevation).lerp(colorDeviance, 0.10);
+  				else if (tile.biome === "mountain")
+  					terrainColor = new THREE.Color(0x555544).lerp(new THREE.Color(0x444433), normalizedElevation).lerp(colorDeviance, 0.05);
+  				else
+  					terrainColor = new THREE.Color(0xFF00FF);
+  			} else{
+  				var normalizedElevation = Math.min((tile.elevation - 0.8) / 0.5, 1);
+  				if (tile.biome === "mountain")
+  					terrainColor = new THREE.Color(0x444433).lerp(new THREE.Color(0x333322), normalizedElevation).lerp(colorDeviance, 0.05);
+  				else if (tile.biome === "snowyMountain")
+  					terrainColor = new THREE.Color(0xDDDDDD).lerp(new THREE.Color(0xFFFFFF), normalizedElevation).lerp(colorDeviance, 0.10);
+  				else
+  					terrainColor = new THREE.Color(0xFF00FF);
+  			}
+
+  			var plateColor = tile.plate.color.clone();
+
+  			var elevationColor;
+  			if (tile.elevation <= 0)
+  				elevationColor = new THREE.Color(0x224488).lerp(new THREE.Color(0xAADDFF), Math.max(0, Math.min((tile.elevation + 3 / 4) / (3 / 4), 1)));
+  			else if (tile.elevation < 0.75)
+  				elevationColor = new THREE.Color(0x997755).lerp(new THREE.Color(0x553311), Math.max(0, Math.min((tile.elevation) / (3 / 4), 1)));
+  			else
+  				elevationColor = new THREE.Color(0x553311).lerp(new THREE.Color(0x222222), Math.max(0, Math.min((tile.elevation - 3 / 4) / (1 / 2), 1)));
+
+  			var temperatureColor;
+  			if (tile.temperature <= 0)
+  				temperatureColor = new THREE.Color(0x0000FF).lerp(new THREE.Color(0xBBDDFF), Math.max(0, Math.min((tile.temperature + 2 / 3) / (2 / 3), 1)));
+  			else
+  				temperatureColor = new THREE.Color(0xFFFF00).lerp(new THREE.Color(0xFF0000), Math.max(0, Math.min((tile.temperature) / (3 / 3), 1)));
+
+  			var moistureColor = new THREE.Color(0xFFCC00).lerp(new THREE.Color(0x0066FF), Math.max(0, Math.min(tile.moisture, 1)));
+
+  			//$add player
+  			// TODO
+  			//console.log(planet_scene.region);
+  			/* var playerColor;
+  			var waterColor = new THREE.Color('#0004ff').lerp(new THREE.Color('white'), 0.7);
+  			var iceColor = new THREE.Color('#0000ff').lerp(new THREE.Color('white'), 0.9);
+  			for (var index = 0; index < planet_scene.region.length; index++) {
+  			if (planet_scene.region[index].user && planet_scene.region[index].id == tile.id) {
+  			//console.log(intToRGB(hashCode(planet_scene.region[index].user)));
+  			if (tile.elevation <= 0) {
+  			//water color
+  			//playerColor = elevationColor;
+  			playerColor = new THREE.Color(intToRGB(hashCode(planet_scene.region[index].user))).lerp(new THREE.Color('white'), 0.2);
+  			} else {
+  			//land color
+  			playerColor = new THREE.Color(intToRGB(hashCode(planet_scene.region[index].user)) ); //'#' + planet_scene.region[index].User.color //.lerp(new THREE.Color(elevationColor), 0.7);
+  			}
+  			break;
+  			} else {
+  			if (tile.elevation <= 0 && !(tile.biome === "oceanGlacier")) {
+  			playerColor = waterColor;
+  			} else if (tile.elevation <= 0) {
+  			playerColor = iceColor;
+  			} else {
+  			playerColor = elevationColor;
+  			}
+  			}
+  			} */
+  			//
+
+  			var baseIndex = planetGeometry.vertices.length;
+  			planetGeometry.vertices.push(tile.averagePosition);
+  			for (var j = 0; j < tile.corners.length; ++j){
+  				var cornerPosition = tile.corners[j].position;
+  				planetGeometry.vertices.push(cornerPosition);
+  				planetGeometry.vertices.push(tile.averagePosition.clone().sub(cornerPosition).multiplyScalar(0.05).add(cornerPosition));
+
+  				var i0 = j * 2;
+  				var i1 = ((j + 1) % tile.corners.length) * 2;
+  				this.buildTileWedge(planetGeometry.faces, baseIndex, i0, i1, tile.normal);
+  				this.buildTileWedgeColors(terrainColors, terrainColor, terrainColor.clone().multiplyScalar(0.5));
+  				this.buildTileWedgeColors(plateColors, plateColor, plateColor.clone().multiplyScalar(0.5));
+  				this.buildTileWedgeColors(elevationColors, elevationColor, elevationColor.clone().multiplyScalar(0.5));
+  				this.buildTileWedgeColors(temperatureColors, temperatureColor, temperatureColor.clone().multiplyScalar(0.5));
+  				this.buildTileWedgeColors(moistureColors, moistureColor, moistureColor.clone().multiplyScalar(0.5));
+  				//$add player
+  				// TODO
+  				//this.buildTileWedgeColors(playerColors, playerColor, playerColor.clone().multiplyScalar(0.5));
+  				//
+  				for (var k = planetGeometry.faces.length - 3; k < planetGeometry.faces.length; ++k)
+  					planetGeometry.faces[k].vertexColors = terrainColors[k];
+  			}
+  			++i;
+  			action.loop(i / tiles.length);
+  	});
+
+  	planetGeometry.dynamic = true;
+  	planetGeometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1000);
+  	var planetMaterial = new THREE.MeshLambertMaterial({
+			// color: new THREE.Color(0x000000),
+			color: new THREE.Color(0xFFFFFF),
+			// ambient: new THREE.Color(0xFFFFFF),
+			// emissive: new THREE.Color(0xFFFFFF),
+			vertexColors: THREE.VertexColors,
+			// side: THREE.BackSide
+			// side: THREE.DoubleSide
+		});
+  	var planetRenderObject = new THREE.Mesh(planetGeometry, planetMaterial);
+
+  	var mapGeometry = new THREE.Geometry();
+  	mapGeometry.dynamic = true;
+  	var mapMaterial = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, });
+  	var mapRenderObject = new THREE.Mesh(mapGeometry, mapMaterial);
+
+  	action.provideResult({
+  			geometry: planetGeometry,
+  			terrainColors: terrainColors,
+  			plateColors: plateColors,
+  			elevationColors: elevationColors,
+  			temperatureColors: temperatureColors,
+  			moistureColors: moistureColors,
+  			//$add player
+  			playerColors: playerColors,
+  			//
+  			material: planetMaterial,
+  			renderObject: planetRenderObject,
+  			mapGeometry: mapGeometry,
+  			mapMaterial: mapMaterial,
+  			mapRenderObject: mapRenderObject,
+  	});
+  }
+
+  //##########################################################################
+  buildPlateBoundariesRenderObject(borders, action){
+  	var geometry = new THREE.Geometry();
+
+  	var i = 0;
+  	action.executeSubaction(function (action){
+  			if (i >= borders.length)
+  				return;
+
+  			var border = borders[i];
+  			if (border.betweenPlates){
+  				var normal = border.midpoint.clone().normalize();
+  				var offset = normal.clone().multiplyScalar(1);
+
+  				var borderPoint0 = border.corners[0].position;
+  				var borderPoint1 = border.corners[1].position;
+  				var tilePoint0 = border.tiles[0].averagePosition;
+  				var tilePoint1 = border.tiles[1].averagePosition;
+
+  				var baseIndex = geometry.vertices.length;
+  				geometry.vertices.push(borderPoint0.clone().add(offset));
+  				geometry.vertices.push(borderPoint1.clone().add(offset));
+  				geometry.vertices.push(tilePoint0.clone().sub(borderPoint0).multiplyScalar(0.2).add(borderPoint0).add(offset));
+  				geometry.vertices.push(tilePoint0.clone().sub(borderPoint1).multiplyScalar(0.2).add(borderPoint1).add(offset));
+  				geometry.vertices.push(tilePoint1.clone().sub(borderPoint0).multiplyScalar(0.2).add(borderPoint0).add(offset));
+  				geometry.vertices.push(tilePoint1.clone().sub(borderPoint1).multiplyScalar(0.2).add(borderPoint1).add(offset));
+
+  				var pressure = Math.max(-1, Math.min((border.corners[0].pressure + border.corners[1].pressure) / 2, 1));
+  				var shear = Math.max(0, Math.min((border.corners[0].shear + border.corners[1].shear) / 2, 1));
+  				var innerColor = (pressure <= 0) ? new THREE.Color(1 + pressure, 1, 0) : new THREE.Color(1, 1 - pressure, 0);
+  				var outerColor = new THREE.Color(0, shear / 2, shear);
+
+  				// geometry.faces.push(new THREE.Face3(baseIndex + 0, baseIndex + 1, baseIndex + 2, normal, [innerColor, innerColor, outerColor]));
+  				// geometry.faces.push(new THREE.Face3(baseIndex + 1, baseIndex + 3, baseIndex + 2, normal, [innerColor, outerColor, outerColor]));
+  				// geometry.faces.push(new THREE.Face3(baseIndex + 1, baseIndex + 0, baseIndex + 5, normal, [innerColor, innerColor, outerColor]));
+  				// geometry.faces.push(new THREE.Face3(baseIndex + 0, baseIndex + 4, baseIndex + 5, normal, [innerColor, outerColor, outerColor]));
+					// WebGL's preferred counter-clockwise order
+					geometry.faces.push(new THREE.Face3(baseIndex + 1, baseIndex + 0, baseIndex + 2, normal, [innerColor, innerColor, outerColor]));
+  				geometry.faces.push(new THREE.Face3(baseIndex + 3, baseIndex + 1, baseIndex + 2, normal, [innerColor, outerColor, outerColor]));
+  				geometry.faces.push(new THREE.Face3(baseIndex + 0, baseIndex + 1, baseIndex + 5, normal, [innerColor, innerColor, outerColor]));
+  				geometry.faces.push(new THREE.Face3(baseIndex + 4, baseIndex + 0, baseIndex + 5, normal, [innerColor, outerColor, outerColor]));
+				}
+  			++i;
+  			action.loop(i / borders.length);
+  	});
+
+  	geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1010);
+  	var material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, });
+  	var renderObject = new THREE.Mesh(geometry, material);
+
+  	var mapGeometry = new THREE.Geometry();
+  	mapGeometry.dynamic = true;
+  	var mapMaterial = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, });
+  	var mapRenderObject = new THREE.Mesh(mapGeometry, mapMaterial);
+
+  	action.provideResult({
+  			geometry: geometry,
+  			material: material,
+  			renderObject: renderObject,
+  			mapGeometry: mapGeometry,
+  			mapMaterial: mapMaterial,
+  			mapRenderObject: mapRenderObject,
+  	});
+  }
+
+  //##########################################################################
+  buildPlateMovementsRenderObject(tiles, action){
+  	var geometry = new THREE.Geometry();
+
+  	var i = 0;
+  	action.executeSubaction( (action) => {
+  			if (i >= tiles.length)
+  				return;
+  			var tile = tiles[i];
+  			var plate = tile.plate;
+  			var movement = plate.calculateMovement(tile.position);
+  			var plateMovementColor = new THREE.Color(1 - plate.color.r, 1 - plate.color.g, 1 - plate.color.b);
+  			this.buildArrow(geometry, tile.position.clone().multiplyScalar(1.002), movement.clone().multiplyScalar(0.5), tile.position.clone().normalize(), Math.min(movement.length(), 4), plateMovementColor);
+  			tile.plateMovement = movement;
+  			++i;
+  			action.loop(i / tiles.length);
+  	});
+
+  	geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1010);
+  	var material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, });
+  	var renderObject = new THREE.Mesh(geometry, material);
+
+  	var mapGeometry = new THREE.Geometry();
+  	mapGeometry.dynamic = true;
+  	var mapMaterial = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, });
+  	var mapRenderObject = new THREE.Mesh(mapGeometry, mapMaterial);
+
+  	action.provideResult({
+  			geometry: geometry,
+  			material: material,
+  			renderObject: renderObject,
+  			mapGeometry: mapGeometry,
+  			mapMaterial: mapMaterial,
+  			mapRenderObject: mapRenderObject,
+  	});
+  }
+
+  //##########################################################################
+  buildAirCurrentsRenderObject(corners, action){
+  	var geometry = new THREE.Geometry();
+  	//console.log('planet.buildAirCurrentsRenderObject(corners,)',corners);
+
+  	var i = 0;
+  	action.executeSubaction( (action) => {
+  			if (i >= corners.length)
+  				return;
+  			var corner = corners[i];
+  			//console.log(corner);
+  			this.buildArrow(geometry, corner.position.clone().multiplyScalar(1.002), corner.airCurrent.clone().multiplyScalar(0.5), corner.position.clone().normalize(), Math.min(corner.airCurrent.length(), 4));
+  			++i;
+  			action.loop(i / corners.length);
+  	});
+
+  	geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1010);
+  	var material = new THREE.MeshBasicMaterial({color: new THREE.Color(0xFFFFFF), });
+  	var renderObject = new THREE.Mesh(geometry, material);
+
+  	var mapGeometry = new THREE.Geometry();
+  	mapGeometry.dynamic = true;
+  	var mapMaterial = new THREE.MeshBasicMaterial({color: new THREE.Color(0xFFFFFF), });
+  	var mapRenderObject = new THREE.Mesh(mapGeometry, mapMaterial);
+
+  	action.provideResult({
+  			geometry: geometry,
+  			material: material,
+  			renderObject: renderObject,
+  			mapGeometry: mapGeometry,
+  			mapMaterial: mapMaterial,
+  			mapRenderObject: mapRenderObject,
+  	});
+  }
+
+  //##########################################################################
+  buildArrow(geometry, position, direction, normal, baseWidth, color){
+  	if (direction.lengthSq() === 0)
+  		return;
+  	var sideOffset = direction.clone().cross(normal).setLength(baseWidth / 2);
+  	var baseIndex = geometry.vertices.length;
+  	geometry.vertices.push(position.clone().add(sideOffset), position.clone().add(direction), position.clone().sub(sideOffset));
+  	// geometry.faces.push(new THREE.Face3(baseIndex, baseIndex + 2, baseIndex + 1, normal, [color, color, color]));
+		// WebGL's preferred counter-clockwise order
+		geometry.faces.push(new THREE.Face3(baseIndex + 2, baseIndex, baseIndex + 1, normal, [color, color, color]));
+  }
+
+  //##########################################################################
+  buildTileWedge(f, b, s, t, n){
+  	// f.push(new THREE.Face3(b + s + 2, b + t + 2, b, n));
+  	// f.push(new THREE.Face3(b + s + 1, b + t + 1, b + t + 2, n));
+  	// f.push(new THREE.Face3(b + s + 1, b + t + 2, b + s + 2, n));
+		// WebGL's preferred counter-clockwise order
+		f.push(new THREE.Face3(b + t + 2, b + s + 2, b, n));
+  	f.push(new THREE.Face3(b + t + 1, b + s + 1, b + t + 2, n));
+  	f.push(new THREE.Face3(b + t + 2, b + s + 1, b + s + 2, n));
+  }
+
+  //##########################################################################
+  buildTileWedgeColors(f, c, bc){
+  	f.push([c, c, c]);
+  	f.push([bc, bc, c]);
+  	f.push([bc, c, c]);
+  }
+
 }
 
 export default Planet3DGenerator

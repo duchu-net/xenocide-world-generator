@@ -2,17 +2,18 @@
 // var jsdom = require('jsdom')
 //   , document = jsdom.jsdom('<!doctype html><html><head></head><body></body></html>')
 //   , window = document.createWindow();
+import World from './generators/World'
 import Galaxy from './generators/Galaxy'
 // import System from './generators/PlanetarySystem'
 import System from './generators/StarSystem'
 import Grid from './generators/Galaxies/Grid'
 import Spiral from './generators/Galaxies/Spiral'
 import Star from './generators/Star'
+import Planet from './generators/Planet'
 import Random from './utils/RandomObject'
-export { Galaxy, System, Grid, Spiral, Star, Random }
+export { World, Galaxy, System, Grid, Spiral, Star, Planet, Random }
 
 // import GalaxyGenerator from './generators/Galaxy/GalaxyGenerator'
-// import { SteppedAction } from 'duchunet-utils'
 // import WorldGenerator from './world/WorldGeneretor'
 //
 //

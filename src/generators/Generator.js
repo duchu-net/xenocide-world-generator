@@ -1,4 +1,3 @@
-// import { hashString } from 'duchunet-utils/utils/objects'
 
 class Generator {
   static defaultProps = {

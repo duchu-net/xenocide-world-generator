@@ -45,6 +45,27 @@ class Tile{
 	toString(){
 		return "Tile " + this.id.toFixed(0) + " (" + this.tiles.length.toFixed(0) + " Neighbors) < " + this.position.x.toFixed(0) + ", " + this.position.y.toFixed(0) + ", " + this.position.z.toFixed(0) + " >";
 	}
+
+	// fromJSON() {}
+	toJSON(key) {
+		return {
+			id: this.id,
+			position: this.position,
+			tiles: this.tiles.map(tile => tile.id),
+			corners: this.corners.map(corner => corner.id),
+			borders: this.borders.map(border => border.id),
+
+			normal: this.normal,
+			averagePosition: this.averagePosition,
+			maxDistanceToCorner: this.maxDistanceToCorner,
+			plate: this.plate ? this.plate.id : undefined,
+			area: this.area,
+			biome: this.biome,
+			moisture: this.moisture,
+			elevation: this.elevation,
+			temperature: this.temperature,
+		}
+	}
 }
 
 export default Tile;
