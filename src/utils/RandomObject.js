@@ -8,6 +8,10 @@ class RandomObject {
   }
 
   constructor(random) {
+    if (random == null) {
+      this.random = new XorShift128()
+      return this
+    }
     switch (typeof random) {
       case 'object': this.random = random; break
       case 'number':
@@ -15,7 +19,6 @@ class RandomObject {
       default: this.random = new XorShift128()
     }
     // this._random = random || new XorShift128(254158958941485)
-    return this
   }
 
   choice(list) {
@@ -84,6 +87,10 @@ class RandomObject {
       } while (u > sigma)
 
       return z * standardDeviation + mean;
+  }
+
+  static randomSeed() {
+    return Math.floor((new Date).getTime() / Math.floor((Math.random() * 100) + 1))
   }
 }
 

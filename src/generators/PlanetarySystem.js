@@ -2,7 +2,7 @@ import Random from '../utils/RandomObject'
 import { Vector3 } from 'three-math'
 import { GREEK_LETTERS_NAMES, GREEK_LETTERS } from '../utils/alphabet'
 import Names from './Names'
-import StarSystem from './StarSystem'
+// import StarSystem from './System'
 import PlanetarySubsystem from './PlanetarySubsystem'
 import {
   STAR_COUNT_DISTIBUTION_IN_SYSTEMS,

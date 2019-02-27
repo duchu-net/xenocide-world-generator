@@ -8,7 +8,7 @@ import {
   SUN_TEMPERATURE,
   SUN_AGE,
  } from '../CONSTANTS'
- import { getStarColor } from './utils/StarColor'
+import { getStarColor } from './utils/StarColor'
 
 
 class Star extends CelestialObject {
@@ -18,6 +18,9 @@ class Star extends CelestialObject {
   body_type = 'STAR'
   model = {}
 
+  physics = {
+
+  }
   // name = null
   // stellar_class = null
   // mass = null // masa (SUN SCALE)
@@ -36,6 +39,9 @@ class Star extends CelestialObject {
   // frost_line = null // linia zmarźliny
   inner_limit = null
   outer_limit = null
+  subtype = null // Main sequence class
+  evolution = null // Can handle evolution
+
 
   // GETTERS & SETTERS =========================================================
   // get mass() { return this._mass }
@@ -73,7 +79,7 @@ class Star extends CelestialObject {
   // END GETTERS & SETTERS =====================================================
 
   constructor(props = {}) {
-    super(props, 'STAR')
+    super(Object.assign({}, props, props.star || {}), 'STAR')
     this.recalculate()
   }
 
@@ -92,6 +98,10 @@ class Star extends CelestialObject {
 
   recalculate() {
     if (this.mass) {
+      const matrice = SPECTRAL_CLASSIFICATION.find(sc => this.mass > sc.min_sol_mass && this.mass < sc.max_sol_mass)
+      this.subtype = matrice.class
+      this.evolution = matrice.organisms_evolution
+
       this.radius = Star.calcRadius(this.mass)
       this.volume = Star.calcVolume(this.radius)
       this.density = Star.calcDensity(this.mass, this.radius)
@@ -108,6 +118,7 @@ class Star extends CelestialObject {
       this.habitable_zone_inner = Star.calcHabitableZoneStart(this.luminosity)
       this.habitable_zone_outer = Star.calcHabitableZoneEnd(this.luminosity)
       // this.makeCode()
+
     }
   }
 
@@ -167,7 +178,7 @@ class Star extends CelestialObject {
           Star.generateMass(random).then(result => { console.log('##',result);action.provideResult(result) })
         }, 1, "Generating Star Mass")
         .getResult((result) => {
-          console.log('result',result)
+          // console.log('result',result)
           star.mass = result
           star.seed = seed
           // star.originalSeed = originalSeed
@@ -231,7 +242,9 @@ class Star extends CelestialObject {
     return 4 * Math.PI * Math.pow(radius, 2)
   }
   static calcInnerLimit(mass) {
-    return 0.1 * mass
+    let limit = 0.1 * mass
+    if (limit < 0.15) limit = 0.15
+    return limit
   }
   static calcOuterLimit(mass) {
     return 40 * mass
@@ -245,6 +258,7 @@ class Star extends CelestialObject {
   static calcHabitableZoneEnd(luminosity) {
     return Math.sqrt(luminosity/0.53)
   }
+
   static Generate(random, buildData) {
     const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
     const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)

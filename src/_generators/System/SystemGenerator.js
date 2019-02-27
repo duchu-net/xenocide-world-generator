@@ -1,6 +1,5 @@
 import Generator from '../Generator'
 import SYSTEM from './SystemConstants'
-// import { SteppedAction, objects, randoms } from 'duchunet-utils'
 import { PlanetGenerator } from '../Planet'
 // import XorShift128 from './helpers/xor-shift128'
 

@@ -9,7 +9,7 @@ class Planet extends CelestialBody {
   // ORBIT
   semi_major_axis = 0 // (a) półoś wielka
   eccentricity = 0 // (e, 0-1) ekscentryczność/mimośród
-  inclination = 0 // (i, DEG) nachylenie
+  inclination = 0 // (i, DEG) nachylenie orbity
   longitude_of_the_ascending_node = 0 // (Ω Omega, 0-360 DEG) długość węzła wstępującego
   argument_of_periapsis = 0 // (ω, omega, 0-360 DEG)  argument perycentrum
   true_anomaly = 0 // (θ theta, 0-360 DEG) anomalia prawdziwa

@@ -24,6 +24,14 @@ class SpatialPartition{
 	// 	}
 	// 	return false;
 	// }
+	toJSON(key) {
+		return {
+			boundingSphere: this.boundingSphere,
+			tiles: this.tiles.map(tile => tile.id),
+			// tiles: this.tiles,
+			partitions: this.partitions,
+		}
+	}
 }
 
 export default SpatialPartition

@@ -17,7 +17,7 @@ class CelestialObject {
   size = null
 
   constructor(props = {}, type) {
-    Object.assign(this, props)
+    Object.assign(this, props, props.extends || {})
     this.setSeed(props.seed)
     this.setId(props.id)
     this.setType(props.type || type)
@@ -64,11 +64,16 @@ class CelestialObject {
 
   makeCode() {
     // console.log(this.system.name);
-    const star_system_name = this.system ? this.system.name : ''
+    const star_system_name = this.system && this.system.name ? this.escapeRegExp(this.system.name) : ''
     const type = this.type
-    const designation = (this.designation || '').split(' ').join('')
-    const name = (this.name || '').split(' ').join('')
-    this.code = (`${star_system_name}.${type}.${designation}${name}`).toUpperCase()
+    const designation = this.designation ? this.escapeRegExp(this.designation) : ''
+    const name = this.name ? this.escapeRegExp(this.name) : ''
+    this.code = (`${star_system_name}.${type}.${designation}${name}`)
+      .toUpperCase()
+      .replace(/ /g, '')
+  }
+  escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, ''); // $& means the whole matched string
   }
 
   static getCurrentId() {
