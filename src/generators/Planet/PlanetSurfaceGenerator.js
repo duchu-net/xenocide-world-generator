@@ -38,7 +38,7 @@ class PlanetSurfaceGenerator {
 			distortionRate = this.adjustRange(distortionLevel, 0.75, 1.00, 0.075, 0.150)
 
     const action = new SteppedAction((action) => {
-      console.log('progress', action.getCurrentActionName(), (action.getProgress() * 100).toFixed(2) + '%')
+      // console.log('progress', action.getCurrentActionName(), (action.getProgress() * 100).toFixed(2) + '%')
     })
     let random = new Random(12345)
 

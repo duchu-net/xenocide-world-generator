@@ -1,6 +1,6 @@
 {
   "name": "xenocide-world-generator",
-  "version": "0.0.1-rc.5",
+  "version": "0.0.2-rc.1",
   "description": "",
   "main": "./lib/library.js",
   "scripts": {
@@ -45,6 +45,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^5.1.4",
+    "eslint": "^5.14.1",
     "mocha": "^5.0.5",
     "nodemon": "^1.17.2",
     "rimraf": "^2.6.2",

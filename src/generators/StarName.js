@@ -4,7 +4,7 @@ import STARS_NAMES from '../../resources/STARS_NAMES'
 
 class StarName {
   static _prefixStrategies = [
-    [1.0, StarName.Greek],
+    // [1.0, StarName.Greek],
     [1.0, StarName.Decorator],
     [0.01, StarName.RomanNumeral],
     [1.0, StarName.Letter],
@@ -14,7 +14,7 @@ class StarName {
     [0.0, r => "San"],
   ]
   static _suffixStrategies = [
-    [1.0, StarName.Greek],
+    // [1.0, StarName.Greek],
     [1.0, StarName.Decorator],
     [1.0, StarName.RomanNumeral],
     [1.0, StarName.Letter],
@@ -122,7 +122,7 @@ class StarName {
     throw new RangeError()
   }
 
-  static async Generate(random) {
+  static Generate(random) {
     return random.weighted(StarName._namingStrategies)(random).trim()
   }
   static async GenerateCount(random, count = 1) {

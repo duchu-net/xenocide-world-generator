@@ -1,5 +1,5 @@
 import { Vector3 } from 'three-math'
-import StarSystem from './StarSystem'
+import System from './System'
 import Random from '../utils/RandomObject'
 import Names from './Names'
 import Grid from './Galaxies/Grid'
@@ -95,7 +95,7 @@ class World {
     //   })) systemName = Names.Generate(random)
     //   // CREATE SYSTEM
     //   // console.log('*', system);
-    //   const ss = new StarSystem({
+    //   const ss = new System({
     //     name: systemName,
     //     seed: systemSeed,
     //     position: { ...system.position },
@@ -115,7 +115,7 @@ class World {
   }
   GenerateStars(shape) {
     const protoStars = [...shape.Generate(this._random)]
-    this.star_systems = protoStars.map(ps => new StarSystem('123', ps))
+    this.star_systems = protoStars.map(ps => new System('123', ps))
     return this
   }
 

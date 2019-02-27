@@ -5,7 +5,7 @@
 import World from './generators/World'
 import Galaxy from './generators/Galaxy'
 // import System from './generators/PlanetarySystem'
-import System from './generators/StarSystem'
+import System from './generators/System'
 import Grid from './generators/Galaxies/Grid'
 import Spiral from './generators/Galaxies/Spiral'
 import Star from './generators/Star'

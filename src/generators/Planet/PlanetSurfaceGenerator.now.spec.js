@@ -4,7 +4,6 @@ import PlanetSurfaceGenerator from './PlanetSurfaceGenerator'
 import Star from '../Star'
 
 
-
 describe('PlanetSurfaceGenerator: model', () => {
   describe('PlanetSurface', () => {
     it ('should generate mesh', async () => {
@@ -13,7 +12,7 @@ describe('PlanetSurfaceGenerator: model', () => {
         subtype: 'earth'
       })
       await planet.generatePlanetSurface()
-      console.log(Object.keys(planet.planet))
+      // console.log(Object.keys(planet.planet))
       // await planet.generatePlanetTerrain()
       // console.log(Object.keys(planet.planet))
 

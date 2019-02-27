@@ -1,5 +1,6 @@
 lib/
 examples/
+.vscode
 
 # Logs
 logs
