@@ -3,8 +3,13 @@ _"Dear World, You are the best for Us!"_ - Artifexian
 JS (EcmaScript) world generator for 4X like games in 3D space  
 `// in development mess xD`
 
-
 #### Example
+- [Generator - React client](https://codesandbox.io/s/1c8gs), [check on YouTube](https://www.youtube.com/channel/UCzGMc0qjJMu7PnH4ZdHni2w)
+![Image](https://uploads.codesandbox.io/uploads/user/c3b8ed92-ed1d-4bff-8894-710d6c229664/aEDM-thumbnail.png)
+- [Name generating - Markov Chains](https://codesandbox.io/s/h4vr6)
+- [Population and Resources Market simulation - node.js subproject](https://codesandbox.io/s/m1vh74)
+
+## Code
 ```js
 const { Galaxy } = require('xenocide-world-generator')
 
