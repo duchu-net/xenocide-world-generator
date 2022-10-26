@@ -9,7 +9,7 @@ import PlanetSurfaceGenerator from './Planet/PlanetSurfaceGenerator'
 // import PlanetTerraintGenerator from './Planet/PlanetTerrainGenerator'
 
 
-class Planet extends CelestialObject {
+export class Planet extends CelestialObject {
   regions = []
   traits = []
   // type = 'PLANET'

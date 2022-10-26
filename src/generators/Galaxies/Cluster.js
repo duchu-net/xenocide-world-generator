@@ -1,6 +1,6 @@
-import { Vector3 } from 'three-math'
+import { Vector3 } from 'three'
 
-class Cluster {
+export class Cluster {
   constructor(basis, countMean, countDeviation, deviationX, deviationY, deviationZ) {
     // this._size = size || 10;
     this._basis = basis
@@ -45,4 +45,3 @@ class Cluster {
   }
 }
 
-export default Cluster

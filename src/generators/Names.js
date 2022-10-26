@@ -1,4 +1,4 @@
-import ModelBuilder from '../utils/MarkovNames/MarkovModelBuilder'
+import { MarkovModelBuilder } from '../utils';
 import GALAXIES_NAMES from '../../resources/GALAXIES_NAMES'
 import STARS_NAMES from '../../resources/STARS_NAMES'
 import PLANETS_NAMES from '../../resources/PLANETS_NAMES'
@@ -42,7 +42,7 @@ class Names {
   static PlainMarkovT(destination, names) {
     return (random) => {
       if (destination == null) {
-        const m = new ModelBuilder(2)
+        const m = new MarkovModelBuilder(2)
         m.TeachArray(names)
         destination = m.toModel()
       }
@@ -70,7 +70,7 @@ class Names {
 
   // static PlainMarkov(random) {
   //   if (!Names._markov) {
-  //     const m = new ModelBuilder(2)
+  //     const m = new MarkovModelBuilder(2)
   //     m.TeachArray(Names.names)
   //     Names._markov = m.toModel()
   //   }

@@ -1,47 +1,39 @@
-import RandomObject from '../utils/RandomObject'
-import SteppedAction from '../utils/SteppedAction'
+import RandomObject from '../utils/RandomObject';
+import SteppedAction from '../utils/SteppedAction';
 // import Generator from './Generator'
-import CelestialObject from './CelestialObject'
-import { GREEK_LETTERS } from '../utils/alphabet'
-import {
-  SPECTRAL_CLASSIFICATION,
-  SUN_TEMPERATURE,
-  SUN_AGE,
- } from '../CONSTANTS'
-import { getStarColor } from './utils/StarColor'
+import CelestialObject from './CelestialObject';
+import { GREEK_LETTERS } from '../utils/alphabet';
+import { SPECTRAL_CLASSIFICATION, SUN_TEMPERATURE, SUN_AGE } from '../CONSTANTS';
+import { getStarColor } from './utils/StarColor';
 
+export class Star extends CelestialObject {
+  type = 'STAR';
+  habitable = false;
 
-class Star extends CelestialObject {
-  type = 'STAR'
-  habitable = false
+  body_type = 'STAR';
+  model = {};
 
-  body_type = 'STAR'
-  model = {}
-
-  physics = {
-
-  }
+  physics = {};
   // name = null
   // stellar_class = null
   // mass = null // masa (SUN SCALE)
   // diameter = null // średnica
-  luminosity = null // jasność (SUN SCALE)
-  radius = null // promień
-  temperature = null // (SUN SCALE)
-  color = null // HEX RGB
-  temperature_k= null // (K) /int
-  volume = null // objętość
-  density = null // gęstość
+  luminosity = null; // jasność (SUN SCALE)
+  radius = null; // promień
+  temperature = null; // (SUN SCALE)
+  color = null; // HEX RGB
+  temperature_k = null; // (K) /int
+  volume = null; // objętość
+  density = null; // gęstość
   // main_sequence_lifetime = null
   // main_sequence_lifetime_y = null // (Y) /int
   // circumference = null // obwód
   // surface_area = null // powierzchnia
   // frost_line = null // linia zmarźliny
-  inner_limit = null
-  outer_limit = null
-  subtype = null // Main sequence class
-  evolution = null // Can handle evolution
-
+  inner_limit = null;
+  outer_limit = null;
+  subtype = null; // Main sequence class
+  evolution = null; // Can handle evolution
 
   // GETTERS & SETTERS =========================================================
   // get mass() { return this._mass }
@@ -79,57 +71,52 @@ class Star extends CelestialObject {
   // END GETTERS & SETTERS =====================================================
 
   constructor(props = {}) {
-    super(Object.assign({}, props, props.star || {}), 'STAR')
-    this.recalculate()
+    super(Object.assign({}, props, props.star || {}), 'STAR');
+    this.recalculate();
   }
 
   setDesignation(designation) {
     if (!designation) {
-      const { system = {}, system_sequence } = this
+      const { system = {}, system_sequence } = this;
       if (system && system_sequence != null) {
-        designation = `${system.designation || system.name} ${GREEK_LETTERS[system_sequence]}`
+        designation = `${system.designation || system.name} ${GREEK_LETTERS[system_sequence]}`;
       } else {
-        designation = system.designation || system.name
+        designation = system.designation || system.name;
       }
     }
-    this.designation = designation
-    this.makeCode()
+    this.designation = designation;
+    this.makeCode();
   }
 
   recalculate() {
     if (this.mass) {
-      const matrice = SPECTRAL_CLASSIFICATION.find(sc => this.mass > sc.min_sol_mass && this.mass < sc.max_sol_mass)
-      this.subtype = matrice.class
-      this.evolution = matrice.organisms_evolution
+      const matrice = SPECTRAL_CLASSIFICATION.find((sc) => this.mass > sc.min_sol_mass && this.mass < sc.max_sol_mass);
+      this.subtype = matrice.class;
+      this.evolution = matrice.organisms_evolution;
 
-      this.radius = Star.calcRadius(this.mass)
-      this.volume = Star.calcVolume(this.radius)
-      this.density = Star.calcDensity(this.mass, this.radius)
-      this.luminosity = Star.calcLuminosity(this.mass)
-      this.inner_limit = Star.calcInnerLimit(this.mass)
-      this.outer_limit = Star.calcOuterLimit(this.mass)
-      this.frost_line = Star.calcFrostLine(this.luminosity)
-      this.temperature = Star.calcTemperature(this.luminosity, this.radius)
-      this.color = Star.calcColor(this.temperature)
-      this.surface_area = Star.calcSurfaceArea(this.radius)
-      this.circumference = Star.calcCircumference(this.radius)
-      this.main_sequence_lifetime = Star.calcMainSequenceLifetime(this.mass, this.luminosity)
-      this.habitable_zone = Star.calcHabitableZone(this.luminosity)
-      this.habitable_zone_inner = Star.calcHabitableZoneStart(this.luminosity)
-      this.habitable_zone_outer = Star.calcHabitableZoneEnd(this.luminosity)
+      this.radius = Star.calcRadius(this.mass);
+      this.volume = Star.calcVolume(this.radius);
+      this.density = Star.calcDensity(this.mass, this.radius);
+      this.luminosity = Star.calcLuminosity(this.mass);
+      this.inner_limit = Star.calcInnerLimit(this.mass);
+      this.outer_limit = Star.calcOuterLimit(this.mass);
+      this.frost_line = Star.calcFrostLine(this.luminosity);
+      this.temperature = Star.calcTemperature(this.luminosity, this.radius);
+      this.color = Star.calcColor(this.temperature);
+      this.surface_area = Star.calcSurfaceArea(this.radius);
+      this.circumference = Star.calcCircumference(this.radius);
+      this.main_sequence_lifetime = Star.calcMainSequenceLifetime(this.mass, this.luminosity);
+      this.habitable_zone = Star.calcHabitableZone(this.luminosity);
+      this.habitable_zone_inner = Star.calcHabitableZoneStart(this.luminosity);
+      this.habitable_zone_outer = Star.calcHabitableZoneEnd(this.luminosity);
       // this.makeCode()
-
     }
   }
 
-
-
-
-
   generateMass(random) {
-    const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
-    const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)
-    return mass
+    const matrice = random.choice(SPECTRAL_CLASSIFICATION); //TODO
+    const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass);
+    return mass;
   }
 
   // Name(name) {
@@ -137,8 +124,8 @@ class Star extends CelestialObject {
   //   return this
   // }
   MassOrder(order) {
-    this.mass_order = order
-    return this
+    this.mass_order = order;
+    return this;
   }
 
   Generate(random = this.random) {
@@ -150,123 +137,132 @@ class Star extends CelestialObject {
       // ['stars', (random) => [...this.generateStars(random)].sort((a, b) => a.mass < b.mass)],
       // [''],
       // ['subsystem', this.generateSubsystem],
-    ]
+    ];
     for (const [key, fun] of genList) {
-      if (this[key] == null) this[key] = fun(random)
+      if (this[key] == null) this[key] = fun(random);
       // console.log(key, this[key]);
     }
-    this.recalculate()
-    return this
+    this.recalculate();
+    return this;
   }
 
   static async generateMass(random) {
     // return 1
     // props.action.provideResult(1)
-    return 1
+    return 1;
   }
 
   async GenerateAsync() {
-    const star = this.model
-    const seed = this.getSeed()
-    const random = new RandomObject(seed)
+    const star = this.model;
+    const seed = this.getSeed();
+    const random = new RandomObject(seed);
 
     return new Promise((resolve, reject) => {
       const action = new SteppedAction((action) => {
         console.log(action.getCurrentActionName(), action.getProgress());
       })
-        .executeSubaction((action) => {
-          Star.generateMass(random).then(result => { console.log('##',result);action.provideResult(result) })
-        }, 1, "Generating Star Mass")
+        .executeSubaction(
+          (action) => {
+            Star.generateMass(random).then((result) => {
+              console.log('##', result);
+              action.provideResult(result);
+            });
+          },
+          1,
+          'Generating Star Mass'
+        )
         .getResult((result) => {
           // console.log('result',result)
-          star.mass = result
-          star.seed = seed
+          star.mass = result;
+          star.seed = seed;
           // star.originalSeed = originalSeed
         })
         .finalize((action) => {
           console.warn('FINISH!!! :D');
           // this.activeAction = null
           //ui.progressPanel.hide()
-          resolve(star)
+          resolve(star);
         }, 0)
-        .execute()
-    })
-
+        .execute();
+    });
   }
 
   // STATICS ===================================================================
   // converters
   static solTemperatureToKelvin(temp = 1) {
-    return parseInt(temp * SUN_TEMPERATURE)
+    return parseInt(temp * SUN_TEMPERATURE);
   }
   static solLifetimeToYears(main_sequence_lifetime = 1) {
-    return parseInt(main_sequence_lifetime * SUN_AGE)
+    return parseInt(main_sequence_lifetime * SUN_AGE);
   }
-
 
   static calcLuminosity(mass) {
     switch (true) {
-      case (mass < 0.43): return 0.23 * Math.pow(mass, 2.3)
-      case (mass < 2 && mass >= 0.43): return Math.pow(mass, 4)
-      case (mass < 20 && mass >= 2): return 1.5 * Math.pow(mass, 3.5)
-      case (mass >= 20): return 3200 * mass
+      case mass < 0.43:
+        return 0.23 * Math.pow(mass, 2.3);
+      case mass < 2 && mass >= 0.43:
+        return Math.pow(mass, 4);
+      case mass < 20 && mass >= 2:
+        return 1.5 * Math.pow(mass, 3.5);
+      case mass >= 20:
+        return 3200 * mass;
     }
   }
   static calcRadius(mass) {
-    const exponent = mass > 1 ? 0.5 : 0.8
-    return Math.pow(mass, exponent)
+    const exponent = mass > 1 ? 0.5 : 0.8;
+    return Math.pow(mass, exponent);
   }
   static calcTemperature(luminosity, radius) {
-    return Math.pow(luminosity / Math.pow(radius, 2), 1/4)
+    return Math.pow(luminosity / Math.pow(radius, 2), 1 / 4);
   }
   static calcColor(temperature) {
-    const kelvins = this.solTemperatureToKelvin(temperature)
-    return getStarColor(kelvins)
+    const kelvins = this.solTemperatureToKelvin(temperature);
+    return getStarColor(kelvins);
   }
   static calcVolume(radius) {
-    return 4/3 * Math.PI * Math.pow(radius, 3)
+    return (4 / 3) * Math.PI * Math.pow(radius, 3);
   }
   static calcDensity(mass, radius) {
-    return mass / (4/3 * Math.PI * Math.pow(radius, 3))
+    return mass / ((4 / 3) * Math.PI * Math.pow(radius, 3));
   }
   static calcFrostLine(luminosity) {
-    return 4.85 * Math.sqrt(luminosity)
+    return 4.85 * Math.sqrt(luminosity);
   }
   static calcMainSequenceLifetime(mass, luminosity) {
-    return mass / luminosity
+    return mass / luminosity;
   }
   static calcCircumference(radius) {
-    return 2 * Math.PI * radius
+    return 2 * Math.PI * radius;
   }
   static calcSurfaceArea(radius) {
-    return 4 * Math.PI * Math.pow(radius, 2)
+    return 4 * Math.PI * Math.pow(radius, 2);
   }
   static calcInnerLimit(mass) {
-    let limit = 0.1 * mass
-    if (limit < 0.15) limit = 0.15
-    return limit
+    let limit = 0.1 * mass;
+    if (limit < 0.15) limit = 0.15;
+    return limit;
   }
   static calcOuterLimit(mass) {
-    return 40 * mass
+    return 40 * mass;
   }
   static calcHabitableZone(luminosity) {
-    return Math.sqrt(luminosity)
+    return Math.sqrt(luminosity);
   }
   static calcHabitableZoneStart(luminosity) {
-    return Math.sqrt(luminosity/1.1)
+    return Math.sqrt(luminosity / 1.1);
   }
   static calcHabitableZoneEnd(luminosity) {
-    return Math.sqrt(luminosity/0.53)
+    return Math.sqrt(luminosity / 0.53);
   }
 
   static Generate(random, buildData) {
-    const matrice = random.choice(SPECTRAL_CLASSIFICATION) //TODO
-    const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass)
+    const matrice = random.choice(SPECTRAL_CLASSIFICATION); //TODO
+    const mass = random.real(matrice.min_sol_mass, matrice.max_sol_mass);
     // console.log(matrice);
-    const star = new this({ mass, ...buildData })
-    return star
+    const star = new this({ mass, ...buildData });
+    return star;
   }
   // END STATICS ===============================================================
 }
 
-export default Star
+export default Star;

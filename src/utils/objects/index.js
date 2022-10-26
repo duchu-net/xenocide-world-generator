@@ -1,2 +1,1 @@
-import assignDeep from './assignDeep'
-export { assignDeep }
+export * from './assignDeep';

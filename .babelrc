@@ -1,40 +1,10 @@
 {
-  "comments": false,
-  "presets": ["env", "stage-0"],
-  "plugins": [
-    ["transform-class-properties", { "spec": true }],
-    ["transform-runtime", {
-      "polyfill": false,
-      "regenerator": true
-    }]
-  ],
-  "env": {
-    "test": {
-      "presets": [
-        ["env",{
-          "targets": {"node": "current"}
-        }]
-      ]
-    },
-    "commonjs": {
-      "ignore": ["node_modules"],
-      "plugins": ["transform-class-properties"],
-      "presets": [
-        ["env", {
-          "useBuiltIns": true,
-          "modules": "commonjs",
-          "debug": true,
-          "forceAllTransforms": true
-        }],["stage-0"]
-      ]
-    },
-    "es": {
-      "presets": [
-        ["env", {
-          "useBuiltIns": false,
-          "modules": false
-        }]
-      ]
-    }
-  }
+  "presets": [
+    [
+      "@nrwl/web/babel",
+      {
+        "useBuiltIns": "usage"
+      }
+    ]
+  ]
 }

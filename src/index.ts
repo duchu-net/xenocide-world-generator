@@ -1,17 +1,14 @@
+export * from './interfaces';
+export * from './generators';
+export * from './utils';
+
 // var window = document.createWindow()
 // var jsdom = require('jsdom')
 //   , document = jsdom.jsdom('<!doctype html><html><head></head><body></body></html>')
 //   , window = document.createWindow();
-import World from './generators/World'
-import Galaxy from './generators/Galaxy'
 // import System from './generators/PlanetarySystem'
-import System from './generators/System'
-import Grid from './generators/Galaxies/Grid'
-import Spiral from './generators/Galaxies/Spiral'
-import Star from './generators/Star'
-import Planet from './generators/Planet'
-import Random from './utils/RandomObject'
-export { World, Galaxy, System, Grid, Spiral, Star, Planet, Random }
+
+// export * from './utils/RandomObject';
 
 // import GalaxyGenerator from './generators/Galaxy/GalaxyGenerator'
 // import WorldGenerator from './world/WorldGeneretor'
