@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { RandomObject } from '../../utils';
+import { RandomObject } from '../utils';
 import { BasicShape } from './BasicShape';
 
 import { ShapeStar } from './ShapeStar';

@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { RandomObject } from '../../utils';
+import { RandomObject } from '../utils';
 
 import { Sphere } from './Sphere';
 import { Cluster } from './Cluster';

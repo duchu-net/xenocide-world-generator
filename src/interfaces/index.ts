@@ -93,7 +93,6 @@ export enum StarClass {
   K = 'K',
   M = 'M',
 }
-export const SUN_TEMPERATURE = 5778; // (K)
 
 export const SPECTRAL_CLASSIFICATION = [
   {

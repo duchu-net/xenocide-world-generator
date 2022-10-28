@@ -2,11 +2,6 @@ import { Vector3 } from 'three-math';
 import System from './System';
 import Random from '../utils/RandomObject';
 import Names from './Names';
-import Grid from './Galaxies/Grid';
-import Sphere from './Galaxies/Sphere';
-import Spiral from './Galaxies/Spiral';
-import Cluster from './Galaxies/Cluster';
-import PlanetarySystem from './PlanetarySystem';
 import Galaxy from './Galaxy';
 
 const GALAXY = {

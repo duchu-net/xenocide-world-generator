@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { RandomObject } from '../../utils';
+import { RandomObject } from '../utils';
 import { ShapeStar } from './ShapeStar';
 
 export class Sphere {

@@ -1,8 +1,7 @@
 import { Vector3 } from 'three';
-import { SPECTRAL_CLASSIFICATION, STAR_COUNT_DISTIBUTION_IN_SYSTEMS, SUN_TEMPERATURE } from '../interfaces';
+import { SPECTRAL_CLASSIFICATION, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../interfaces';
 import { RandomObject } from '../utils';
 import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
-import { getStarColor } from '../generators/utils/StarColor';
 import { StarPhysicModel, StarPhysics } from './physic';
 
 export interface StarModel {

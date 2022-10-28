@@ -3,7 +3,7 @@ import System from './System';
 import Random from '../utils/RandomObject';
 import Names from './Names';
 import StarNames from './StarName';
-import { Grid, Sphere, Spiral } from './Galaxies';
+import { Grid, Sphere, Spiral } from '../galaxy-shape';
 // import Cluster from './Galaxies/Cluster';
 import PlanetarySystem from './PlanetarySystem';
 
