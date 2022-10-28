@@ -1,13 +1,13 @@
 import { RandomObject, Seed } from '../utils';
 import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from './physic';
 import { Orbit, ORBIT_OBJECT_TYPES } from './physic/orbit';
-import { NewStarGenerator } from './star-generator';
+import { StarGenerator } from './star-generator';
 
 interface OrbitOptions {
   seed?: Seed;
   random?: RandomObject;
   prefer_habitable?: boolean;
-  star: NewStarGenerator;
+  star: StarGenerator; // todo StarPhysic be enought
 }
 
 const defaultOptions: Partial<OrbitOptions> = {
@@ -47,7 +47,7 @@ export class SystemOrbitsGenerator {
     this.generateProtoOrbits();
     this.fillOrbitZone();
     this.fillOrbitPeriod();
-    console.log('build()', this);
+    // console.log('build()', this);
     const opts = {
       prefer_habitable: this.options.prefer_habitable,
     };
@@ -93,7 +93,7 @@ export class SystemOrbitsGenerator {
       lastDistance = nextOrbit;
     }
     // Sort by distance
-    this.orbits = this.orbits.sort((a, b) => a.distance - b.distance);
+    this.orbits.sort((a, b) => a.distance - b.distance);
     // Fill from sun order
     for (const [index, orbit] of this.orbits.entries()) orbit.from_star = index + 1;
   }

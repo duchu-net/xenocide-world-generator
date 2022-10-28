@@ -5,7 +5,7 @@ import Star from './Star';
 import StarSubsystem from './StarSubsystem';
 import Planet from './Planet';
 import { RandomObject } from '../utils/RandomObject';
-import { toRoman } from '../utils/alphabet';
+import { decimalToRoman } from '../utils';
 // import Names from './Names'
 import Names from './StarName';
 import PlanetOrbitGenerator from './Planet/PlanetOrbitGenerator';
@@ -201,7 +201,7 @@ export class System {
       while (used_seeds.find((o) => o == planetSeed)) planetSeed = random.next();
       used_seeds.push(planetSeed);
 
-      const designation = `${this.name} ${toRoman(orbit.from_star)}`;
+      const designation = `${this.name} ${decimalToRoman(orbit.from_star)}`;
       yield {
         ...orbit,
         // type: undefined,
@@ -219,7 +219,7 @@ export class System {
     //   while (used_seeds.find(o => o == planetSeed)) planetSeed = random.next()
     //   used_seeds.push(planetSeed)
     //
-    //   const designation = `${this.name} ${toRoman(i+1)}`
+    //   const designation = `${this.name} ${decimalToRoman(i+1)}`
     //   yield {
     //     seed: planetSeed,
     //     zone: zones[i],

@@ -4,6 +4,7 @@ import { RandomObject } from '../../utils';
 
 import { Sphere } from './Sphere';
 import { Cluster } from './Cluster';
+import { BasicShape } from './BasicShape';
 
 interface SpiralShapeOptions {
   size: number;
@@ -49,7 +50,7 @@ const defaultOptions: SpiralShapeOptions = {
   centralVoidSizeDeviation: 7,
 };
 
-export class Spiral {
+export class Spiral implements BasicShape {
   public readonly options: SpiralShapeOptions;
   constructor(options: Partial<SpiralShapeOptions> = defaultOptions) {
     this.options = { ...defaultOptions, ...options };

@@ -1,8 +1,5 @@
-import { Vector3 } from 'three';
-import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../interfaces';
-import { RandomObject, Seed } from '../utils';
-import { BasicGenerator, BasicGeneratorOptions } from './basic-generator';
-import { NewStarGenerator } from './star-generator';
+import { decimalToRoman, RandomObject, Seed } from '../utils';
+import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
 
 export enum RegionBiome {
   Ocean = 'ocean',
@@ -10,34 +7,63 @@ export enum RegionBiome {
 
 export interface RegionModel {
   id: string;
-  biome: RegionBiome;
-  effects: {}[];
+  biome?: RegionBiome;
+  effects?: {}[];
 }
 
 export interface PlanetOptions extends BasicGeneratorOptions {
-  name?: string;
-  // position: Vector3;
-  // temperature?: number;
-  // starsSeed?: number;
-  // planetsSeed?: number;
-  surfaceSeed?: Seed;
+  // surfaceSeed?: Seed;
+  random?: RandomObject;
 }
-
 const defaultOptions: PlanetOptions = {
   // position: new Vector3(0, 0, 0),
 };
 
-export class NewPlanetGenerator extends BasicGenerator<PlanetOptions> {
-  // public readonly stars: NewStarGenerator[] = [];
+export interface PlanetModel {
+  id?: string;
+  name?: string;
+  surfaceSeed?: Seed;
+  physic?: {
+    mass?: number;
+  };
+  orbit?: {}; // OrbitModel;
+  regions?: RegionModel[];
+  options?: {}; // todo generator options???
+}
+
+// export interface PlanetGeneratorModel {
+//   model?: PlanetModel;
+//   options?: PlanetOptions;
+// }
+
+export class PlanetGenerator extends ExtendedGenerator<PlanetModel, PlanetOptions> {
   public readonly regions: RegionModel[] = [];
-  // public readonly planets: any[] = [];
 
-  // starColor?: string;
-  // starRadius?: number;
+  constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
+    super(model, { ...defaultOptions, ...model.options, ...options });
 
-  constructor(options: Partial<PlanetOptions> = defaultOptions) {
-    super({ ...defaultOptions, ...options });
+    if (!model.surfaceSeed) this.model.surfaceSeed = this.random.next();
+    this.regions = (model.regions as RegionModel[]) || [];
+  }
 
-    if (!options.surfaceSeed) this.options.surfaceSeed = this.random.next();
+  *generateSurface() {
+    try {
+      // todo
+      for (let i = 0; i < 5; i++) {
+        const region = { id: `demo_region ${i}` };
+        this.regions.push(region);
+        yield region;
+      }
+    } catch (error) {
+      console.warn('*generateSurface()', error);
+    }
+  }
+
+  static getSequentialName(systemName: string, planetIndex: number) {
+    return `${systemName} ${decimalToRoman(planetIndex + 1)}`;
+  }
+
+  override toModel() {
+    return { ...this.model, regions: this.regions, options: this.options };
   }
 }

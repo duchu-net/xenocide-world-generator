@@ -1,48 +1,62 @@
 import { Vector3 } from 'three';
 import { SPECTRAL_CLASSIFICATION, STAR_COUNT_DISTIBUTION_IN_SYSTEMS, SUN_TEMPERATURE } from '../interfaces';
 import { RandomObject } from '../utils';
-import { BasicGenerator, BasicGeneratorOptions } from './basic-generator';
+import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
 import { getStarColor } from '../generators/utils/StarColor';
 import { StarPhysicModel, StarPhysics } from './physic';
 
-export interface NewStarGeneratorOptions extends BasicGeneratorOptions {
+export interface StarModel {
   mass?: number;
+  name?: string;
+  physic?: StarPhysicModel;
+  options?: {};
+}
+
+export interface StarOptions extends BasicGeneratorOptions {
   name?: string;
   temperature?: number;
 }
 
-const defaultOptions: NewStarGeneratorOptions = {
+const defaultOptions: StarOptions = {
   // seed: 999,
 };
 
-export class NewStarGenerator extends BasicGenerator<NewStarGeneratorOptions> {
+export class StarGenerator extends ExtendedGenerator<StarModel, StarOptions> {
   public physic?: StarPhysicModel;
   private meta: typeof SPECTRAL_CLASSIFICATION[0];
 
-  constructor(options: Partial<NewStarGeneratorOptions> = defaultOptions) {
-    super({ ...defaultOptions, ...options });
+  constructor(model: StarModel, options: Partial<StarOptions> = defaultOptions) {
+    super(model, { ...defaultOptions, ...model.options, ...options });
 
     this.meta = this.random.choice(SPECTRAL_CLASSIFICATION);
-    if (!options.mass) {
-      this.options.mass = this.random.real(this.meta.min_sol_mass, this.meta.max_sol_mass);
+    this.physic = model.physic;
+    if (!model.mass) {
+      this.model.mass = this.random.real(this.meta.min_sol_mass, this.meta.max_sol_mass);
     }
 
     this.recalculatePhysic();
   }
 
   get name(): string {
-    return this.options.name || 'star_1'; // todo
+    return this.model.name || 'star_1'; // todo
   }
   get mass(): number {
-    return this.options.mass as number; // todo
+    return this.model.mass as number; // todo
   }
 
-  static getName(systemName: string, currentIndex: number) {
-    return `${systemName} ${currentIndex + 1}`; // todo somewhere we have that
+  setName(name: string) {
+    this.model.name = name;
+  }
+
+  static getSequentialName(systemName: string, starIndex: number) {
+    return `${systemName} ${starIndex + 1}`; // todo toGreekLetter(starIndex + 1)
+  }
+  static sortByMass(stars: StarGenerator[]) {
+    return stars.sort((a, b) => b.mass - a.mass);
   }
 
   recalculatePhysic() {
-    const { mass } = this.options;
+    const { mass } = this.model;
     if (mass) {
       // @ts-ignore
       const model: StarPhysicModel = { mass };
@@ -68,5 +82,9 @@ export class NewStarGenerator extends BasicGenerator<NewStarGeneratorOptions> {
 
       this.physic = model;
     }
+  }
+
+  override toModel() {
+    return { ...this.model, physic: this.physic, meta: this.meta };
   }
 }

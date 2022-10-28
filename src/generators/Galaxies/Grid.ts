@@ -1,13 +1,14 @@
 import { Vector3 } from 'three';
 
 import { RandomObject } from '../../utils';
+import { BasicShape } from './BasicShape';
 
 import { ShapeStar } from './ShapeStar';
 
-export class Grid {
+export class Grid implements BasicShape {
   constructor(public readonly size: number = 5, public readonly spacing: number = 1) {}
 
-  *Generate(random: RandomObject) {
+  *Generate(random?: RandomObject) {
     const { size, spacing } = this;
     const count = parseInt((size / spacing).toFixed());
 

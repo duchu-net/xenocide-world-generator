@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*!
  * @description Recursive object extending
  * @author Viacheslav Lotsmanov <lotsmanov89@gmail.com>

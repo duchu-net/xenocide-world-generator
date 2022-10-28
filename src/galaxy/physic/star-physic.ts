@@ -8,7 +8,8 @@ export interface StarPhysicModel {
   volume: number;
   density: number;
   subtype: string;
-  habitable: boolean;
+  stellar_class: string;
+  // habitable: boolean;
   evolution: boolean;
   luminosity: number;
   inner_limit: number;
