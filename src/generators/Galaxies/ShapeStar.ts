@@ -22,7 +22,7 @@ export class ShapeStar {
     return this;
   }
 
-  Swirl(axis: Vector3, amount: number) {
+  swirl(axis: Vector3, amount: number) {
     var d = this.position.length();
     var angle = Math.pow(d, 0.1) * amount;
     this.position.applyAxisAngle(axis, angle);

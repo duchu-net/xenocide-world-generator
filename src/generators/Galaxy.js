@@ -22,6 +22,7 @@ export class Galaxy {
   buildData = {
     shape: null,
     gridOptions: [20, 7],
+    spiralOptions: { size: 750 },
     random: null,
   };
   star_systems = [];
@@ -87,7 +88,7 @@ export class Galaxy {
     let shape = null;
     switch (this.classification) {
       case 'spiral':
-        shape = new Spiral();
+        shape = new Spiral(this.buildData.spiralOptions);
         break;
       case 'sphere':
         shape = new Sphere();

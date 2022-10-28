@@ -10,7 +10,7 @@ export interface StarPhysic extends CelestialPhysic {
   density?: number;
   circumference?: number;
   surface_area?: number;
-  
+
   stellar_class?: string;
   main_sequence_lifetime?: number;
   luminosity?: number;
@@ -25,22 +25,76 @@ export interface MoonPhysic extends CelestialPhysic {
   // mass?: number;
 }
 
-// export 
 export enum SystemType {
   SINGLE_STAR = 'SINGLE_STAR',
   BINARY_STAR = 'BINARY_STAR',
   MULTIPLE_STAR = 'MULTIPLE_STAR',
 }
 
-export enum StarClass {
-  O='O',
-  B='B',
-  A='A',
-  F='F',
-  G='G',
-  K='K',
-  M='M',
+// SINGLE STAR
+export const PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM = {
+  0: 0.1,
+  1: 0.1,
+  2: 0.2,
+  3: 0.2,
+  4: 0.3,
+  5: 0.3,
+  6: 0.4,
+  7: 0.4,
+  8: 0.5,
+  9: 0.5,
+  10: 0.3,
+  11: 0.3,
+  12: 0.1,
+  13: 0.1,
+  14: 0.1,
+  15: 0.01,
+  16: 0.01,
+  17: 0.001,
+};
+
+export const STAR_COUNT_DISTIBUTION_IN_SYSTEMS = {
+  1: 1,
+  2: 0.2,
+  // 3: 0.05,
+  // 4: 0.01,
+  // 5: 0.005
+} as const;
+
+export enum GalaxyClass {
+  Spiral = 'spiral',
+  Grid = 'grid',
 }
+
+export enum GalaxyAge {
+  Young = 'young',
+  Mature = 'mature',
+  Acient = 'ancient',
+}
+
+export enum GalaxyClassShape {
+  Elliptical = 'elliptical',
+  Spiral2 = 'spiral-2',
+  Spiral3 = 'spiral-3',
+  Spiral4 = 'spiral-4',
+  Cluster = 'cluster',
+  Disc = 'disc',
+  Box = 'box',
+  Irregular = 'irregular',
+  Ring = 'ring',
+}
+
+export enum StarClass {
+  O = 'O',
+  B = 'B',
+  A = 'A',
+  F = 'F',
+  G = 'G',
+  K = 'K',
+  M = 'M',
+}
+export const SUN_TEMPERATURE = 5778; // (K)
+
 export const SPECTRAL_CLASSIFICATION = [
   {
     class: 'O',

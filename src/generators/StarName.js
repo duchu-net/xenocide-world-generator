@@ -1,7 +1,7 @@
 import { MarkovModelBuilder } from '../utils';
 import STARS_NAMES from '../../resources/STARS_NAMES';
 
-class StarName {
+export class StarName {
   static _prefixStrategies = [
     // [1.0, StarName.Greek],
     [1.0, StarName.Decorator],

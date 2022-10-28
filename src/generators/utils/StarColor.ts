@@ -58,7 +58,7 @@ const TemperatureColors = [
   [rgbToHexColor(191, 211, 255), 12000],
   [rgbToHexColor(193, 213, 255), 11500],
   [rgbToHexColor(196, 215, 255), 11000],
-  [rgbToHexColor(200, 217, 255), 10500  ],
+  [rgbToHexColor(200, 217, 255), 10500],
   [rgbToHexColor(204, 219, 255), 10000],
   [rgbToHexColor(208, 222, 255), 9500],
   [rgbToHexColor(214, 225, 255), 9000],
@@ -74,37 +74,40 @@ const TemperatureColors = [
   [rgbToHexColor(255, 209, 163), 4000],
   [rgbToHexColor(255, 196, 137), 3500],
   [rgbToHexColor(255, 180, 107), 3000],
-  [rgbToHexColor(255, 161,  72), 2500],
-  [rgbToHexColor(255, 137,  18), 2000],
-  [rgbToHexColor(255, 109,   0), 1500 ],
-  [rgbToHexColor(255,  51,   0), 1000]
-]
+  [rgbToHexColor(255, 161, 72), 2500],
+  [rgbToHexColor(255, 137, 18), 2000],
+  [rgbToHexColor(255, 109, 0), 1500],
+  [rgbToHexColor(255, 51, 0), 1000],
+] as const;
 
-export function getStarColor(temperature) {
+export function getStarColor(temperature: number) {
   // let temperature = star.temperature || star.extends.temperature
   // temperature *= 5778 // SUN TEMPERATURE IN KELVINS
-  const closestTemp = closest(temperature, TemperatureColors.map(e => e[1]))
-  const index = TemperatureColors.findIndex(c => c[1] == closestTemp)
-  return TemperatureColors[index][0]
+  const closestTemp = closest(
+    temperature,
+    TemperatureColors.map((e) => e[1])
+  );
+  const index = TemperatureColors.findIndex((c) => c[1] == closestTemp);
+  return TemperatureColors[index][0];
 }
 
-function closest (num, arr) {
-   var curr = arr[0];
-   var diff = Math.abs (num - curr);
-   for (var val = 0; val < arr.length; val++) {
-       var newdiff = Math.abs (num - arr[val]);
-       if (newdiff < diff) {
-           diff = newdiff;
-           curr = arr[val];
-       }
-   }
-   return curr;
+function closest(num: number, arr: number[]) {
+  var curr = arr[0];
+  var diff = Math.abs(num - curr);
+  for (var val = 0; val < arr.length; val++) {
+    var newdiff = Math.abs(num - arr[val]);
+    if (newdiff < diff) {
+      diff = newdiff;
+      curr = arr[val];
+    }
+  }
+  return curr;
 }
 
-function componentToHex(c) {
-  var hex = c.toString(16);
-  return hex.length == 1 ? "0" + hex : hex;
+function componentToHex(c: number) {
+  const hex = c.toString(16);
+  return hex.length == 1 ? '0' + hex : hex;
 }
-function rgbToHexColor(r, g, b) {
-  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b)
+function rgbToHexColor(r: number, g: number, b: number) {
+  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
