@@ -1,11 +1,10 @@
-import { Vector3 } from 'three';
-import { SPECTRAL_CLASSIFICATION, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../interfaces';
-import { RandomObject } from '../utils';
-import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
-import { StarPhysicModel, StarPhysics } from './physic';
+import { numberToGreekChar, RandomObject } from '../utils';
+import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { StarPhysicModel, StarPhysics, StarStellarClass } from './physic';
 
 export interface StarModel {
   mass?: number;
+  spectralClass?: StarStellarClass;
   name?: string;
   physic?: StarPhysicModel;
   options?: {};
@@ -22,24 +21,29 @@ const defaultOptions: StarOptions = {
 
 export class StarGenerator extends ExtendedGenerator<StarModel, StarOptions> {
   public physic?: StarPhysicModel;
-  private meta: typeof SPECTRAL_CLASSIFICATION[0];
+  private meta: typeof StarPhysics.SPECTRAL_CLASSIFICATION[0];
 
   constructor(model: StarModel, options: Partial<StarOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
-    this.meta = this.random.choice(SPECTRAL_CLASSIFICATION);
-    this.physic = model.physic;
-    if (!model.mass) {
+    if (model.mass && !model.spectralClass) {
+      this.meta = StarPhysics.getSpectralByMass(model.mass);
+    } else if (model.spectralClass) {
+      this.meta = StarPhysics.getSpectralByClass(model.spectralClass);
+      this.model.mass = this.random.real(this.meta.min_sol_mass, this.meta.max_sol_mass);
+    } else {
+      this.meta = this.random.choice(StarPhysics.SPECTRAL_CLASSIFICATION);
       this.model.mass = this.random.real(this.meta.min_sol_mass, this.meta.max_sol_mass);
     }
+    this.model.spectralClass = this.meta.class;
 
     this.recalculatePhysic();
   }
 
-  get name(): string {
-    return this.model.name || 'star_1'; // todo
+  get name() {
+    return this.model.name as string; // todo
   }
-  get mass(): number {
+  get mass() {
     return this.model.mass as number; // todo
   }
 
@@ -48,7 +52,7 @@ export class StarGenerator extends ExtendedGenerator<StarModel, StarOptions> {
   }
 
   static getSequentialName(systemName: string, starIndex: number) {
-    return `${systemName} ${starIndex + 1}`; // todo toGreekLetter(starIndex + 1)
+    return `${systemName} ${numberToGreekChar(starIndex)}`;
   }
   static sortByMass(stars: StarGenerator[]) {
     return stars.sort((a, b) => b.mass - a.mass);
@@ -61,6 +65,7 @@ export class StarGenerator extends ExtendedGenerator<StarModel, StarOptions> {
       const model: StarPhysicModel = { mass };
 
       model.subtype = this.meta.class;
+      model.stellar_class = this.meta.class;
       model.evolution = this.meta.organisms_evolution;
 
       model.radius = StarPhysics.calcRadius(model.mass);

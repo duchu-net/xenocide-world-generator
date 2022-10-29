@@ -1,9 +1,11 @@
 import { Vector3 } from 'three';
 
 import { RandomObject } from '../utils';
+
+import { BasicShape } from './BasicShape';
 import { ShapeStar } from './ShapeStar';
 
-export class Sphere {
+export class Sphere implements BasicShape {
   constructor(
     public readonly size: number = 750,
     public readonly densityMean: number = 0.000001,

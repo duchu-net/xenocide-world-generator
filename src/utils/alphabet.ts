@@ -8,6 +8,10 @@ export function greekLetterNameToLetter(name: string) {
   return GREEK_LETTERS[GREEK_LETTERS_NAMES.indexOf(name)]
 }
 
+export const numberToGreekChar = (num: number) => {
+  return GREEK_LETTERS[num % GREEK_LETTERS.length];
+};
+
 function romanCharToInt(char: string) {
   switch (char) {
     case 'I':

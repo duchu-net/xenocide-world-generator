@@ -1,3 +1,14 @@
+export enum StarStellarClass {
+  O = 'O',
+  B = 'B',
+  A = 'A',
+  F = 'F',
+  G = 'G',
+  K = 'K',
+  M = 'M',
+  // Dwarf = 'Dwarf',
+}
+
 export interface StarPhysicModel {
   mass: number;
   color: string;
@@ -5,7 +16,7 @@ export interface StarPhysicModel {
   volume: number;
   density: number;
   subtype: string;
-  stellar_class: string;
+  stellar_class: StarStellarClass;
   // habitable: boolean;
   evolution: boolean;
   luminosity: number;
@@ -21,8 +32,102 @@ export interface StarPhysicModel {
   habitable_zone_outer: number;
 }
 
+export interface StarStellarClassData {
+  class: StarStellarClass;
+  min_sol_mass: number;
+  max_sol_mass: number;
+  min_kelvin_temperature: number;
+  max_kelvin_temperature: number;
+  organisms_evolution: boolean;
+}
+
 export class StarPhysics {
-  static SUN_TEMPERATURE = 5778; // (K)
+  private constructor() {}
+
+  static readonly SUN_TEMPERATURE = 5778; // (K)
+  static readonly SPECTRAL_CLASSIFICATION: StarStellarClassData[] = [
+    {
+      class: StarStellarClass.O,
+      max_sol_mass: 50,
+      min_sol_mass: 16,
+      max_kelvin_temperature: Number.MAX_SAFE_INTEGER,
+      min_kelvin_temperature: 31000,
+      organisms_evolution: false,
+    },
+    {
+      class: StarStellarClass.B,
+      max_sol_mass: 16,
+      min_sol_mass: 2.1,
+      max_kelvin_temperature: 31000,
+      min_kelvin_temperature: 9750,
+      organisms_evolution: false,
+    },
+    {
+      class: StarStellarClass.A,
+      max_sol_mass: 2.1,
+      min_sol_mass: 1.4,
+      max_kelvin_temperature: 9750,
+      min_kelvin_temperature: 7100,
+      organisms_evolution: false,
+    },
+    {
+      class: StarStellarClass.F,
+      max_sol_mass: 1.4,
+      min_sol_mass: 1.04,
+      max_kelvin_temperature: 7100,
+      min_kelvin_temperature: 5950,
+      organisms_evolution: true,
+    },
+    {
+      class: StarStellarClass.G,
+      max_sol_mass: 1.04,
+      min_sol_mass: 0.8,
+      max_kelvin_temperature: 5950,
+      min_kelvin_temperature: 5250,
+      organisms_evolution: true,
+    },
+    {
+      class: StarStellarClass.K,
+      max_sol_mass: 0.8,
+      min_sol_mass: 0.45,
+      max_kelvin_temperature: 5250,
+      min_kelvin_temperature: 3950,
+      organisms_evolution: true,
+    },
+    {
+      class: StarStellarClass.M,
+      max_sol_mass: 0.45,
+      min_sol_mass: 0.08,
+      max_kelvin_temperature: 3950,
+      // min_kelvin_temperature: 2000, // todo proper value
+      min_kelvin_temperature: 1000,
+      organisms_evolution: false,
+    },
+    // TODO BROWN DWARF - 'often without planets' /wiki
+    // {
+    //   class: StarStellarClass.Dwarf,
+    //   max_sol_mass: 0.08,
+    //   min_sol_mass: 0.013,
+    //   max_kelvin_temperature: 2000,
+    //   min_kelvin_temperature: 1000,
+    //   organisms_evolution: false,
+    //   iluminosity: false,
+    // }
+  ];
+  static readonly spectrallClasses = this.SPECTRAL_CLASSIFICATION.map((data) => data.class);
+  static getSpectralByMass(mass: number) {
+    return this.SPECTRAL_CLASSIFICATION.find(
+      (data) => data.min_sol_mass <= mass && mass <= data.max_sol_mass
+    ) as StarStellarClassData;
+  }
+  static getSpectralByClass(stellarClass: string) {
+    return this.SPECTRAL_CLASSIFICATION.find((data) => data.class === stellarClass) as StarStellarClassData;
+  }
+  static getSpectralByTemperature(temperature: number) {
+    return this.SPECTRAL_CLASSIFICATION.find(
+      (data) => data.min_kelvin_temperature <= temperature && temperature <= data.max_kelvin_temperature
+    ) as StarStellarClassData;
+  }
 
   static calcLuminosity(mass: number) {
     switch (true) {
@@ -98,26 +203,27 @@ export class StarPhysics {
   }
 }
 
-function closest(num: number, arr: number[]) {
-  var curr = arr[0];
-  var diff = Math.abs(num - curr);
-  for (var val = 0; val < arr.length; val++) {
-    var newdiff = Math.abs(num - arr[val]);
+// --- Star Color utils --- //
+const closest = (num: number, arr: number[]) => {
+  let curr = arr[0];
+  let diff = Math.abs(num - curr);
+  arr.forEach((value) => {
+    const newdiff = Math.abs(num - value);
     if (newdiff < diff) {
       diff = newdiff;
-      curr = arr[val];
+      curr = value;
     }
-  }
+  });
   return curr;
-}
+};
 
-function componentToHex(c: number) {
-  const hex = c.toString(16);
+const numberToHex = (num: number) => {
+  const hex = num.toString(16);
   return hex.length == 1 ? '0' + hex : hex;
-}
-function rgbToHexColor(r: number, g: number, b: number) {
-  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
+};
+const rgbToHexColor = (r: number, g: number, b: number) => {
+  return `#${numberToHex(r)}${numberToHex(g)}${numberToHex(b)}`;
+};
 
 const TemperatureColors = [
   [rgbToHexColor(155, 188, 255), 40000],

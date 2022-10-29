@@ -7,6 +7,7 @@ import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 
 import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
 import { SystemGenerator } from './system-generator';
+import { StarPhysics, SystemPhysics } from './physic';
 
 export interface GalaxyModel {
   systemsSeed?: number; // todo
@@ -78,9 +79,12 @@ export class GalaxyGenerator extends ExtendedGenerator<GalaxyModel, GalaxyOption
           name: systemName,
           // seed: systemSeed,
           position: system.position,
-          temperature: system.temperature,
+          temperature: system.temperature, // todo not needed?
         },
-        { seed: systemSeed }
+        {
+          seed: systemSeed,
+          spectralClass: StarPhysics.getSpectralByTemperature(system.temperature as number)?.class,
+        }
       );
       this.systems.push(systemGenerator);
       yield systemGenerator;

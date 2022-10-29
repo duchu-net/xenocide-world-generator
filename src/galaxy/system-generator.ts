@@ -1,8 +1,7 @@
 import { Vector3 } from 'three';
-import { PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../interfaces';
 import { RandomObject } from '../utils';
 import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
-import { OrbitPhysicModel } from './physic';
+import { OrbitPhysicModel, StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
 import { PlanetGenerator } from './planet-generator';
 import { StarGenerator } from './star-generator';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
@@ -28,6 +27,7 @@ export interface SystemOptions extends BasicGeneratorOptions {
   // planetsSeed?: number;
   prefer_habitable: boolean;
   planetsCount?: number; // todo
+  spectralClass?: StarStellarClass;
 }
 
 const defaultOptions: SystemOptions = {
@@ -62,14 +62,17 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     return this.model.position as Vector3;
   }
 
-  *generateStars() {
+  *generateStars(): IterableIterator<StarGenerator> {
     try {
+      const { spectralClass } = this.options;
+      // console.log({spectralClass, temperature: this.model.temperature})
       const random = new RandomObject(this.model.starsSeed);
 
       const count = random.weighted(STAR_COUNT_DISTIBUTION_IN_SYSTEMS);
-      if (count <= 0) return;
+      // if (count <= 0) return;
       for (let i = 0; i < count; i++) {
-        const star = new StarGenerator({}, { random });
+        // todo when spectralClass is provided, next star should be smaller
+        const star = new StarGenerator(spectralClass && i === 0 ? { spectralClass } : {}, { random });
         this.stars.push(star);
         yield star;
       }
@@ -90,7 +93,7 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     }
   }
 
-  *generatePlanets() {
+  *generatePlanets(): IterableIterator<PlanetGenerator | OrbitPhysicModel> {
     try {
       let planetIndex = 0;
       let otherIndex = 0;
