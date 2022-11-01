@@ -1,5 +1,6 @@
 import { decimalToRoman, RandomObject, Seed } from '../utils';
 import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { PlanetSurfaceGenerator } from './planet-surface-generator';
 
 export enum RegionBiome {
   Ocean = 'ocean',
@@ -46,14 +47,27 @@ export class PlanetGenerator extends ExtendedGenerator<PlanetModel, PlanetOption
     this.regions = (model.regions as RegionModel[]) || [];
   }
 
+  get subtype(): string {
+    // @ts-ignore
+    return this.model.orbit.subtype;
+  }
+
   *generateSurface() {
     try {
-      // todo
       for (let i = 0; i < 5; i++) {
         const region = { id: `demo_region ${i}` };
         this.regions.push(region);
+      }
+
+      // todo
+      const surface = new PlanetSurfaceGenerator(this);
+      for (const region of surface.generateSurface()) {
         yield region;
       }
+
+      // for (let i = 0; i < 5; i++) {
+      //   yield this.regions[i];
+      // }
     } catch (error) {
       console.warn('*generateSurface()', error);
     }

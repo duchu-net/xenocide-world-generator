@@ -117,7 +117,7 @@ export class StarPhysics {
   static readonly spectrallClasses = this.SPECTRAL_CLASSIFICATION.map((data) => data.class);
   static getSpectralByMass(mass: number) {
     return this.SPECTRAL_CLASSIFICATION.find(
-      (data) => data.min_sol_mass <= mass && mass <= data.max_sol_mass
+      (data) => data.min_sol_mass <= mass && mass < data.max_sol_mass
     ) as StarStellarClassData;
   }
   static getSpectralByClass(stellarClass: string) {
@@ -125,7 +125,7 @@ export class StarPhysics {
   }
   static getSpectralByTemperature(temperature: number) {
     return this.SPECTRAL_CLASSIFICATION.find(
-      (data) => data.min_kelvin_temperature <= temperature && temperature <= data.max_kelvin_temperature
+      (data) => data.min_kelvin_temperature <= temperature && temperature < data.max_kelvin_temperature
     ) as StarStellarClassData;
   }
 
