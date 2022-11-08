@@ -136,7 +136,7 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     // }
     // zones.sort((a, b) => zonesNames.indexOf(a) - zonesNames.indexOf(b));
 
-    const planetOrbits = new SystemOrbitsGenerator({ star: this.stars[0] });
+    const planetOrbits = new SystemOrbitsGenerator({ star: this.stars[0], random });
     for (const orbit of planetOrbits.generateOrbits()) {
       // let planetSeed = random.next();
       // while (used_seeds.find((o) => o == planetSeed)) planetSeed = random.next();
