@@ -3,7 +3,7 @@ import { RandomObject } from '../utils';
 import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
 import { OrbitPhysicModel, StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
 import { PlanetGenerator } from './planet-generator';
-import { StarGenerator } from './star-generator';
+import { StarGenerator, StarModel } from './star-generator';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
 
 export interface SystemModel {
@@ -16,6 +16,7 @@ export interface SystemModel {
   starsSeed?: number;
   planetsSeed?: number;
 
+  stars?: StarModel[];
   options?: {};
 }
 

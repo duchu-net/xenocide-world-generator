@@ -34,6 +34,7 @@ export class RandomObject {
     // console.log('@',this.next(list.length), list[this.next(list.length)]);
     return list[this.next(list.length - 1)];
   }
+
   weighted(list: any[] | {}) {
     if (typeof list !== 'object') throw new TypeError('list must be array or object');
     if (!Array.isArray(list)) {
@@ -62,8 +63,14 @@ export class RandomObject {
   integer(min: number, max: number) {
     return this.random.integer(min, max);
   }
+  integerExclusive(min: number, max: number) {
+    return this.random.integerExclusive(min, max);
+  }
   real(min: number, max: number) {
     return this.random.real(min, max);
+  }
+  realInclusive(min: number, max: number) {
+    return this.random.realInclusive(min, max);
   }
   seed() {
     return this.next();
