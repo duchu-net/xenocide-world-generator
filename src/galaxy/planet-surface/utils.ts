@@ -148,6 +148,7 @@ export class Tile {
   maxDistanceToCorner?: number;
   plate?: Plate;
   biome?: string;
+  color?: Color;
   moisture?: number;
   temperature?: number;
 

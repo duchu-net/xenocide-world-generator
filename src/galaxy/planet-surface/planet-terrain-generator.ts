@@ -2,6 +2,7 @@ import { Color, Vector3 } from 'three';
 import { RandomObject } from '../../utils';
 import { PlanetBiomeGenerator } from './planet-biome-generator';
 import { PlanetWeatherGenerator } from './planet-weather-generator';
+import { SurfaceModificator } from './surface-strategy/surface-modificator';
 import { Border, Corner, PlanetSurface, Plate, Tile, Topology } from './utils';
 
 function randomUnitVector(random: RandomObject) {
@@ -32,15 +33,36 @@ interface ElevetionBorderTask {
   distanceToPlateBoundary: number;
 }
 
-export class PlanetTerrainGenerator {
-  generatePlanetTerrain(
+interface PlanetTerrainGeneratorOptions {
+  plateCount: number;
+  oceanicRate: number;
+  heatLevel: number;
+  moistureLevel: number;
+  // random?: RandomObject;
+}
+const defaultOptions: PlanetTerrainGeneratorOptions = {
+  plateCount: 10,
+  oceanicRate: 0.7,
+  heatLevel: 1,
+  moistureLevel: 1,
+};
+
+export class PlanetTerrainGenerator extends SurfaceModificator<PlanetTerrainGeneratorOptions> {
+  constructor(options?: Partial<PlanetTerrainGeneratorOptions>) {
+    super('terrain-genarator', { ...defaultOptions, ...options });
+  }
+
+  override generate(
     planet: PlanetSurface,
-    plateCount: number,
-    oceanicRate: number,
-    heatLevel: number,
-    moistureLevel: number,
-    random: RandomObject
+    // plateCount: number,
+    // oceanicRate: number,
+    // heatLevel: number,
+    // moistureLevel: number,
+    random: RandomObject,
+    options?: Partial<PlanetTerrainGeneratorOptions>
   ) {
+    const { plateCount, oceanicRate, heatLevel, moistureLevel } = { ...this.options, ...options };
+
     // Generating Tectonic Plates
     planet.plates = this.generatePlanetTectonicPlates(planet.topology, plateCount, oceanicRate, random);
 
@@ -51,8 +73,9 @@ export class PlanetTerrainGenerator {
     const weather = new PlanetWeatherGenerator();
     weather.generatePlanetWeather(planet.topology, planet.partition, heatLevel, moistureLevel, random);
 
-    // 'Generating Biomes'
-    PlanetBiomeGenerator.generatePlanetBiomes(planet.topology.tiles, 1000);
+    // todo can be deleted - moved to surface
+    // // 'Generating Biomes'
+    // PlanetBiomeGenerator.generatePlanetBiomes(planet.topology.tiles, 1000, random);
   }
 
   generatePlanetTectonicPlates(topology: Topology, plateCount: number, oceanicRate: number, random: RandomObject) {
