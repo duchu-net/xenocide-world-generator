@@ -1,6 +1,7 @@
 import { Vector3 } from 'three';
 import { RandomObject } from '../utils';
 import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { DebrisBeltGenerator } from './debris-belt-generator';
 import { OrbitPhysicModel, StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
 import { PlanetGenerator } from './planet-generator';
 import { StarGenerator, StarModel } from './star-generator';
@@ -44,9 +45,11 @@ const defaultOptions: SystemOptions = {
 //   FINISHED = 'finished',
 // }
 
+type CelestialModel = PlanetGenerator | DebrisBeltGenerator | OrbitPhysicModel;
+
 export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOptions> {
   public readonly stars: StarGenerator[] = [];
-  public readonly orbits: (PlanetGenerator | OrbitPhysicModel)[] = [];
+  public readonly orbits: CelestialModel[] = [];
 
   constructor(model: SystemModel, options: Partial<SystemOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
@@ -94,18 +97,23 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     }
   }
 
-  *generatePlanets(): IterableIterator<PlanetGenerator | OrbitPhysicModel> {
+  *generatePlanets(): IterableIterator<CelestialModel> {
     try {
       let planetIndex = 0;
       let otherIndex = 0;
       for (const protoPlanet of this.generateProtoPlanets()) {
-        let orbitObject: PlanetGenerator | OrbitPhysicModel;
+        let orbitObject: CelestialModel;
         if (protoPlanet.type === 'PLANET')
           orbitObject = new PlanetGenerator({
             name: PlanetGenerator.getSequentialName(this.name, planetIndex++),
             orbit: protoPlanet,
           });
-        else orbitObject = { ...protoPlanet, name: `${protoPlanet.type} ${++otherIndex}` };
+        else if (protoPlanet.type === 'ASTEROID_BELT') {
+          orbitObject = new DebrisBeltGenerator({
+            name: DebrisBeltGenerator.getSequentialName(otherIndex++),
+            orbit: protoPlanet,
+          });
+        } else orbitObject = { ...protoPlanet, name: `${protoPlanet.type} ${++otherIndex}` };
 
         this.orbits.push(orbitObject);
         yield orbitObject;

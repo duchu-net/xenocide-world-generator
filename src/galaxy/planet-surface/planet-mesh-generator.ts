@@ -51,30 +51,19 @@ export class PlanetMeshGenerator {
       --remainingIterations;
     }
 
-    // Relaxing Triangle Mesh // todo
-
-    // action.executeSubaction(
-    //   (action) => {
-    //     var initialIntervalIteration = action.intervalIteration;
-
-    //     var averageNodeRadius = Math.sqrt((4 * Math.PI) / mesh.nodes.length);
-    //     var minShiftDelta = (averageNodeRadius / 50000) * mesh.nodes.length;
-    //     var maxShiftDelta = (averageNodeRadius / 50) * mesh.nodes.length;
-
-    //     var priorShift;
-    //     var currentShift = this.relaxMesh(mesh, 0.5, action);
-    //     action.executeSubaction((action) => {
-    //       priorShift = currentShift;
-    //       currentShift = this.relaxMesh(mesh, 0.5, action);
-    //       var shiftDelta = Math.abs(currentShift - priorShift);
-    //       if (shiftDelta >= minShiftDelta && action.intervalIteration - initialIntervalIteration < 300) {
-    //         action.loop(Math.pow(Math.max(0, (maxShiftDelta - shiftDelta) / (maxShiftDelta - minShiftDelta)), 4));
-    //       }
-    //     });
-    //   },
-    //   25,
-    //   'Relaxing Triangle Mesh'
-    // );
+    // Relaxing Triangle Mesh
+    const averageNodeRadius = Math.sqrt((4 * Math.PI) / mesh.nodes.length);
+    const minShiftDelta = (averageNodeRadius / 50000) * mesh.nodes.length;
+    let priorShift;
+    let shiftDelta;
+    let currentShift = PlanetMeshGenerator.relaxMesh(mesh, 0.5);
+    let index = 0;
+    do {
+      priorShift = currentShift;
+      currentShift = PlanetMeshGenerator.relaxMesh(mesh, 0.5);
+      shiftDelta = Math.abs(currentShift - priorShift);
+      index += 1;
+    } while (shiftDelta >= minShiftDelta && index < 300);
 
     // Calculating Triangle Centroids
     mesh.faces.forEach((face) => {
