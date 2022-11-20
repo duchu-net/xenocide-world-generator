@@ -105,6 +105,12 @@ function adjustRange(value: number, oldMin: number, oldMax: number, newMin: numb
 function add(accumulator: number, factor: number) {
   return accumulator + factor;
 }
+/**
+ * Spherical coordinate system to polar angle
+ * @param phi phi (ϕ) in methematics meaning, angle with respect to polar axis
+ * @returns
+ */
+const sphericalPhiToPolarAngle = (phi: number) => phi * (180 / Math.PI);
 
 class GasGiantBiomeStrategy implements BiomeStrategy {
   name = 'gas-giant';
@@ -122,7 +128,7 @@ class GasGiantBiomeStrategy implements BiomeStrategy {
       ];
 
       const spherical = new Spherical().setFromVector3(tile.position);
-      let angle = spherical.phi * (180 / Math.PI);
+      let angle = sphericalPhiToPolarAngle(spherical.phi);
       angle = angle > 90 ? 180 - angle : angle;
       const normalizedAngle = adjustRange(angle, 0, 90, 0, colors.map((col) => col[0]).reduce(add, 0));
 
