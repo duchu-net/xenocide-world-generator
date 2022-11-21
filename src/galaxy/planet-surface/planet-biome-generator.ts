@@ -130,6 +130,12 @@ class GasGiantBiomeStrategy implements BiomeStrategy {
       const spherical = new Spherical().setFromVector3(tile.position);
       let angle = sphericalPhiToPolarAngle(spherical.phi);
       angle = angle > 90 ? 180 - angle : angle;
+      /**
+       * todo can be write with Polar from @shared (but for now generator should't have dependencies):
+       * const polar = new Polar().setFromVector3(tile.position);
+       * // convert [-90,90] to [0,90] from equator, with [0,180] angle
+       * const angle = 90 - Math.abs(polar.latitude);
+       */
       const normalizedAngle = adjustRange(angle, 0, 90, 0, colors.map((col) => col[0]).reduce(add, 0));
 
       let sum = 0;
