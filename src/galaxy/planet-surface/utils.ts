@@ -224,6 +224,7 @@ export class Tile {
       plate: this.plate ? this.plate.id : undefined,
       area: this.area,
       biome: this.biome,
+      color: this.color,
       moisture: this.moisture,
       elevation: this.elevation,
       temperature: this.temperature,
