@@ -6,7 +6,7 @@ import { GalaxyClass, GalaxyClassShape } from '../interfaces';
 import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 
 import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
-import { SystemGenerator } from './system-generator';
+import { SystemGenerator, SystemModel } from './system-generator';
 import { StarPhysics, SystemPhysics } from './physic';
 
 export interface GalaxyModel {
@@ -15,6 +15,7 @@ export interface GalaxyModel {
   code?: string;
   position?: Vector3;
   classification?: GalaxyClass;
+  systems?: SystemModel[];
 
   options?: {};
 }
@@ -30,7 +31,7 @@ const defaultOptions: GalaxyOptions = {
 };
 
 export class GalaxyGenerator extends ExtendedGenerator<GalaxyModel, GalaxyOptions> {
-  private readonly systems: any[] = [];
+  private readonly systems: SystemGenerator[] = [];
 
   constructor(model: GalaxyModel, options: Partial<GalaxyOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
@@ -39,6 +40,9 @@ export class GalaxyGenerator extends ExtendedGenerator<GalaxyModel, GalaxyOption
     if (!model.code)
       this.model.code = `GALAXY.${String(this.model.name).toUpperCase().replace(new RegExp(' ', 'g'), '')}`;
     if (!model.position) this.model.position = new Vector3();
+
+    // todo check that
+    this.systems = model.systems?.map((system) => new SystemGenerator(system)) || [];
 
     this.setClassification();
   }
@@ -65,11 +69,11 @@ export class GalaxyGenerator extends ExtendedGenerator<GalaxyModel, GalaxyOption
     for (let system of shape.Generate(this.random)) {
       // CHECK UNIQUE SEED
       let systemSeed = this.random.next();
-      while (this.systems.find((o) => o.seed == systemSeed)) systemSeed = this.random.next();
+      while (this.systems.find((system) => system.options.seed == systemSeed)) systemSeed = this.random.next();
       let systemName = StarName.Generate(this.random);
       while (
-        this.systems.find((o) => {
-          return o.name.toLowerCase() == systemName.toLowerCase();
+        this.systems.find((system) => {
+          return system.model.name?.toLowerCase() == systemName.toLowerCase();
         })
       )
         systemName = StarName.Generate(this.random);
@@ -92,7 +96,7 @@ export class GalaxyGenerator extends ExtendedGenerator<GalaxyModel, GalaxyOption
     // this.fillStatistics();
   }
 
-  override toModel() {
+  override toModel(): GalaxyModel {
     return { ...this.model, options: this.options, systems: this.systems.map((system) => system.toModel()) };
   }
 }

@@ -94,10 +94,16 @@ export class StarName {
     return String.fromCharCode(random.integer(65, 90));
   }
 
-  static markovNameModel = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
+  static getInstance() {
+    if (StarName.instance) return StarName.instance;
+    console.log(STARS_NAMES);
+    StarName.instance = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
+    return StarName.instance;
+  }
+  // static markovNameModel = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
   static PlainMarkov(random) {
     // console.log('PlainMarkov');
-    return StarName.markovNameModel.Generate(random);
+    return StarName.getInstance().Generate(random);
   }
   static NamedStar(random) {
     // console.log('NamedStar');

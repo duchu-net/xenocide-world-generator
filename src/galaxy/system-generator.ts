@@ -7,6 +7,8 @@ import { PlanetGenerator } from './planet-generator';
 import { StarGenerator, StarModel } from './star-generator';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
 
+type CelestialModel = PlanetGenerator | DebrisBeltGenerator | OrbitPhysicModel;
+
 export interface SystemModel {
   starColor?: string;
   habitable?: boolean;
@@ -18,6 +20,7 @@ export interface SystemModel {
   planetsSeed?: number;
 
   stars?: StarModel[];
+  orbits?: CelestialModel[];
   options?: {};
 }
 
@@ -44,8 +47,6 @@ const defaultOptions: SystemOptions = {
 //   PLANETS = 'planets',
 //   FINISHED = 'finished',
 // }
-
-type CelestialModel = PlanetGenerator | DebrisBeltGenerator | OrbitPhysicModel;
 
 export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOptions> {
   public readonly stars: StarGenerator[] = [];
@@ -167,7 +168,7 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     }
   }
 
-  override toModel() {
+  override toModel(): SystemModel {
     return {
       ...this.model,
       stars: this.stars.map((star) => star.toModel()),

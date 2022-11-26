@@ -908,4 +908,4 @@ export const STAR_NAMES = [
   ...HONOR_HARRINGTON_STARS_NAMES,
 ];
 
-export default [...new Set<string>(STAR_NAMES)];
+export default Array.from(new Set<string>(STAR_NAMES));
