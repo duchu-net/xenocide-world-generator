@@ -21,7 +21,17 @@ export abstract class BasicGenerator<Options extends BasicGeneratorOptions> {
   }
 }
 
+export abstract class BasicModelGenerator<Model, Options> {
+  constructor(public readonly model: Model, public readonly options: Options) {}
 
+  toModel(): Model {
+    // todo
+    return { ...this.model };
+  }
+  toJSON() {
+    return this.toModel();
+  }
+}
 
 // export interface ExtendedGeneratorModel {
 //   seed?: number;

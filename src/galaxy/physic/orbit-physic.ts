@@ -14,8 +14,8 @@ export class OrbitPhysic {
   static calcOrbitalPeriod(star_mass: number, semi_major_axis: number) {
     return Math.sqrt(Math.pow(semi_major_axis, 3) / star_mass);
   }
-  static convertOrbitalPeriodToDays(orbital_period: number) {
-    return Math.floor(orbital_period * 365);
+  static convertOrbitalPeriodToDays(orbitalPeriod: number) {
+    return Math.floor(orbitalPeriod * 365);
   }
 
   static calcZone(distance: number, physic: StarPhysicModel) {

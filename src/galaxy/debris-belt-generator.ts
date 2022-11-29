@@ -1,5 +1,6 @@
 import { decimalToRoman, RandomObject, Seed } from '../utils';
 import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { SystemOrbitModel } from './system-orbits-generator';
 
 export interface DebrisBeltOptions extends BasicGeneratorOptions {
   // surfaceSeed?: Seed;
@@ -15,7 +16,7 @@ export interface DebrisBeltModel {
   physic?: {
     mass?: number;
   };
-  orbit?: {}; // OrbitModel;
+  orbit?: SystemOrbitModel; // OrbitModel;
   options?: {}; // todo generator options???
 }
 
@@ -38,7 +39,7 @@ export class DebrisBeltGenerator extends ExtendedGenerator<DebrisBeltModel, Debr
     return `Belt ${decimalToRoman(beltIndex + 1)}`;
   }
 
-  override toModel() {
+  override toModel(): DebrisBeltModel {
     return { ...this.model, options: this.options };
   }
 }

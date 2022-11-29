@@ -2,32 +2,54 @@ import { RandomObject } from '../../utils';
 import { OrbitPhysicModel } from './orbit-physic';
 import { StarPhysicModel } from './star-physic';
 
-interface OrbitModel {
+export interface OrbitModel {
   distance: number;
   zone?: string;
-  orbital_period?: number;
+  orbitalPeriod?: number;
+
+  type?: string;
+  subtype?: string;
+
+  fromStar?: number;
+  orbitalPeriodInDays?: number;
 }
 
-export class Orbit {
+export class OrbitGenerator {
   type?: string;
   subtype?: string;
   distance: number;
   zone?: string;
-  orbital_period?: number;
+  orbitalPeriod?: number;
   tags: string[] = [];
   lock: boolean = false;
 
+  fromStar?: number; // todo move to system?
+  orbitalPeriodInDays?: number;
+
   constructor(props: OrbitModel) {
     this.zone = props.zone;
-    this.orbital_period = props.orbital_period;
+    this.orbitalPeriod = props.orbitalPeriod;
 
     this.distance = this.cutDecimals(props.distance, 2);
   }
+
+  toJSON() {
+    return this.toModel();
+  }
+  toModel() {
+    return {
+      type: this.type,
+      subtype: this.subtype,
+      distance: this.distance,
+      orbitalPeriod: this.orbitalPeriod,
+    };
+  }
+
   cutDecimals(number: number, position = 2) {
     const factor = Math.pow(10, position);
     return Math.floor(number * factor) / factor;
   }
-  lockTag(tags: Orbit['tags']) {
+  lockTag(tags: OrbitGenerator['tags'] | OrbitGenerator['tags'][0]) {
     if (!Array.isArray(tags)) tags = [tags];
     this.lock = true;
     this.tags = tags;

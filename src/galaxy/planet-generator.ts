@@ -1,6 +1,7 @@
 import { decimalToRoman, RandomObject, Seed } from '../utils';
 import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
 import { PlanetSurfaceGenerator } from './planet-surface-generator';
+import { SystemOrbitModel } from './system-orbits-generator';
 
 export enum RegionBiome {
   Ocean = 'ocean',
@@ -27,7 +28,7 @@ export interface PlanetModel {
   physic?: {
     mass?: number;
   };
-  orbit?: {}; // OrbitModel;
+  orbit?: SystemOrbitModel; // OrbitModel;
   regions?: RegionModel[];
   options?: {}; // todo generator options???
 }
@@ -77,7 +78,7 @@ export class PlanetGenerator extends ExtendedGenerator<PlanetModel, PlanetOption
     return `${systemName} ${decimalToRoman(planetIndex + 1)}`;
   }
 
-  override toModel() {
+  override toModel(): PlanetModel {
     return { ...this.model, regions: this.regions, options: this.options };
   }
 }

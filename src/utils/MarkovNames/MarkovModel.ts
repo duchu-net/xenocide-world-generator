@@ -1,7 +1,11 @@
 import { RandomObject } from '../RandomObject';
 
 export class MarkovModel {
-  constructor(public order: number, public startingStrings = new Map(), public productions = new Map()) {}
+  constructor(
+    public order: number,
+    public startingStrings = new Map<string, number>(),
+    public productions = new Map()
+  ) {}
 
   Generate(random: RandomObject) {
     let builder = '';

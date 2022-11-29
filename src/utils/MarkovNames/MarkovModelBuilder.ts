@@ -3,7 +3,7 @@ import MarkovModel from './MarkovModel';
 
 export class MarkovModelBuilder {
   _order = null;
-  _startingStrings = new Map();
+  _startingStrings = new Map<string, number>();
   _productions = new Map();
 
   // (int)
@@ -39,20 +39,13 @@ export class MarkovModelBuilder {
   }
 
   toModel() {
-    // @ts-ignore
     const startingStrings = new Map(this.Normalize(this._startingStrings));
-    const productions = new Map(
-      [...this._productions.entries()].map((a) => [
-        a[0],
-        // @ts-ignore
-        new Map(this.Normalize(a[1])),
-      ])
-    );
+    const productions = new Map([...this._productions.entries()].map((a) => [a[0], new Map(this.Normalize(a[1]))]));
 
     return new MarkovModel(this._order, startingStrings, productions);
   }
 
-  Normalize(stringCounts = []) {
+  Normalize(stringCounts: Map<string, number> = []): [string, number][] {
     const total = [...(stringCounts.values ? stringCounts.values() : stringCounts)].reduce((a, b) => a + b, 0);
     return [...stringCounts.entries()].map(([key, value]) => {
       return [key, value / total];

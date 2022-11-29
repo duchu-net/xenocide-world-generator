@@ -1,22 +1,29 @@
 import { RandomObject, Seed } from '../utils';
+import { ExtendedGenerator } from './basic-generator';
 import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from './physic';
-import { Orbit, ORBIT_OBJECT_TYPES } from './physic/orbit';
-import { StarGenerator } from './star-generator';
+import { OrbitGenerator, OrbitModel, ORBIT_OBJECT_TYPES } from './physic/orbit-generator';
+import { StarGenerator, StarModel } from './star-generator';
 
-interface OrbitOptions {
+interface SystemOrbitOptions {
   seed?: Seed;
   random?: RandomObject;
   prefer_habitable?: boolean;
-  star: StarGenerator; // todo StarPhysic be enought
+  star: StarModel; // todo StarPhysic be enought
+}
+export interface SystemOrbitModel extends Partial<OrbitModel> {
+  options?: Partial<SystemOrbitOptions>;
+
+  fromStar?: number;
 }
 
-const defaultOptions: Partial<OrbitOptions> = {
+const defaultOptions: Partial<SystemOrbitOptions> = {
   prefer_habitable: true,
 };
 
-export class SystemOrbitsGenerator {
-  public readonly options: OrbitOptions;
-  random: RandomObject;
+export class SystemOrbitsGenerator extends ExtendedGenerator<SystemOrbitModel, SystemOrbitOptions> {
+  // public readonly options: SystemOrbitOptions;
+  // random: RandomObject;
+
   // Evry value is in AU unit
   // inner_limit = 0.15;
   // habitable_zone_inner = 0.95;
@@ -25,18 +32,21 @@ export class SystemOrbitsGenerator {
   // outer_limit = 40;
 
   topology?: string;
-  orbits: any[] = [];
+  orbits: OrbitGenerator[] = [];
   beetwen_orbits_factor = [1.4, 2];
   modyficators: (typeof SystemOrbitsGenerator.ClassicSystem | typeof SystemOrbitsGenerator.HabitableMoonSystem)[] = [];
 
-  constructor(options: OrbitOptions) {
-    this.options = { ...defaultOptions, ...options };
+  // constructor(options: SystemOrbitOptions) {
+  //   this.options = { ...defaultOptions, ...options };
 
-    if (!options.seed) this.options.seed = RandomObject.randomSeed();
-    this.random = options.random || new RandomObject(this.options.seed);
+  //   if (!options.seed) this.options.seed = RandomObject.randomSeed();
+  //   this.random = options.random || new RandomObject(this.options.seed);
+  // }
+  constructor(model: SystemOrbitModel, options: SystemOrbitOptions) {
+    super(model, { ...defaultOptions, ...model.options, ...options });
   }
 
-  *generateOrbits() {
+  *generateOrbits(): IterableIterator<SystemOrbitModel> {
     // console.log('*generateOrbits()');
     if (!this.orbits.length) this.build();
     for (const orbit of this.orbits) yield orbit;
@@ -64,7 +74,8 @@ export class SystemOrbitsGenerator {
   }
 
   generateProtoOrbits() {
-    if (!this.options.star.physic) return;
+    if (!this.options.star?.physic) throw new Error('no star available');
+
     const { physic } = this.options.star;
     let firstOrbitdistance = null;
 
@@ -75,13 +86,13 @@ export class SystemOrbitsGenerator {
     } else {
       firstOrbitdistance = this.random.real(physic.inner_limit, physic.outer_limit);
     }
-    this.orbits.push(new Orbit({ distance: firstOrbitdistance }));
+    this.orbits.push(new OrbitGenerator({ distance: firstOrbitdistance }));
     // Fill orbits down
     let lastDistance = firstOrbitdistance;
     while (true) {
       const nextOrbit = lastDistance / this.random.real(this.beetwen_orbits_factor[0], this.beetwen_orbits_factor[1]);
       if (nextOrbit < physic.inner_limit) break;
-      this.orbits.push(new Orbit({ distance: nextOrbit }));
+      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }));
       lastDistance = nextOrbit;
     }
     // Fill orbits up
@@ -89,17 +100,17 @@ export class SystemOrbitsGenerator {
     while (true) {
       const nextOrbit = lastDistance * this.random.real(this.beetwen_orbits_factor[0], this.beetwen_orbits_factor[1]);
       if (nextOrbit > physic.outer_limit) break;
-      this.orbits.push(new Orbit({ distance: nextOrbit }));
+      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }));
       lastDistance = nextOrbit;
     }
     // Sort by distance
     this.orbits.sort((a, b) => a.distance - b.distance);
     // Fill from sun order
-    for (const [index, orbit] of this.orbits.entries()) orbit.from_star = index + 1;
+    for (const [index, orbit] of this.orbits.entries()) orbit.fromStar = index + 1;
   }
 
   fillOrbitZone() {
-    if (!this.options.star.physic) return;
+    if (!this.options.star?.physic) throw new Error('no star available');
     const { physic } = this.options.star;
 
     for (const orbit of this.orbits) orbit.zone = OrbitPhysic.calcZone(orbit.distance, physic);
@@ -107,9 +118,13 @@ export class SystemOrbitsGenerator {
 
   fillOrbitPeriod() {
     for (const orbit of this.orbits) {
-      orbit.orbital_period = OrbitPhysic.calcOrbitalPeriod(this.options.star.mass, orbit.distance);
-      orbit.orbital_period_in_days = OrbitPhysic.convertOrbitalPeriodToDays(orbit.orbital_period);
+      orbit.orbitalPeriod = OrbitPhysic.calcOrbitalPeriod(this.options.star.mass as number, orbit.distance);
+      orbit.orbitalPeriodInDays = OrbitPhysic.convertOrbitalPeriodToDays(orbit.orbitalPeriod);
     }
+  }
+
+  toModel(): SystemOrbitModel {
+    return { ...this.model };
   }
 
   // static _generationStrategies = [

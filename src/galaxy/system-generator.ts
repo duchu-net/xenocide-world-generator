@@ -1,13 +1,16 @@
 import { Vector3 } from 'three';
+import { PlanetModel } from '.';
 import { RandomObject } from '../utils';
 import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
-import { DebrisBeltGenerator } from './debris-belt-generator';
+import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';
 import { OrbitPhysicModel, StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
+import { OrbitModel } from './physic/orbit-generator';
 import { PlanetGenerator } from './planet-generator';
 import { StarGenerator, StarModel } from './star-generator';
-import { SystemOrbitsGenerator } from './system-orbits-generator';
+import { SystemOrbitModel, SystemOrbitsGenerator } from './system-orbits-generator';
+import { EmptyZone, EmptyZoneModel } from './system/empty-zone';
 
-type CelestialModel = PlanetGenerator | DebrisBeltGenerator | OrbitPhysicModel;
+type OnOrbitGenerator = PlanetGenerator | DebrisBeltGenerator | EmptyZone;
 
 export interface SystemModel {
   starColor?: string;
@@ -20,7 +23,7 @@ export interface SystemModel {
   planetsSeed?: number;
 
   stars?: StarModel[];
-  orbits?: CelestialModel[];
+  orbits?: (PlanetModel | DebrisBeltModel | EmptyZoneModel)[];
   options?: {};
 }
 
@@ -50,7 +53,7 @@ const defaultOptions: SystemOptions = {
 
 export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOptions> {
   public readonly stars: StarGenerator[] = [];
-  public readonly orbits: CelestialModel[] = [];
+  public readonly orbits: OnOrbitGenerator[] = [];
 
   constructor(model: SystemModel, options: Partial<SystemOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
@@ -98,23 +101,27 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     }
   }
 
-  *generatePlanets(): IterableIterator<CelestialModel> {
+  *generatePlanets(): IterableIterator<OnOrbitGenerator> {
     try {
-      let planetIndex = 0;
-      let otherIndex = 0;
-      for (const protoPlanet of this.generateProtoPlanets()) {
-        let orbitObject: CelestialModel;
-        if (protoPlanet.type === 'PLANET')
+      let nameIndex = 0;
+      for (const orbitModel of this.generateProtoPlanets()) {
+        let orbitObject: OnOrbitGenerator;
+        if (orbitModel.type === 'PLANET')
           orbitObject = new PlanetGenerator({
-            name: PlanetGenerator.getSequentialName(this.name, planetIndex++),
-            orbit: protoPlanet,
+            name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
+            orbit: orbitModel,
           });
-        else if (protoPlanet.type === 'ASTEROID_BELT') {
+        else if (orbitModel.type === 'ASTEROID_BELT') {
           orbitObject = new DebrisBeltGenerator({
-            name: DebrisBeltGenerator.getSequentialName(otherIndex++),
-            orbit: protoPlanet,
+            name: DebrisBeltGenerator.getSequentialName(nameIndex++),
+            orbit: orbitModel,
           });
-        } else orbitObject = { ...protoPlanet, name: `${protoPlanet.type} ${++otherIndex}` };
+        } else {
+          orbitObject = new EmptyZone({
+            name: EmptyZone.getSequentialName(nameIndex++),
+            orbit: orbitModel,
+          });
+        }
 
         this.orbits.push(orbitObject);
         yield orbitObject;
@@ -125,45 +132,12 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     }
   }
 
-  *generateProtoPlanets() {
+  *generateProtoPlanets(): IterableIterator<SystemOrbitModel> {
     const random = new RandomObject(this.model.planetsSeed);
-    // const planet_count = random.weighted(PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM);
-    // const used_seeds: number[] = [];
-    // const zones = [];
-    // const zonesNames = ['inner', 'habitable', 'outer'];
-    // let maxInInner = 4;
-    // let maxInHabitable = 3;
-    // for (let i = 0; i < planet_count; i++) {
-    //   const tempZones = [];
-    //   if (maxInInner != 0) tempZones.push('inner');
-    //   if (maxInHabitable != 0) tempZones.push('habitable');
-    //   tempZones.push('outer');
-    //   const choice = this.options.prefer_habitable && i == 0 ? 'habitable' : random.choice(tempZones);
-    //   // if (this.habitable && i==0)
-    //   if (choice == 'inner') maxInInner--;
-    //   if (choice == 'habitable') maxInHabitable--;
-    //   zones.push(choice);
-    // }
-    // zones.sort((a, b) => zonesNames.indexOf(a) - zonesNames.indexOf(b));
 
-    const planetOrbits = new SystemOrbitsGenerator({ star: this.stars[0], random });
+    const planetOrbits = new SystemOrbitsGenerator({}, { star: this.stars[0], random });
+
     for (const orbit of planetOrbits.generateOrbits()) {
-      // let planetSeed = random.next();
-      // while (used_seeds.find((o) => o == planetSeed)) planetSeed = random.next();
-      // used_seeds.push(planetSeed);
-
-      // // const designation = `${this.name} ${toRoman(orbit.from_star)}`; // todo
-      // const designation = `${this.name} ${orbit.from_star}`;
-      // yield {
-      //   ...orbit,
-      //   // type: undefined,
-      //   // subtype: orbit.type,
-      //   seed: planetSeed,
-      //   // orbit: orbit,
-      //   // zone: zones[i],
-      //   // subtype: this.habitable && i === habitableIndex ? 'earth' : null,
-      //   designation: designation,
-      // };
       yield orbit;
     }
   }
@@ -172,7 +146,6 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     return {
       ...this.model,
       stars: this.stars.map((star) => star.toModel()),
-      // @ts-ignore
       orbits: this.orbits.map((orbit) => orbit.toModel?.()),
       options: this.options,
     };
