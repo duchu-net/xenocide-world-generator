@@ -2,10 +2,9 @@ import { RandomObject } from '../../utils';
 import { OrbitPhysicModel } from './orbit-physic';
 import { StarPhysicModel } from './star-physic';
 
-export interface OrbitModel {
+export interface OrbitModel extends OrbitPhysicModel {
   distance: number;
   zone?: string;
-  orbitalPeriod?: number;
 
   type?: string;
   subtype?: string;
