@@ -10,6 +10,7 @@ export interface OrbitModel extends OrbitPhysicModel {
   subtype?: string;
 
   fromStar?: number;
+  orbitalPeriod?: number;
   orbitalPeriodInDays?: number;
 }
 
@@ -35,12 +36,15 @@ export class OrbitGenerator {
   toJSON() {
     return this.toModel();
   }
-  toModel() {
+  toModel(): OrbitModel {
     return {
       type: this.type,
+      zone: this.zone,
       subtype: this.subtype,
+      fromStar: this.fromStar,
       distance: this.distance,
       orbitalPeriod: this.orbitalPeriod,
+      orbitalPeriodInDays: this.orbitalPeriodInDays, // todo not used?
     };
   }
 

@@ -46,7 +46,7 @@ export class SystemOrbitsGenerator extends ExtendedGenerator<SystemOrbitModel, S
     super(model, { ...defaultOptions, ...model.options, ...options });
   }
 
-  *generateOrbits(): IterableIterator<SystemOrbitModel> {
+  *generateOrbits(): IterableIterator<OrbitGenerator> {
     // console.log('*generateOrbits()');
     if (!this.orbits.length) this.build();
     for (const orbit of this.orbits) yield orbit;
@@ -123,9 +123,9 @@ export class SystemOrbitsGenerator extends ExtendedGenerator<SystemOrbitModel, S
     }
   }
 
-  toModel(): SystemOrbitModel {
-    return { ...this.model };
-  }
+  // toModel(): SystemOrbitModel {
+  //   return { ...this.model };
+  // }
 
   // static _generationStrategies = [
   //   [1, PlanetOrbitGenerator.ClassicSystem],

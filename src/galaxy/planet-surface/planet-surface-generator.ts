@@ -146,7 +146,7 @@ export class PlanetSurfaceGenerator extends ExtendedGenerator<PlanetSurfaceModel
     return this.planet;
   }
 
-  toModel() {
-    return { ...this.model };
-  }
+  // toModel() {
+  //   return { ...this.model };
+  // }
 }

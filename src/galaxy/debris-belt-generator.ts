@@ -26,6 +26,8 @@ export interface DebrisBeltModel {
 // }
 
 export class DebrisBeltGenerator extends ExtendedGenerator<DebrisBeltModel, DebrisBeltOptions> {
+  override schemaName = 'DebrisBeltModel';
+
   constructor(model: DebrisBeltModel, options: Partial<DebrisBeltOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
   }
@@ -40,6 +42,6 @@ export class DebrisBeltGenerator extends ExtendedGenerator<DebrisBeltModel, Debr
   }
 
   override toModel(): DebrisBeltModel {
-    return { ...this.model, options: this.options };
+    return super.toModel({ options: this.options });
   }
 }

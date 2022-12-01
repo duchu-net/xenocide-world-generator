@@ -31,6 +31,7 @@ export interface PlanetModel {
   orbit?: SystemOrbitModel; // OrbitModel;
   regions?: RegionModel[];
   options?: {}; // todo generator options???
+  schemaName?: string;
 }
 
 // export interface PlanetGeneratorModel {
@@ -39,6 +40,7 @@ export interface PlanetModel {
 // }
 
 export class PlanetGenerator extends ExtendedGenerator<PlanetModel, PlanetOptions> {
+  override schemaName = 'PlanetModel';
   public readonly regions: RegionModel[] = [];
 
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
@@ -79,6 +81,6 @@ export class PlanetGenerator extends ExtendedGenerator<PlanetModel, PlanetOption
   }
 
   override toModel(): PlanetModel {
-    return { ...this.model, regions: this.regions, options: this.options };
+    return super.toModel({ regions: this.regions, options: this.options });
   }
 }

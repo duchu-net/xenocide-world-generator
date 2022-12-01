@@ -4,7 +4,7 @@ import { RandomObject } from '../utils';
 import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
 import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';
 import { OrbitPhysicModel, StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
-import { OrbitModel } from './physic/orbit-generator';
+import { OrbitGenerator, OrbitModel } from './physic/orbit-generator';
 import { PlanetGenerator } from './planet-generator';
 import { StarGenerator, StarModel } from './star-generator';
 import { SystemOrbitModel, SystemOrbitsGenerator } from './system-orbits-generator';
@@ -52,6 +52,7 @@ const defaultOptions: SystemOptions = {
 // }
 
 export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOptions> {
+  override schemaName = 'SystemModel';
   public readonly stars: StarGenerator[] = [];
   public readonly orbits: OnOrbitGenerator[] = [];
 
@@ -104,22 +105,22 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
   *generatePlanets(): IterableIterator<OnOrbitGenerator> {
     try {
       let nameIndex = 0;
-      for (const orbitModel of this.generateProtoPlanets()) {
+      for (const orbitModel of this.generateOrbits()) {
         let orbitObject: OnOrbitGenerator;
         if (orbitModel.type === 'PLANET')
           orbitObject = new PlanetGenerator({
             name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
-            orbit: orbitModel,
+            orbit: orbitModel.toModel(),
           });
         else if (orbitModel.type === 'ASTEROID_BELT') {
           orbitObject = new DebrisBeltGenerator({
             name: DebrisBeltGenerator.getSequentialName(nameIndex++),
-            orbit: orbitModel,
+            orbit: orbitModel.toModel(),
           });
         } else {
           orbitObject = new EmptyZone({
             name: EmptyZone.getSequentialName(nameIndex++),
-            orbit: orbitModel,
+            orbit: orbitModel.toModel(),
           });
         }
 
@@ -132,7 +133,7 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
     }
   }
 
-  *generateProtoPlanets(): IterableIterator<SystemOrbitModel> {
+  *generateOrbits(): IterableIterator<OrbitGenerator> {
     const random = new RandomObject(this.model.planetsSeed);
 
     const planetOrbits = new SystemOrbitsGenerator({}, { star: this.stars[0], random });
@@ -143,11 +144,10 @@ export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOption
   }
 
   override toModel(): SystemModel {
-    return {
-      ...this.model,
+    return super.toModel({
       stars: this.stars.map((star) => star.toModel()),
       orbits: this.orbits.map((orbit) => orbit.toModel?.()),
       options: this.options,
-    };
+    });
   }
 }

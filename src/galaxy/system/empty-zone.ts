@@ -1,16 +1,14 @@
-import { decimalToRoman } from "../../utils";
-import { BasicModelGenerator } from "../basic-generator";
-import { SystemOrbitModel } from "../system-orbits-generator";
+import { decimalToRoman } from '../../utils';
+import { BasicModelGenerator } from '../basic-generator';
+import { SystemOrbitModel } from '../system-orbits-generator';
 
 export interface EmptyZoneModel {
   name?: string;
   orbit?: SystemOrbitModel;
 }
-interface EmptyZoneOptions {
-
-}
 
 export class EmptyZone extends BasicModelGenerator<EmptyZoneModel, null> {
+  override schemaName = 'EmptyZoneModel';
   constructor(model: EmptyZoneModel, options = null) {
     super(model, options);
   }
