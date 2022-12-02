@@ -1,21 +1,21 @@
-import * as THREE from 'three';
-import { Vector3 } from 'three';
+import { Plane, Sphere, Vector3 } from 'three';
 
-import { Border, Corner, Mesh, Tile, Topology } from './utils';
+import { Mesh, Topology } from '../types';
+import { Border, Corner, Tile } from '../utils';
 
 function calculateTriangleArea(pa: Vector3, pb: Vector3, pc: Vector3) {
-  var vab = new THREE.Vector3().subVectors(pb, pa);
-  var vac = new THREE.Vector3().subVectors(pc, pa);
-  var faceNormal = new THREE.Vector3().crossVectors(vab, vac);
-  var vabNormal = new THREE.Vector3().crossVectors(faceNormal, vab).normalize();
-  var plane = new THREE.Plane().setFromNormalAndCoplanarPoint(vabNormal, pa);
+  var vab = new Vector3().subVectors(pb, pa);
+  var vac = new Vector3().subVectors(pc, pa);
+  var faceNormal = new Vector3().crossVectors(vab, vac);
+  var vabNormal = new Vector3().crossVectors(faceNormal, vab).normalize();
+  var plane = new Plane().setFromNormalAndCoplanarPoint(vabNormal, pa);
   var height = plane.distanceToPoint(pc);
   var width = vab.length();
   var area = width * height * 0.5;
   return area;
 }
 
-export class PlanetTopologyGenerator {
+export class PlanetTopologyBuilder {
   maxDistanceToCorner?: number;
 
   generatePlanetTopology(mesh: Mesh): Topology {
@@ -47,7 +47,7 @@ export class PlanetTopologyGenerator {
 
     borders.forEach((border, index) => {
       const edge = mesh.edges[index];
-      const averageCorner = new THREE.Vector3(0, 0, 0);
+      const averageCorner = new Vector3(0, 0, 0);
       let n = 0;
       for (let j = 0; j < edge.f.length; ++j) {
         const corner = corners[edge.f[j]];
@@ -106,7 +106,7 @@ export class PlanetTopologyGenerator {
           }
         }
       }
-      tile.averagePosition = new THREE.Vector3(0, 0, 0);
+      tile.averagePosition = new Vector3(0, 0, 0);
       for (let j = 0; j < tile.corners.length; ++j) {
         tile.averagePosition.add(tile.corners[j].position);
       }
@@ -126,7 +126,7 @@ export class PlanetTopologyGenerator {
       tile.area = area;
       tile.normal = tile.position.clone().normalize();
       this.maxDistanceToCorner = maxDistanceToCorner;
-      tile.boundingSphere = new THREE.Sphere(tile.averagePosition, maxDistanceToCorner);
+      tile.boundingSphere = new Sphere(tile.averagePosition, maxDistanceToCorner);
     });
 
     corners.forEach((corner) => {

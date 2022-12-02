@@ -1,8 +1,10 @@
 import { Color, Spherical } from 'three';
-import * as THREE from 'three';
-import { RandomObject } from '../../utils';
-import { PlanetSurface, Tile } from './utils';
-import { SurfaceModificator } from './surface-strategy/surface-modificator';
+
+import { RandomObject } from '../../../utils';
+import { PlanetSurface } from '../types';
+import { Tile } from '../utils';
+
+import { SurfaceModificator } from './surface-modificator';
 
 interface BiomeStrategy {
   name: string;
@@ -184,7 +186,7 @@ interface PlanetBiomeGeneratorOptions {
 const defaultOptions: PlanetBiomeGeneratorOptions = {
   strategy: 'terrestial-earth',
 };
-export class PlanetBiomeGenerator extends SurfaceModificator<PlanetBiomeGeneratorOptions> {
+export class BiomeSurfaceModificator extends SurfaceModificator<PlanetBiomeGeneratorOptions> {
   public strategy: BiomeStrategy;
 
   constructor(options?: Partial<PlanetBiomeGeneratorOptions>) {

@@ -1,2 +1,3 @@
 export * from './planet-surface-generator';
-export { Tile, PlanetSurface } from './utils';
+export * from './types';
+export { Tile } from './utils';

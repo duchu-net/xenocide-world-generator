@@ -1,9 +1,12 @@
 import { Color, Vector3 } from 'three';
-import { RandomObject } from '../../utils';
-import { PlanetBiomeGenerator } from './planet-biome-generator';
-import { PlanetWeatherGenerator } from './planet-weather-generator';
-import { SurfaceModificator } from './surface-strategy/surface-modificator';
-import { Border, Corner, PlanetSurface, Plate, Tile, Topology } from './utils';
+
+import { RandomObject } from '../../../utils';
+import { PlanetSurface, Topology } from '../types';
+import { Border, Corner, Plate, Tile } from '../utils';
+
+import { BiomeSurfaceModificator } from './biome-surface-modificator';
+import { PlanetWeatherGenerator } from './planet-weather-modificator';
+import { SurfaceModificator } from './surface-modificator';
 
 function randomUnitVector(random: RandomObject) {
   const theta = random.real(0, Math.PI * 2);
@@ -47,7 +50,7 @@ const defaultOptions: PlanetTerrainGeneratorOptions = {
   moistureLevel: 1,
 };
 
-export class PlanetTerrainGenerator extends SurfaceModificator<PlanetTerrainGeneratorOptions> {
+export class TerrainSurfaceModificator extends SurfaceModificator<PlanetTerrainGeneratorOptions> {
   constructor(options?: Partial<PlanetTerrainGeneratorOptions>) {
     super('terrain-genarator', { ...defaultOptions, ...options });
   }
@@ -75,7 +78,7 @@ export class PlanetTerrainGenerator extends SurfaceModificator<PlanetTerrainGene
 
     // todo can be deleted - moved to surface
     // // 'Generating Biomes'
-    // PlanetBiomeGenerator.generatePlanetBiomes(planet.topology.tiles, 1000, random);
+    // BiomeSurfaceModificator.generatePlanetBiomes(planet.topology.tiles, 1000, random);
   }
 
   generatePlanetTectonicPlates(topology: Topology, plateCount: number, oceanicRate: number, random: RandomObject) {

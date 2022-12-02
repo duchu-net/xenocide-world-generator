@@ -1,5 +1,6 @@
 import { Vector3 } from 'three';
-import { Mesh } from './utils';
+
+import { Mesh } from '../types';
 
 function slerp(p0: Vector3, p1: Vector3, t: number) {
   const omega = Math.acos(p0.dot(p1));
@@ -10,12 +11,12 @@ function slerp(p0: Vector3, p1: Vector3, t: number) {
     .divideScalar(Math.sin(omega));
 }
 
-export class IcosahedronGenerator {
+export class IcosahedronBuilder {
   private constructor() {}
 
   // degree/subdivisions - detail_level
   static generateSubdividedIcosahedron(degree: number = 10): Mesh {
-    const icosahedron = IcosahedronGenerator.generateIcosahedron();
+    const icosahedron = IcosahedronBuilder.generateIcosahedron();
 
     const nodes: Mesh['nodes'] = icosahedron.nodes.map((node) => ({
       p: node.p,

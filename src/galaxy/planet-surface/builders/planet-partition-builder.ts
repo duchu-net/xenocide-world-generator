@@ -1,12 +1,12 @@
 import { Sphere, Vector3 } from 'three';
-import { IcosahedronGenerator } from './icosahedron-generator';
-import { SpatialPartition, Tile } from './utils';
+import { IcosahedronBuilder } from './icosahedron-builder';
+import { SpatialPartition, Tile } from '../utils';
 
-export class PlanetPartitionGenerator {
+export class PlanetPartitionBuilder {
   private constructor() {}
 
   static generatePlanetPartition(tiles: Tile[]) {
-    const icosahedron = IcosahedronGenerator.generateIcosahedron();
+    const icosahedron = IcosahedronBuilder.generateIcosahedron();
 
     icosahedron.faces.forEach((face) => {
       const p0 = icosahedron.nodes[face.n[0]].p.clone().multiplyScalar(1000);

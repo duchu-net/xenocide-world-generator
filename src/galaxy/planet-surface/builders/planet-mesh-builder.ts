@@ -1,10 +1,10 @@
 import { Plane, Vector3 } from 'three';
 
-import { RandomObject } from '../../utils';
-import { ModelGeneratorOptions } from '../basic-generator';
+import { RandomObject } from '../../../utils';
+import { ModelGeneratorOptions } from '../../basic-generator';
+import { Mesh } from '../types';
 
-import { IcosahedronGenerator } from './icosahedron-generator';
-import { Mesh } from './utils';
+import { IcosahedronBuilder } from './icosahedron-builder';
 
 interface Node {
   p: Vector3;
@@ -29,7 +29,7 @@ const defaultOptions: PlanetMeshOptions = {
   // seed: 999,
 };
 
-export class PlanetMeshGenerator {
+export class PlanetMeshBuilder {
   mesh?: Mesh;
 
   // override toModel() {
@@ -37,7 +37,7 @@ export class PlanetMeshGenerator {
   // }
 
   generatePlanetMesh(icosahedronSubdivision: number, topologyDistortionRate: number, random: RandomObject) {
-    const mesh = IcosahedronGenerator.generateSubdividedIcosahedron(icosahedronSubdivision);
+    const mesh = IcosahedronBuilder.generateSubdividedIcosahedron(icosahedronSubdivision);
     this.mesh = mesh;
 
     // Distorting Triangle Mesh
@@ -46,8 +46,8 @@ export class PlanetMeshGenerator {
     while (remainingIterations !== 0) {
       const iterationDistortion = Math.floor(totalDistortion / remainingIterations);
       totalDistortion -= iterationDistortion;
-      PlanetMeshGenerator.distortMesh(mesh, iterationDistortion, random);
-      PlanetMeshGenerator.relaxMesh(mesh, 0.5);
+      PlanetMeshBuilder.distortMesh(mesh, iterationDistortion, random);
+      PlanetMeshBuilder.relaxMesh(mesh, 0.5);
       --remainingIterations;
     }
 
@@ -56,11 +56,11 @@ export class PlanetMeshGenerator {
     const minShiftDelta = (averageNodeRadius / 50000) * mesh.nodes.length;
     let priorShift;
     let shiftDelta;
-    let currentShift = PlanetMeshGenerator.relaxMesh(mesh, 0.5);
+    let currentShift = PlanetMeshBuilder.relaxMesh(mesh, 0.5);
     let index = 0;
     do {
       priorShift = currentShift;
-      currentShift = PlanetMeshGenerator.relaxMesh(mesh, 0.5);
+      currentShift = PlanetMeshBuilder.relaxMesh(mesh, 0.5);
       shiftDelta = Math.abs(currentShift - priorShift);
       index += 1;
     } while (shiftDelta >= minShiftDelta && index < 300);
@@ -70,14 +70,14 @@ export class PlanetMeshGenerator {
       const p0 = mesh.nodes[face.n[0]].p;
       const p1 = mesh.nodes[face.n[1]].p;
       const p2 = mesh.nodes[face.n[2]].p;
-      face.centroid = PlanetMeshGenerator.calculateFaceCentroid(p0, p1, p2).normalize();
+      face.centroid = PlanetMeshBuilder.calculateFaceCentroid(p0, p1, p2).normalize();
     });
 
     // Reordering Triangle Nodes
     mesh.nodes.forEach((node, index) => {
       let faceIndex = node.f[0];
       for (let j = 1; j < node.f.length - 1; ++j) {
-        faceIndex = PlanetMeshGenerator.findNextFaceIndex(mesh, index, faceIndex);
+        faceIndex = PlanetMeshBuilder.findNextFaceIndex(mesh, index, faceIndex);
         const k = node.f.indexOf(faceIndex);
         node.f[k] = node.f[j];
         node.f[j] = faceIndex;
@@ -92,7 +92,7 @@ export class PlanetMeshGenerator {
     const face = mesh.faces[faceIndex];
     const nodeFaceIndex = face.n.indexOf(nodeIndex);
     const edge = mesh.edges[face.e[(nodeFaceIndex + 2) % 3]];
-    return PlanetMeshGenerator.getEdgeOppositeFaceIndex(edge, faceIndex);
+    return PlanetMeshBuilder.getEdgeOppositeFaceIndex(edge, faceIndex);
   }
 
   static getEdgeOppositeFaceIndex(edge: Mesh['edges'][0], faceIndex: number) {
@@ -129,7 +129,7 @@ export class PlanetMeshGenerator {
     while (i < degree) {
       let consecutiveFailedAttempts = 0;
       let edgeIndex = random.integerExclusive(0, mesh.edges.length);
-      while (!PlanetMeshGenerator.conditionalRotateEdge(mesh, edgeIndex, rotationPredicate)) {
+      while (!PlanetMeshBuilder.conditionalRotateEdge(mesh, edgeIndex, rotationPredicate)) {
         if (++consecutiveFailedAttempts >= mesh.edges.length) return false;
         edgeIndex = (edgeIndex + 1) % mesh.edges.length;
       }
@@ -143,8 +143,8 @@ export class PlanetMeshGenerator {
     const edge = mesh.edges[edgeIndex];
     const face0 = mesh.faces[edge.f[0]];
     const face1 = mesh.faces[edge.f[1]];
-    const farNodeFaceIndex0 = PlanetMeshGenerator.getFaceOppositeNodeIndex(face0, edge);
-    const farNodeFaceIndex1 = PlanetMeshGenerator.getFaceOppositeNodeIndex(face1, edge);
+    const farNodeFaceIndex0 = PlanetMeshBuilder.getFaceOppositeNodeIndex(face0, edge);
+    const farNodeFaceIndex1 = PlanetMeshBuilder.getFaceOppositeNodeIndex(face1, edge);
     const newNodeIndex0 = face0.n[farNodeFaceIndex0];
     const oldNodeIndex0 = face0.n[(farNodeFaceIndex0 + 1) % 3];
     const newNodeIndex1 = face1.n[farNodeFaceIndex1];
@@ -214,7 +214,7 @@ export class PlanetMeshGenerator {
       const e0 = p1.distanceTo(p0) / idealEdgeLength;
       const e1 = p2.distanceTo(p1) / idealEdgeLength;
       const e2 = p0.distanceTo(p2) / idealEdgeLength;
-      const centroid = PlanetMeshGenerator.calculateFaceCentroid(p0, p1, p2).normalize();
+      const centroid = PlanetMeshBuilder.calculateFaceCentroid(p0, p1, p2).normalize();
       const v0 = centroid.clone().sub(p0);
       const v1 = centroid.clone().sub(p1);
       const v2 = centroid.clone().sub(p2);

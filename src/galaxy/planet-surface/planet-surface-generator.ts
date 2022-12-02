@@ -1,10 +1,13 @@
-import { ModelGeneratorOptions, ModelGeneratorHandler } from '../basic-generator';
-import { PlanetBiomeGenerator } from './planet-biome-generator';
-import { PlanetMeshGenerator } from './planet-mesh-generator';
-import { PlanetPartitionGenerator } from './planet-partition-generator';
-import { PlanetTerrainGenerator } from './planet-terrain-generator';
-import { PlanetTopologyGenerator } from './planet-topology-generator';
-import { PlanetSurface } from './utils';
+import { ModelGeneratorOptions, RandomGenerator } from '../basic-generator';
+
+import { PlanetMeshBuilder } from './builders/planet-mesh-builder';
+import { PlanetTopologyBuilder } from './builders/planet-topology-builder';
+// import { PlanetPartitionBuilder } from './builders/planet-partition-builder';
+
+import { BiomeSurfaceModificator } from './surface-strategy/biome-surface-modificator';
+import { TerrainSurfaceModificator } from './surface-strategy/terrain-surface-modificator';
+
+import { PlanetSurface } from './types';
 
 function adjustRange(value: number, oldMin: number, oldMax: number, newMin: number, newMax: number) {
   return ((value - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin;
@@ -40,38 +43,38 @@ export const surfaceStrategy = [
   {
     name: 'terrestial-earth',
     modyficators: [
-      [PlanetTerrainGenerator, { plateCount: 20, subdivisions: 9 }],
-      [PlanetBiomeGenerator, { strategy: 'terrestial-earth' }],
+      [TerrainSurfaceModificator, { plateCount: 20, subdivisions: 9 }],
+      [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
     ] as const,
   },
   {
     name: 'terrestial-ocean',
     modyficators: [
-      [PlanetTerrainGenerator, { plateCount: 7, subdivisions: 9, oceanicRate: 1, moistureLevel: 1 }],
-      [PlanetBiomeGenerator, { strategy: 'terrestial-earth' }],
+      [TerrainSurfaceModificator, { plateCount: 7, subdivisions: 9, oceanicRate: 1, moistureLevel: 1 }],
+      [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
     ] as const,
   },
   {
     name: 'terrestial-desert',
     modyficators: [
-      [PlanetTerrainGenerator, { plateCount: 20, subdivisions: 9, oceanicRate: 0, moistureLevel: 0, heatLevel: 1 }],
-      [PlanetBiomeGenerator, { strategy: 'terrestial-earth' }],
+      [TerrainSurfaceModificator, { plateCount: 20, subdivisions: 9, oceanicRate: 0, moistureLevel: 0, heatLevel: 1 }],
+      [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
     ] as const,
   },
   {
     name: 'terrestial-lava',
     modyficators: [
-      [PlanetTerrainGenerator, { plateCount: 20, oceanicRate: 0.7, subdivisions: 9 }],
-      [PlanetBiomeGenerator, { strategy: 'terrestial-lava' }],
+      [TerrainSurfaceModificator, { plateCount: 20, oceanicRate: 0.7, subdivisions: 9 }],
+      [BiomeSurfaceModificator, { strategy: 'terrestial-lava' }],
     ] as const,
   },
   {
     name: 'gas-giant',
-    modyficators: [[PlanetBiomeGenerator, { strategy: 'gas-giant' }]] as const,
+    modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
   },
 ];
 
-export class PlanetSurfaceGenerator extends ModelGeneratorHandler<PlanetSurfaceModelGen, PlanetSurfaceOptions> {
+export class PlanetSurfaceGenerator extends RandomGenerator<PlanetSurfaceModelGen, PlanetSurfaceOptions> {
   // @ts-ignore
   planet: PlanetSurface = {};
 
@@ -99,22 +102,22 @@ export class PlanetSurfaceGenerator extends ModelGeneratorHandler<PlanetSurfaceM
     else distortionRate = adjustRange(distortionLevel, 0.75, 1.0, 0.075, 0.15);
 
     console.time('mesh');
-    const meshGenerator = new PlanetMeshGenerator();
+    const meshGenerator = new PlanetMeshBuilder();
     this.planet.mesh = meshGenerator.generatePlanetMesh(subdivisions, distortionRate, this.random);
     console.timeEnd('mesh');
 
     console.time('topology');
-    const topologyGenerator = new PlanetTopologyGenerator();
+    const topologyGenerator = new PlanetTopologyBuilder();
     this.planet.topology = topologyGenerator.generatePlanetTopology(this.planet.mesh);
     console.timeEnd('topology');
 
     // todo can be deleted?
     // console.time('partition');
-    // this.planet.partition = PlanetPartitionGenerator.generatePlanetPartition(this.planet.topology.tiles);
+    // this.planet.partition = PlanetPartitionBuilder.generatePlanetPartition(this.planet.topology.tiles);
     // console.timeEnd('partition');
 
     // console.time('terrain');
-    // const terrainGenerator = new PlanetTerrainGenerator();
+    // const terrainGenerator = new TerrainSurfaceModificator();
     // terrainGenerator.generate(this.planet, this.random, {
     //   plateCount,
     //   oceanicRate,
@@ -125,7 +128,7 @@ export class PlanetSurfaceGenerator extends ModelGeneratorHandler<PlanetSurfaceM
 
     // console.time('biomes');
     // // 'Generating Biomes'
-    // const biomeGenerator = new PlanetBiomeGenerator();
+    // const biomeGenerator = new BiomeSurfaceModificator();
     // biomeGenerator.generate(this.planet, this.random);
     // console.timeEnd('biomes');
 
