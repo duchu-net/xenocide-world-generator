@@ -1,8 +1,20 @@
 ## xenocide-world-generator
 
 _"Dear World, You are the best for Us!"_ - Artifexian  
-JS (EcmaScript) world generator for 4X like games in 3D space  
-`// in development mess xD`
+JS (EcmaScript) world generator for 4X like games in 3D space
+
+> In heavy development mess xD
+>
+> For [CodeSandbox example](https://codesandbox.io/s/1c8gs), use tag `prealpha_0.0.2-rc.1`, package.json example:
+>
+> ```json
+> "dependencies": {
+>   "xenocide-world-generator": "https://github.com/duchu-net/xenocide-world-generator#prealpha_0.0.2-rc.1",
+> }
+> ```
+>
+> For now generator is developed as part of a private project (galaxy simulator with [nx](https://nx.dev/)),  
+> so currently without plans to release as a separate bundle (but can be used as git submodule).
 
 ![Image](./docs/22-10-30.png)
 
@@ -45,6 +57,7 @@ console.log(galaxy.statistics);
 - [Star-Citizen-WebGL-Map](https://github.com/Leeft/Star-Citizen-WebGL-Map) by _Lianna Eeftinck_
 - [Artifexian (YouTube)](https://www.youtube.com/user/Artifexian) by _Edgar Grunewald_
 - [Procedural Generation For Dummies](http://martindevans.me/game-development/2016/01/14/Procedural-Generation-For-Dummies-Galaxies/) by _Martin Evans_
+- [X game series](https://www.egosoft.com/games/x4/info_en.php) by Egosoft
 
 #### Other links
 
