@@ -1,19 +1,49 @@
-// import Vector3 from '../utils/Vector3'
-import { Vector3, Matrix4, Quaternion } from 'three-math';
+import { Vector3 } from 'three';
+
 import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS, PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM } from '../CONSTANTS';
 import Star from './Star';
 import StarSubsystem from './StarSubsystem';
 import Planet from './Planet';
-import Random from '../utils/RandomObject';
-import { decimalToRoman } from '../utils/alphabet';
+import { RandomObject } from '../utils/RandomObject';
+import { decimalToRoman } from '../utils';
 // import Names from './Names'
 import Names from './StarName';
 import PlanetOrbitGenerator from './Planet/PlanetOrbitGenerator';
 
+import { SystemType } from '../interfaces';
+import { Seed } from '../utils';
+
+interface StarGenModel {
+  mass?: number;
+}
+interface PlanetGenModel {}
+
+export interface SystemGenModel {
+  type?: SystemType;
+  seed?: Seed;
+  position?: Vector3;
+  stars?: StarGenModel[];
+  planets?: PlanetGenModel[];
+
+  code?: string;
+  name?: string;
+  habitable?: boolean;
+  habitable_zone_inner?: boolean;
+  habitable_zone_outer?: boolean;
+  frost_line?: boolean;
+  description?: string;
+  celestial_objects?: any[];
+}
+
 export class System {
-  type = null; // SINGLE_STAR, BINARY
-  code = null;
-  name = null;
+  type?: SystemGenModel; // SINGLE_STAR, BINARY
+  code?: string;
+  name?: string;
+  position: Vector3;
+  random?: RandomObject;
+
+  seed?: Seed;
+  seeds: { planets?: Seed; stars?: Seed } = {};
   habitable = null; // fill after planet generation
   habitable_zone_inner = null;
   habitable_zone_outer = null;
@@ -21,12 +51,20 @@ export class System {
   description = null;
   celestial_objects = [];
 
-  constructor(props = {}) {
-    Object.assign(this, props);
-    const { seed, position, name, stars, planets } = props;
+  stars: Star[];
+  planets: any[];
+
+  starGenerationData?: any; // todo more generic
+  planetGenerationData?: any; // todo more generic
+
+  constructor(public model: SystemGenModel = { position: new Vector3(0, 0, 0) }) {
+    Object.assign(this, model); // todo remove
+
+    const { seed, position, name, stars, planets } = model;
     this.setSeed(seed);
     this.setName(name);
     this.setPosition(position);
+    // @ts-ignore
     this.stars = stars || [];
     this.planets = planets || [];
     // this.seeds = {}
@@ -36,30 +74,32 @@ export class System {
     // console.log(this);
   }
 
-  setSeed(seed) {
+  setSeed(seed: number) {
     if (this.seed == null) {
       this.seed = seed || Date.now();
     }
-    this.random = new Random(this.seed);
+    this.random = new RandomObject(this.seed);
     this.generateSeeds();
   }
   generateSeeds() {
     if (this.seeds && this.seeds.planets) return this.seeds;
     this.seeds = {
-      stars: this.random.next(),
-      planets: this.random.next(),
+      stars: this.random?.next(),
+      planets: this.random?.next(),
     };
   }
 
-  setPosition(position) {
-    this.position = position || { ...new Vector3() };
+  setPosition(position: Vector3) {
+    this.position = position || new Vector3();
   }
-  setName(name) {
+  setName(name?: string) {
     // this.name = name || Names.GenerateSystemName(this.random)
     this.name = name || Names.Generate(this.random);
-    this.code = this.escapeRegExp(this.name).toUpperCase().replace(/ /g, '');
+    this.code = this.escapeRegExp(this.name as string)
+      .toUpperCase()
+      .replace(/ /g, '');
   }
-  escapeRegExp(str) {
+  escapeRegExp(str: string) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, ''); // $& means the whole matched string
   }
 
@@ -72,12 +112,13 @@ export class System {
   // }
   *generateStars() {
     try {
-      const random = new Random(this.seeds.stars);
+      const random = new RandomObject(this.seeds.stars);
       for (let star of System.GenerateStars(random, this)) {
         this.stars.push(star);
         this.celestial_objects.push(star);
         yield star;
       }
+      // @ts-ignore
       this.stars.sort((s1, s2) => s1.mass < s2.mass);
       this.fillStarInfo();
     } catch (e) {
@@ -133,7 +174,7 @@ export class System {
   }
 
   *generateProtoPlanets() {
-    const random = new Random(this.seeds.planets);
+    const random = new RandomObject(this.seeds.planets);
     const planet_count = random.weighted(PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM);
     const used_seeds = [];
     const zones = [];
@@ -211,7 +252,7 @@ export class System {
     return this;
   }
   Subsystem(subsystem) {
-    this._subsystem = subsystem;
+    // this._subsystem = subsystem; // todo maybe? xD
     return this;
   }
   // Offset(offset) {
@@ -259,6 +300,7 @@ export class System {
       for (let i = 0; i < count; i++) {
         const buildData = {
           // parent: system,
+          system_sequence: undefined, // todo
           system: system,
         };
         if (count > 1) buildData.system_sequence = i;
