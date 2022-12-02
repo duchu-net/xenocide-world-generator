@@ -1,7 +1,7 @@
 ## xenocide-world-generator
 
 _"Dear World, You are the best for Us!"_ - Artifexian  
-JS (EcmaScript) world generator for 4X like games in 3D space
+TypeScript world generator for 4X like games in 3D space
 
 > In heavy development mess xD
 >

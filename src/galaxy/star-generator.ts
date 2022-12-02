@@ -1,5 +1,5 @@
-import { numberToGreekChar, RandomObject } from '../utils';
-import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { numberToGreekChar } from '../utils';
+import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
 import { StarPhysicModel, StarPhysics, StarStellarClass } from './physic';
 
 export interface StarModel {
@@ -10,7 +10,7 @@ export interface StarModel {
   options?: {};
 }
 
-export interface StarOptions extends BasicGeneratorOptions {
+export interface StarOptions extends ModelGeneratorOptions {
   name?: string;
   temperature?: number;
 }
@@ -19,7 +19,7 @@ const defaultOptions: StarOptions = {
   // seed: 999,
 };
 
-export class StarGenerator extends ExtendedGenerator<StarModel, StarOptions> {
+export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
   public physic?: StarPhysicModel;
   private meta: typeof StarPhysics.SPECTRAL_CLASSIFICATION[0];
 

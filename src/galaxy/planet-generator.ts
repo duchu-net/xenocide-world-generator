@@ -1,5 +1,5 @@
-import { decimalToRoman, RandomObject, Seed } from '../utils';
-import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { decimalToRoman, Seed } from '../utils';
+import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
 import { PlanetSurfaceGenerator } from './planet-surface-generator';
 import { SystemOrbitModel } from './system-orbits-generator';
 
@@ -13,9 +13,9 @@ export interface RegionModel {
   effects?: {}[];
 }
 
-export interface PlanetOptions extends BasicGeneratorOptions {
+export interface PlanetOptions extends ModelGeneratorOptions {
   // surfaceSeed?: Seed;
-  random?: RandomObject;
+  // random?: RandomObject;
 }
 const defaultOptions: PlanetOptions = {
   // position: new Vector3(0, 0, 0),
@@ -39,7 +39,7 @@ export interface PlanetModel {
 //   options?: PlanetOptions;
 // }
 
-export class PlanetGenerator extends ExtendedGenerator<PlanetModel, PlanetOptions> {
+export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions> {
   override schemaName = 'PlanetModel';
   public readonly regions: RegionModel[] = [];
 

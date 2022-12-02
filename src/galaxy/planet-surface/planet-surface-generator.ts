@@ -1,4 +1,4 @@
-import { BasicGeneratorOptions, ExtendedGenerator } from '../basic-generator';
+import { ModelGeneratorOptions, ModelGeneratorHandler } from '../basic-generator';
 import { PlanetBiomeGenerator } from './planet-biome-generator';
 import { PlanetMeshGenerator } from './planet-mesh-generator';
 import { PlanetPartitionGenerator } from './planet-partition-generator';
@@ -12,7 +12,7 @@ function adjustRange(value: number, oldMin: number, oldMax: number, newMin: numb
 
 export interface PlanetSurfaceModelGen {}
 
-export interface PlanetSurfaceOptions extends BasicGeneratorOptions {
+export interface PlanetSurfaceOptions extends ModelGeneratorOptions {
   subdivisions: number; // [2,20] detail_level
   distortionLevel: number; // [.1,1] - 0 occur visual bugs: empty space // todo: CONST?? --- |
   plateCount: number; // [0,100]
@@ -71,7 +71,7 @@ export const surfaceStrategy = [
   },
 ];
 
-export class PlanetSurfaceGenerator extends ExtendedGenerator<PlanetSurfaceModelGen, PlanetSurfaceOptions> {
+export class PlanetSurfaceGenerator extends ModelGeneratorHandler<PlanetSurfaceModelGen, PlanetSurfaceOptions> {
   // @ts-ignore
   planet: PlanetSurface = {};
 

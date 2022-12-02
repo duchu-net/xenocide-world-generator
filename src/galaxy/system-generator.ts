@@ -1,13 +1,13 @@
 import { Vector3 } from 'three';
 import { PlanetModel } from '.';
 import { RandomObject } from '../utils';
-import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
 import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';
-import { OrbitPhysicModel, StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
-import { OrbitGenerator, OrbitModel } from './physic/orbit-generator';
+import { StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
+import { OrbitGenerator } from './physic/orbit-generator';
 import { PlanetGenerator } from './planet-generator';
 import { StarGenerator, StarModel } from './star-generator';
-import { SystemOrbitModel, SystemOrbitsGenerator } from './system-orbits-generator';
+import { SystemOrbitsGenerator } from './system-orbits-generator';
 import { EmptyZone, EmptyZoneModel } from './system/empty-zone';
 
 type OnOrbitGenerator = PlanetGenerator | DebrisBeltGenerator | EmptyZone;
@@ -27,7 +27,7 @@ export interface SystemModel {
   options?: {};
 }
 
-export interface SystemOptions extends BasicGeneratorOptions {
+export interface SystemOptions extends ModelGeneratorOptions {
   // name?: string;
   // position: Vector3;
   // temperature?: number;
@@ -51,7 +51,7 @@ const defaultOptions: SystemOptions = {
 //   FINISHED = 'finished',
 // }
 
-export class SystemGenerator extends ExtendedGenerator<SystemModel, SystemOptions> {
+export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions> {
   override schemaName = 'SystemModel';
   public readonly stars: StarGenerator[] = [];
   public readonly orbits: OnOrbitGenerator[] = [];

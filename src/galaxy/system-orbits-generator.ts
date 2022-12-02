@@ -1,5 +1,5 @@
 import { RandomObject, Seed } from '../utils';
-import { ExtendedGenerator } from './basic-generator';
+import { RandomGenerator } from './basic-generator';
 import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from './physic';
 import { OrbitGenerator, OrbitModel, ORBIT_OBJECT_TYPES } from './physic/orbit-generator';
 import { StarGenerator, StarModel } from './star-generator';
@@ -20,7 +20,7 @@ const defaultOptions: Partial<SystemOrbitOptions> = {
   prefer_habitable: true,
 };
 
-export class SystemOrbitsGenerator extends ExtendedGenerator<SystemOrbitModel, SystemOrbitOptions> {
+export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, SystemOrbitOptions> {
   // public readonly options: SystemOrbitOptions;
   // random: RandomObject;
 

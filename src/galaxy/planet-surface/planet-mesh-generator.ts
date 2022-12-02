@@ -1,8 +1,8 @@
-import * as THREE from 'three';
 import { Plane, Vector3 } from 'three';
-import { RandomObject } from '../../utils';
 
-import { BasicGeneratorOptions, ExtendedGenerator } from '../basic-generator';
+import { RandomObject } from '../../utils';
+import { ModelGeneratorOptions } from '../basic-generator';
+
 import { IcosahedronGenerator } from './icosahedron-generator';
 import { Mesh } from './utils';
 
@@ -20,7 +20,7 @@ export interface PlanetMeshModelGen {
   // options?: {};
 }
 
-export interface PlanetMeshOptions extends BasicGeneratorOptions {
+export interface PlanetMeshOptions extends ModelGeneratorOptions {
   // name?: string;
   // temperature?: number;
 }

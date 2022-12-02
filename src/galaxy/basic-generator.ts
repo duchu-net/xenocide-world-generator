@@ -1,56 +1,60 @@
 import { RandomObject } from '../utils';
 
-export interface BasicGeneratorOptions {
+/**
+ * Basic class to handle model logic
+ */
+export class ModelHandler<ObjectModel> {
+  schemaName: string = 'noname-model';
+  constructor(public readonly model: ObjectModel) {}
+
+  updateModel(fieldName: keyof ObjectModel, value: ObjectModel[typeof fieldName]) {
+    // todo check that type
+    this.model[fieldName] = value;
+  }
+  toModel(model: Partial<ObjectModel> = {}): ObjectModel {
+    return { schema: this.schemaName, ...this.model, ...model };
+  }
+  toJSON() {
+    return this.toModel();
+  }
+}
+
+/**
+ * Pure generator class with options
+ */
+export class PureGenerator<ObjectModel, Options> extends ModelHandler<ObjectModel> {
+  override schemaName: string = 'noname-pure-generator';
+  constructor(model: ObjectModel, public readonly options: Options) {
+    super(model);
+  }
+
+  override toModel(model: Partial<ObjectModel> = {}): ObjectModel {
+    return super.toModel({ options: this.options, ...model });
+  }
+}
+
+/**
+ * Pure generator extended with random
+ */
+export interface ModelGeneratorOptions {
   seed?: number;
   random?: RandomObject;
 }
-
-export abstract class BasicGenerator<Options extends BasicGeneratorOptions> {
+export class RandomGenerator<ObjectModel, Options extends ModelGeneratorOptions> extends PureGenerator<
+  ObjectModel,
+  Options
+> {
+  override schemaName: string = 'unnamed-basic-model-generator';
   protected readonly random: RandomObject;
-  // public readonly options: Options;
+  constructor(model: ObjectModel, options: Options) {
+    super(model, options);
 
-  constructor(public readonly options: Options) {
-    if (!options.seed) this.options.seed = Date.now();
+    if (!options.seed) this.options.seed = Date.now(); // todo we get same seeds for many items created asynchronously
     this.random = options.random || new RandomObject(this.options.seed);
-    // if (!options.random) this.random = new RandomObject(this.options.seed);
   }
 
-  toModel() {
-    // todo
-    return { ...this };
-  }
-}
-
-export abstract class BasicModelGenerator<Model, Options> {
-  schemaName: string = 'unnamed-basic-model-generator';
-  constructor(public readonly model: Model, public readonly options: Options) {}
-
-  toModel(model: Partial<Model> = {}): Model {
-    return { schema: this.schemaName, ...this.model, ...model };
-  }
-  toJSON() {
-    return this.toModel();
-  }
-}
-
-// export interface ExtendedGeneratorModel {
-//   seed?: number;
-//   random?: RandomObject;
-// }
-export abstract class ExtendedGenerator<Model, Options extends BasicGeneratorOptions> {
-  schemaName: string = 'unnamed-extended-generator';
-  protected readonly random: RandomObject;
-
-  constructor(public readonly model: Model, public readonly options: Options) {
-    if (!options.seed) this.options.seed = Date.now();
-    this.random = options.random || new RandomObject(this.options.seed);
-    // if (!options.random) this.random = new RandomObject(this.options.seed);
-  }
-
-  toModel(model: Partial<Model> = {}): Model {
-    return { schema: this.schemaName, ...this.model, ...model };
-  }
-  toJSON() {
-    return this.toModel();
+  override toModel(model: Partial<ObjectModel> = {}): ObjectModel {
+    const { random, ...options } = this.options; // exclude RandomObject
+    return super.toModel({ options, ...model });
   }
 }

@@ -1,8 +1,8 @@
-import { decimalToRoman, RandomObject, Seed } from '../utils';
-import { BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
+import { decimalToRoman } from '../utils';
+import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
 import { SystemOrbitModel } from './system-orbits-generator';
 
-export interface DebrisBeltOptions extends BasicGeneratorOptions {
+export interface DebrisBeltOptions extends ModelGeneratorOptions {
   // surfaceSeed?: Seed;
   // random?: RandomObject;
 }
@@ -25,7 +25,7 @@ export interface DebrisBeltModel {
 //   options?: DebrisBeltOptions;
 // }
 
-export class DebrisBeltGenerator extends ExtendedGenerator<DebrisBeltModel, DebrisBeltOptions> {
+export class DebrisBeltGenerator extends RandomGenerator<DebrisBeltModel, DebrisBeltOptions> {
   override schemaName = 'DebrisBeltModel';
 
   constructor(model: DebrisBeltModel, options: Partial<DebrisBeltOptions> = defaultOptions) {

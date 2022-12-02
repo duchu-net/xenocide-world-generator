@@ -1,33 +1,23 @@
-import { Vector3 } from 'three';
-import { RandomObject } from '../utils';
-import { BasicGenerator, BasicGeneratorOptions, ExtendedGenerator } from './basic-generator';
-import { OrbitPhysicModel, StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
+import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
 import { PlanetGenerator } from './planet-generator';
-import { StarGenerator } from './star-generator';
 import { SurfaceStrategies, SurfaceStrategy } from './strategy';
 
 export interface PlanetSurfaceModel {
   options?: {};
 }
 
-export interface PlanetSurfaceOptions extends BasicGeneratorOptions {
+export interface PlanetSurfaceOptions extends ModelGeneratorOptions {
   // prefer_habitable: boolean;
-  // planetsCount?: number; // todo
-  // spectralClass?: StarStellarClass;
 }
 
 const defaultOptions: PlanetSurfaceOptions = {
   // prefer_habitable: true,
 };
 
-export class PlanetSurfaceGenerator extends ExtendedGenerator<PlanetSurfaceModel, PlanetSurfaceOptions> {
-  // public readonly model: PlanetGenerator;
+export class PlanetSurfaceGenerator extends RandomGenerator<PlanetSurfaceModel, PlanetSurfaceOptions> {
   public readonly strategy: SurfaceStrategy;
 
-  constructor(
-    public readonly planet: PlanetGenerator,
-    options: Partial<PlanetSurfaceOptions> = defaultOptions
-  ) {
+  constructor(public readonly planet: PlanetGenerator, options: Partial<PlanetSurfaceOptions> = defaultOptions) {
     super(planet, { ...defaultOptions, ...planet.options, ...options });
 
     this.strategy = SurfaceStrategies[planet.subtype] || SurfaceStrategies['barren'];

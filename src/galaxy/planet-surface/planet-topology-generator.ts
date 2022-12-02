@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
-import { RandomObject } from '../../utils';
 
-import { BasicGeneratorOptions, ExtendedGenerator } from '../basic-generator';
 import { Border, Corner, Mesh, Tile, Topology } from './utils';
 
 function calculateTriangleArea(pa: Vector3, pb: Vector3, pc: Vector3) {
