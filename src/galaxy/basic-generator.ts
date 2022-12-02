@@ -22,11 +22,11 @@ export abstract class BasicGenerator<Options extends BasicGeneratorOptions> {
 }
 
 export abstract class BasicModelGenerator<Model, Options> {
+  schemaName: string = 'unnamed-basic-model-generator';
   constructor(public readonly model: Model, public readonly options: Options) {}
 
-  toModel(): Model {
-    // todo
-    return { ...this.model };
+  toModel(model: Partial<Model> = {}): Model {
+    return { schema: this.schemaName, ...this.model, ...model };
   }
   toJSON() {
     return this.toModel();
@@ -38,6 +38,7 @@ export abstract class BasicModelGenerator<Model, Options> {
 //   random?: RandomObject;
 // }
 export abstract class ExtendedGenerator<Model, Options extends BasicGeneratorOptions> {
+  schemaName: string = 'unnamed-extended-generator';
   protected readonly random: RandomObject;
 
   constructor(public readonly model: Model, public readonly options: Options) {
@@ -46,7 +47,9 @@ export abstract class ExtendedGenerator<Model, Options extends BasicGeneratorOpt
     // if (!options.random) this.random = new RandomObject(this.options.seed);
   }
 
-  abstract toModel(): Model;
+  toModel(model: Partial<Model> = {}): Model {
+    return { schema: this.schemaName, ...this.model, ...model };
+  }
   toJSON() {
     return this.toModel();
   }
