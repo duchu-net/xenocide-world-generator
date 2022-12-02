@@ -44,6 +44,7 @@ export interface StarStellarClassData {
 export class StarPhysics {
   private constructor() {}
 
+  static readonly SUN_AGE = 4.603e9; // 4603000000 YEARS
   static readonly SUN_TEMPERATURE = 5778; // (K)
   static readonly SPECTRAL_CLASSIFICATION: StarStellarClassData[] = [
     {
@@ -189,6 +190,9 @@ export class StarPhysics {
     return Math.sqrt(luminosity / 0.53);
   }
 
+  static solLifetimeToYears(mainSequenceLifetime: number) {
+    return mainSequenceLifetime * this.SUN_AGE;
+  }
   static solTemperatureToKelvin(temp = 1) {
     return temp * this.SUN_TEMPERATURE;
   }

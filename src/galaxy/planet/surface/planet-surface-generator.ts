@@ -1,4 +1,4 @@
-import { ModelGeneratorOptions, RandomGenerator } from '../basic-generator';
+import { ModelGeneratorOptions, RandomGenerator } from '../../basic-generator';
 
 import { PlanetMeshBuilder } from './builders/planet-mesh-builder';
 import { PlanetTopologyBuilder } from './builders/planet-topology-builder';

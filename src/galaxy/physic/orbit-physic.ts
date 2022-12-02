@@ -39,4 +39,14 @@ export class OrbitPhysic {
         return SystemZone.Outer;
     }
   }
+
+  // todo
+  // createInclination() {
+  //   if (this.inclination != null) return this.inclination;
+  //   if (this.subtype != null) {
+  //     const direction = Math.random() > 0.5 ? 1 : -1;
+  //     this.inclination = Math.random() > 0.33 ? 0 : direction * Math.floor(Math.random() * 15);
+  //   } else throw { subtype: 'create planet subtype first' };
+  //   return this.inclination;
+  // }
 }

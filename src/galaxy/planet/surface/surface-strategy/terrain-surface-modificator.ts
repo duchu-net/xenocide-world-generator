@@ -1,6 +1,6 @@
 import { Color, Vector3 } from 'three';
 
-import { RandomObject } from '../../../utils';
+import { RandomObject } from '../../../../utils';
 import { PlanetSurface, Topology } from '../types';
 import { Border, Corner, Plate, Tile } from '../utils';
 

@@ -1,14 +1,16 @@
 import { Vector3 } from 'three';
-import { PlanetModel } from '.';
+
 import { RandomObject } from '../utils';
+
 import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
-import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';
-import { StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
-import { OrbitGenerator } from './physic/orbit-generator';
-import { PlanetGenerator } from './planet-generator';
 import { StarGenerator, StarModel } from './star-generator';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
+import { PlanetGenerator, PlanetModel } from './planet';
+import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';
 import { EmptyZone, EmptyZoneModel } from './system/empty-zone';
+
+import { StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
+import { OrbitGenerator } from './physic/orbit-generator';
 
 type OnOrbitGenerator = PlanetGenerator | DebrisBeltGenerator | EmptyZone;
 
