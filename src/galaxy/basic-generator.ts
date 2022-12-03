@@ -4,7 +4,7 @@ import { RandomObject } from '../utils';
  * Basic class to handle model logic
  */
 export class ModelHandler<ObjectModel> {
-  schemaName: string = 'noname-model';
+  readonly schemaName: string = 'noname-model';
   constructor(public readonly model: ObjectModel) {}
 
   updateModel(fieldName: keyof ObjectModel, value: ObjectModel[typeof fieldName]) {
@@ -23,7 +23,7 @@ export class ModelHandler<ObjectModel> {
  * Pure generator class with options
  */
 export class PureGenerator<ObjectModel, Options> extends ModelHandler<ObjectModel> {
-  override schemaName: string = 'noname-pure-generator';
+  override readonly schemaName: string = 'noname-pure-generator';
   constructor(model: ObjectModel, public readonly options: Options) {
     super(model);
   }
@@ -36,15 +36,15 @@ export class PureGenerator<ObjectModel, Options> extends ModelHandler<ObjectMode
 /**
  * Pure generator extended with random
  */
-export interface ModelGeneratorOptions {
+export interface RandomGeneratorOptions {
   seed?: number;
   random?: RandomObject;
 }
-export class RandomGenerator<ObjectModel, Options extends ModelGeneratorOptions> extends PureGenerator<
+export class RandomGenerator<ObjectModel, Options extends RandomGeneratorOptions> extends PureGenerator<
   ObjectModel,
   Options
 > {
-  override schemaName: string = 'unnamed-basic-model-generator';
+  override readonly schemaName: string = 'unnamed-basic-model-generator';
   protected readonly random: RandomObject;
   constructor(model: ObjectModel, options: Options) {
     super(model, options);

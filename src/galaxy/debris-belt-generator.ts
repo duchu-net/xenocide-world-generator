@@ -1,8 +1,8 @@
 import { decimalToRoman } from '../utils';
-import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
+import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
 import { SystemOrbitModel } from './system-orbits-generator';
 
-export interface DebrisBeltOptions extends ModelGeneratorOptions {
+export interface DebrisBeltOptions extends RandomGeneratorOptions {
   // surfaceSeed?: Seed;
   // random?: RandomObject;
 }

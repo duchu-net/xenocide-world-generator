@@ -1,4 +1,4 @@
-import { RandomObject } from '../../../utils';
+import { RandomObject } from '../../../../utils';
 
 import { PlanetSurface } from '../types';
 

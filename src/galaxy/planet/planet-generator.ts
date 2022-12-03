@@ -1,7 +1,9 @@
-import { decimalToRoman, Seed } from '../utils';
-import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
+import { decimalToRoman, Seed } from '../../utils';
+
+import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
+import { SystemOrbitModel } from '../system-orbits-generator';
+
 import { PlanetSurfaceGenerator } from './planet-surface-generator';
-import { SystemOrbitModel } from './system-orbits-generator';
 
 export enum RegionBiome {
   Ocean = 'ocean',
@@ -13,7 +15,7 @@ export interface RegionModel {
   effects?: {}[];
 }
 
-export interface PlanetOptions extends ModelGeneratorOptions {
+export interface PlanetOptions extends RandomGeneratorOptions {
   // surfaceSeed?: Seed;
   // random?: RandomObject;
 }

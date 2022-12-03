@@ -1,6 +1,8 @@
 import { Sphere, Vector3 } from 'three';
-import { IcosahedronBuilder } from './icosahedron-builder';
+
 import { SpatialPartition, Tile } from '../utils';
+
+import { IcosahedronBuilder } from './icosahedron-builder';
 
 export class PlanetPartitionBuilder {
   private constructor() {}

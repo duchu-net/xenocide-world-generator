@@ -5,7 +5,7 @@ import { StarName } from '../generators/StarName';
 import { GalaxyClass, GalaxyClassShape } from '../interfaces';
 import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 
-import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
+import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
 import { SystemGenerator, SystemModel } from './system-generator';
 import { StarPhysics } from './physic';
 
@@ -20,7 +20,7 @@ export interface GalaxyModel {
   options?: {};
 }
 
-export interface GalaxyOptions extends ModelGeneratorOptions {
+export interface GalaxyOptions extends RandomGeneratorOptions {
   grid: { size: number; spacing: number }; // todo
   spiral: { size: number }; // todo
 }

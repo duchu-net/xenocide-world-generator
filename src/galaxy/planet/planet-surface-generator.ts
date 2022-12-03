@@ -1,12 +1,12 @@
-import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
+import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { PlanetGenerator } from './planet-generator';
-import { SurfaceStrategies, SurfaceStrategy } from './strategy';
+import { SurfaceStrategies, SurfaceStrategy } from '../strategy';
 
 export interface PlanetSurfaceModel {
   options?: {};
 }
 
-export interface PlanetSurfaceOptions extends ModelGeneratorOptions {
+export interface PlanetSurfaceOptions extends RandomGeneratorOptions {
   // prefer_habitable: boolean;
 }
 

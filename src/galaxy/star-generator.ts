@@ -1,5 +1,5 @@
 import { numberToGreekChar } from '../utils';
-import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
+import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
 import { StarPhysicModel, StarPhysics, StarStellarClass } from './physic';
 
 export interface StarModel {
@@ -10,7 +10,7 @@ export interface StarModel {
   options?: {};
 }
 
-export interface StarOptions extends ModelGeneratorOptions {
+export interface StarOptions extends RandomGeneratorOptions {
   name?: string;
   temperature?: number;
 }

@@ -1,6 +1,6 @@
 import { Color, Spherical } from 'three';
 
-import { RandomObject } from '../../../utils';
+import { RandomObject } from '../../../../utils';
 import { PlanetSurface } from '../types';
 import { Tile } from '../utils';
 
