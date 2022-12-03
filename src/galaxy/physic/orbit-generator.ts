@@ -1,4 +1,5 @@
 import { RandomObject } from '../../utils';
+import { RandomGenerator } from '../basic-generator';
 import { OrbitPhysicModel } from './orbit-physic';
 import { StarPhysicModel } from './star-physic';
 
@@ -14,39 +15,64 @@ export interface OrbitModel extends OrbitPhysicModel {
   orbitalPeriodInDays?: number;
 }
 
-export class OrbitGenerator {
-  type?: string;
-  subtype?: string;
-  distance: number;
-  zone?: string;
-  orbitalPeriod?: number;
+interface OrbitOptions {}
+
+const denormalize = (normalized: number, min: number, max: number) => normalized * (max - min) + min;
+const normalize = (value: number, min: number, max: number) => (value - min) / (max - min);
+
+export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
+  override schemaName = 'orbit-model';
+  // type?: string;
+  // subtype?: string;
+  // distance: number;
+  // zone?: string;
+  // orbitalPeriod?: number;
   tags: string[] = [];
   lock: boolean = false;
 
-  fromStar?: number; // todo move to system?
-  orbitalPeriodInDays?: number;
+  // fromStar?: number; // todo move to system?
+  // orbitalPeriodInDays?: number;
 
-  constructor(props: OrbitModel) {
-    this.zone = props.zone;
-    this.orbitalPeriod = props.orbitalPeriod;
+  constructor(model: OrbitModel, options: Partial<OrbitOptions> = {}) {
+    super(model, options);
 
-    this.distance = this.cutDecimals(props.distance, 2);
+    // this.zone = props.zone;
+    // this.orbitalPeriod = props.orbitalPeriod;
+
+    // this.distance = this.cutDecimals(props.distance, 2);
+
+    this.generateOrbit();
   }
 
-  toJSON() {
-    return this.toModel();
+  generateOrbit() {
+    // const inclination = denormalize(this.random.integer(-1, 1) ^ 5, -15, 15);
+    const pow = 3;
+    const random = this.random.integer(-15, 15);
+    let inclination = normalize(Math.pow(random, pow), Math.pow(-15, pow), Math.pow(15, pow));
+    inclination = denormalize(inclination, -15, 15);
+    //  normalize((this.random.integer(0, 15) / 15) ^ pow, 0, 1 ^ pow);
+    // console.log({ inclination, random });
+    this.updateModel('inclination', inclination); // kąt
+    // // this.updateModel('periapsis', 1);
+    this.updateModel('longitude', this.random.integer(-180, 180));
+    // console.log({ inclination, random, longitude: this.model.longitude });
+    this.updateModel('anomaly', this.random.integer(-180, 180));
   }
-  toModel(): OrbitModel {
-    return {
-      type: this.type,
-      zone: this.zone,
-      subtype: this.subtype,
-      fromStar: this.fromStar,
-      distance: this.distance,
-      orbitalPeriod: this.orbitalPeriod,
-      orbitalPeriodInDays: this.orbitalPeriodInDays, // todo not used?
-    };
-  }
+
+  // toJSON() {
+  //   return this.toModel();
+  // }
+  // toModel(): OrbitModel {
+  //   return {
+  //     type: this.type,
+  //     zone: this.zone,
+  //     subtype: this.subtype,
+  //     fromStar: this.fromStar,
+  //     distance: this.distance,
+  //     orbitalPeriod: this.orbitalPeriod,
+  //     orbitalPeriodInDays: this.orbitalPeriodInDays, // todo not used?
+  //   };
+  // }
 
   cutDecimals(number: number, position = 2) {
     const factor = Math.pow(10, position);
@@ -64,8 +90,8 @@ export class OrbitGenerator {
   generateType(random: RandomObject) {
     const tags = this.tags;
     if (tags.length == 0 || (tags.length == 1 && tags[0] == 'EMPTY')) {
-      this.subtype = 'EMPTY';
-      this.type = 'EMPTY';
+      this.updateModel('subtype', 'EMPTY');
+      this.updateModel('type', 'EMPTY');
       return;
     }
     const weighted = [];
@@ -75,8 +101,9 @@ export class OrbitGenerator {
       weighted.push([orbitObject.probability, tag]);
     }
     const subtype = random.weighted(weighted);
-    this.subtype = subtype;
-    this.type = ['EMPTY', 'ASTEROID_BELT'].indexOf(subtype) > -1 ? this.subtype : 'PLANET';
+    this.updateModel('subtype', subtype);
+    const type = ['EMPTY', 'ASTEROID_BELT'].indexOf(subtype) > -1 ? subtype : 'PLANET';
+    this.updateModel('type', type);
   }
   // static MOONS_TOPOLOGIES = [
   //   // { probability: 1, name: 'EMPTY' },

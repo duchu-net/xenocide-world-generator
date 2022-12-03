@@ -2,7 +2,7 @@ import { Vector3 } from 'three';
 
 import { RandomObject } from '../utils';
 
-import { RandomGenerator, ModelGeneratorOptions } from './basic-generator';
+import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
 import { StarGenerator, StarModel } from './star-generator';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
 import { PlanetGenerator, PlanetModel } from './planet';
@@ -29,7 +29,7 @@ export interface SystemModel {
   options?: {};
 }
 
-export interface SystemOptions extends ModelGeneratorOptions {
+export interface SystemOptions extends RandomGeneratorOptions {
   // name?: string;
   // position: Vector3;
   // temperature?: number;
@@ -107,22 +107,22 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   *generatePlanets(): IterableIterator<OnOrbitGenerator> {
     try {
       let nameIndex = 0;
-      for (const orbitModel of this.generateOrbits()) {
+      for (const orbitGenerator of this.generateOrbits()) {
         let orbitObject: OnOrbitGenerator;
-        if (orbitModel.type === 'PLANET')
+        if (orbitGenerator.model.type === 'PLANET')
           orbitObject = new PlanetGenerator({
             name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
-            orbit: orbitModel.toModel(),
+            orbit: orbitGenerator.toModel(),
           });
-        else if (orbitModel.type === 'ASTEROID_BELT') {
+        else if (orbitGenerator.model.type === 'ASTEROID_BELT') {
           orbitObject = new DebrisBeltGenerator({
             name: DebrisBeltGenerator.getSequentialName(nameIndex++),
-            orbit: orbitModel.toModel(),
+            orbit: orbitGenerator.toModel(),
           });
         } else {
           orbitObject = new EmptyZone({
             name: EmptyZone.getSequentialName(nameIndex++),
-            orbit: orbitModel.toModel(),
+            orbit: orbitGenerator.toModel(),
           });
         }
 

@@ -86,13 +86,13 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
     } else {
       firstOrbitdistance = this.random.real(physic.inner_limit, physic.outer_limit);
     }
-    this.orbits.push(new OrbitGenerator({ distance: firstOrbitdistance }));
+    this.orbits.push(new OrbitGenerator({ distance: firstOrbitdistance }, { seed: this.random.seed() }));
     // Fill orbits down
     let lastDistance = firstOrbitdistance;
     while (true) {
       const nextOrbit = lastDistance / this.random.real(this.beetwen_orbits_factor[0], this.beetwen_orbits_factor[1]);
       if (nextOrbit < physic.inner_limit) break;
-      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }));
+      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }, { seed: this.random.seed() }));
       lastDistance = nextOrbit;
     }
     // Fill orbits up
@@ -100,26 +100,31 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
     while (true) {
       const nextOrbit = lastDistance * this.random.real(this.beetwen_orbits_factor[0], this.beetwen_orbits_factor[1]);
       if (nextOrbit > physic.outer_limit) break;
-      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }));
+      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }, { seed: this.random.seed() }));
       lastDistance = nextOrbit;
     }
     // Sort by distance
-    this.orbits.sort((a, b) => a.distance - b.distance);
+    this.orbits.sort((a, b) => a.model.distance - b.model.distance);
     // Fill from sun order
-    for (const [index, orbit] of this.orbits.entries()) orbit.fromStar = index + 1;
+    for (const [index, orbit] of this.orbits.entries()) {
+      orbit.updateModel('fromStar', index + 1);
+    }
   }
 
   fillOrbitZone() {
     if (!this.options.star?.physic) throw new Error('no star available');
     const { physic } = this.options.star;
 
-    for (const orbit of this.orbits) orbit.zone = OrbitPhysic.calcZone(orbit.distance, physic);
+    for (const orbit of this.orbits) {
+      orbit.updateModel('zone', OrbitPhysic.calcZone(orbit.model.distance, physic));
+    }
   }
 
   fillOrbitPeriod() {
     for (const orbit of this.orbits) {
-      orbit.orbitalPeriod = OrbitPhysic.calcOrbitalPeriod(this.options.star.mass as number, orbit.distance);
-      orbit.orbitalPeriodInDays = OrbitPhysic.convertOrbitalPeriodToDays(orbit.orbitalPeriod);
+      const orbitalPeriod = OrbitPhysic.calcOrbitalPeriod(this.options.star.mass as number, orbit.model.distance);
+      orbit.updateModel('orbitalPeriod', orbitalPeriod);
+      orbit.updateModel('orbitalPeriodInDays', OrbitPhysic.convertOrbitalPeriodToDays(orbitalPeriod));
     }
   }
 
@@ -138,7 +143,7 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
       for (const orbit of planetOrbit.orbits) {
         let tags = [];
         for (const orbitObject of ORBIT_OBJECT_TYPES) {
-          if (orbitObject.when?.(planetOrbit.options.star?.physic as StarPhysicModel, orbit))
+          if (orbitObject.when?.(planetOrbit.options.star?.physic as StarPhysicModel, orbit.model))
             tags.push(orbitObject.type);
         }
         if (prefer_habitable && tags.indexOf('earth') > -1) {
@@ -157,7 +162,7 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
       let findedGasGiant = false;
       for (const orbit of planetOrbit.orbits) {
         const isGiant = orbit.tags.some((tgs: string) => tgs == 'gas_giant');
-        if (orbit.zone == 'habitable' && !findedHabitable) {
+        if (orbit.model.zone == 'habitable' && !findedHabitable) {
           orbit.lockTag('gas_giant');
           // orbit.generateMoons(random, { min_one: ['earth'] })
           // orbit.lock = true

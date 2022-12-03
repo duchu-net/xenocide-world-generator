@@ -1,4 +1,4 @@
-import { ModelGeneratorOptions, RandomGenerator } from '../../basic-generator';
+import { RandomGeneratorOptions, RandomGenerator } from '../../basic-generator';
 
 import { PlanetMeshBuilder } from './builders/planet-mesh-builder';
 import { PlanetTopologyBuilder } from './builders/planet-topology-builder';
@@ -15,7 +15,7 @@ function adjustRange(value: number, oldMin: number, oldMax: number, newMin: numb
 
 export interface PlanetSurfaceModelGen {}
 
-export interface PlanetSurfaceOptions extends ModelGeneratorOptions {
+export interface PlanetSurfaceOptions extends RandomGeneratorOptions {
   subdivisions: number; // [2,20] detail_level
   distortionLevel: number; // [.1,1] - 0 occur visual bugs: empty space // todo: CONST?? --- |
   plateCount: number; // [0,100]

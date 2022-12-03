@@ -1,6 +1,6 @@
 import { decimalToRoman, Seed } from '../../utils';
 
-import { RandomGenerator, ModelGeneratorOptions } from '../basic-generator';
+import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { SystemOrbitModel } from '../system-orbits-generator';
 
 import { PlanetSurfaceGenerator } from './planet-surface-generator';
@@ -15,7 +15,7 @@ export interface RegionModel {
   effects?: {}[];
 }
 
-export interface PlanetOptions extends ModelGeneratorOptions {
+export interface PlanetOptions extends RandomGeneratorOptions {
   // surfaceSeed?: Seed;
   // random?: RandomObject;
 }
