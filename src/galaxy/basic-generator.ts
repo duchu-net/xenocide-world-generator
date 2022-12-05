@@ -7,14 +7,25 @@ export class ModelHandler<ObjectModel> {
   readonly schemaName: string = 'noname-model';
   constructor(public readonly model: ObjectModel) {}
 
-  updateModel(fieldName: keyof ObjectModel, value: ObjectModel[typeof fieldName]) {
-    // todo check that type
+  /**
+   * update stored model with value
+   * @param fieldName key name in model
+   * @param value value to insert into Model[fieldName]
+   * @return inserted value
+   */
+  updateModel<T extends keyof ObjectModel>(fieldName: T, value: ObjectModel[T]) {
     this.model[fieldName] = value;
+    return this.model[fieldName];
   }
+
   toModel(model: Partial<ObjectModel> = {}): ObjectModel {
     return { schema: this.schemaName, ...this.model, ...model };
   }
-  toJSON() {
+
+  /**
+   * @returns plain Model for JSON conversion
+   */
+  toJSON(): ObjectModel {
     return this.toModel();
   }
 }

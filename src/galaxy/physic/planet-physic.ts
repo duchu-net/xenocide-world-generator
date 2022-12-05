@@ -1,13 +1,24 @@
 export interface PlanetPhysicModel {
+  /** (kg) planet mass */ // todo in EARTH MASS?
   mass: number;
+  /** (g/cm3) planet density */
+  density: number;
+  /** (km) planet radius */
+  radius: number;
+  /** (EARTH DAY) full rotation, solar day length */
+  rotationPeriod: number;
+  /** (axial tilt, DEG) angle between planet rotational axis and its orbital axis */
+  obliquity: number;
+}
 
-  // // ORBIT
-  // semi_major_axis: number; // (a) półoś wielka
-  // eccentricity: number; // (e, 0-1) ekscentryczność/mimośród
-  // inclination: number; // (i, DEG) nachylenie orbity
-  // longitude_of_the_ascending_node: number; // (Ω Omega, 0-360 DEG) długość węzła wstępującego
-  // argument_of_periapsis: number; // (ω, omega, 0-360 DEG)  argument perycentrum
-  // true_anomaly: number; // (θ theta, 0-360 DEG) anomalia prawdziwa
-  // orbitalPeriod: number; // (P, EARTH YEAR) okres orbitalny/rok
-  // orbital_velocity: number; // (Vo, EARTH SPEED) prędkość orbitalna
+export class PlanetPhysic {
+  private constructor() {}
+
+  /**
+   * @param radius planet radius
+   * @returns rotation period in EARTH DAYS // todo in hours?
+   */
+  static calcRotationPeriod(radius: number) {
+    return 1; // not good: -0.1 + 0.069 * radius;
+  }
 }

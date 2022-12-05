@@ -10,19 +10,28 @@ export enum StarStellarClass {
 }
 
 export interface StarPhysicModel {
+  /** (SUN_MASS) star mass */
   mass: number;
+  /** (hex color) star color */
   color: string;
   radius: number;
   volume: number;
   density: number;
   subtype: string;
+  /** (stellar classification) classification of star based on spectral characteristics */
   stellar_class: StarStellarClass;
   // habitable: boolean;
+  /** is star capable of sustaining evolution process */
   evolution: boolean;
+  /** (L, Luminosity) star luminosity - measure of the total amount of energy radiated by a star or other celestial object per second */
   luminosity: number;
+  /** (Au) star inner limit - nearest orbit/planet position */
   inner_limit: number;
+  /** (Au) star outer limit - farest orbit/planet position */
   outer_limit: number;
+  /** (Au) frost line */
   frost_line: number;
+  /** (K) star temperature in kelvins */
   temperature: number;
   surface_area: number;
   circumference: number;
@@ -44,8 +53,10 @@ export interface StarStellarClassData {
 export class StarPhysics {
   private constructor() {}
 
-  static readonly SUN_AGE = 4.603e9; // 4603000000 YEARS
-  static readonly SUN_TEMPERATURE = 5778; // (K)
+  /** sun age in years (4603000000 YEARS) */
+  static readonly SUN_AGE = 4.603e9;
+  /** sun temperature in kelvins (K) */
+  static readonly SUN_TEMPERATURE = 5778;
   static readonly SPECTRAL_CLASSIFICATION: StarStellarClassData[] = [
     {
       class: StarStellarClass.O,
@@ -130,6 +141,10 @@ export class StarPhysics {
     ) as StarStellarClassData;
   }
 
+  /**
+   * @param mass (SUN_MASS) star mass
+   * @returns (L) luminosity
+   */
   static calcLuminosity(mass: number) {
     switch (true) {
       case mass < 0.43:
@@ -143,6 +158,7 @@ export class StarPhysics {
         return 3200 * mass;
     }
   }
+  
   static calcRadius(mass: number) {
     const exponent = mass > 1 ? 0.5 : 0.8;
     return Math.pow(mass, exponent);
