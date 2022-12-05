@@ -1,6 +1,7 @@
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
+
 import { PlanetGenerator } from './planet-generator';
-import { SurfaceStrategies, SurfaceStrategy } from '../strategy';
+import { SurfaceStrategies, SurfaceStrategy } from './strategy';
 
 export interface PlanetSurfaceModel {
   options?: {};

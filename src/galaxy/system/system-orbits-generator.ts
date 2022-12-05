@@ -1,8 +1,9 @@
-import { RandomObject, Seed } from '../utils';
-import { RandomGenerator } from './basic-generator';
-import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from './physic';
-import { OrbitGenerator, OrbitModel, ORBIT_OBJECT_TYPES } from './physic/orbit-generator';
-import { StarGenerator, StarModel } from './star-generator';
+import { RandomObject, Seed } from '../../utils';
+
+import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from '../physic';
+import { OrbitGenerator, OrbitModel, ORBIT_OBJECT_TYPES } from '../physic/orbit-generator';
+import { RandomGenerator } from '../basic-generator';
+import { StarGenerator, StarModel } from '../star';
 
 interface SystemOrbitOptions {
   seed?: Seed;
@@ -23,7 +24,10 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
   public orbits: OrbitGenerator[] = [];
   public topology?: string;
   public beetwen_orbits_factor = [1.4, 2];
-  public modyficators: (typeof SystemOrbitsGenerator.ClassicSystem | typeof SystemOrbitsGenerator.HabitableMoonSystem)[] = [];
+  public modyficators: (
+    | typeof SystemOrbitsGenerator.ClassicSystem
+    | typeof SystemOrbitsGenerator.HabitableMoonSystem
+  )[] = [];
 
   constructor(model: SystemOrbitModel, options: SystemOrbitOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });

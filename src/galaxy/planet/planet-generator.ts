@@ -1,7 +1,7 @@
 import { decimalToRoman, Seed } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
-import { SystemOrbitModel } from '../system-orbits-generator';
+import { SystemOrbitModel } from '../system';
 
 import { PlanetSurfaceGenerator } from './planet-surface-generator';
 
