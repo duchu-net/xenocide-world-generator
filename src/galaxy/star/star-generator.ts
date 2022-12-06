@@ -5,7 +5,6 @@ import { StarPhysicModel, StarPhysics, StarStellarClass } from '../physic';
 
 import { StarModel } from './types';
 
-
 interface StarOptions extends RandomGeneratorOptions {
   name?: string;
   temperature?: number;
