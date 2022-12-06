@@ -1,3 +1,6 @@
+import { OrbitPhysicModel } from './orbit-physic';
+import { StarPhysicModel } from './star-physic';
+
 export interface PlanetPhysicModel {
   /** (kg) planet mass */ // todo in EARTH MASS?
   mass: number;
@@ -11,6 +14,12 @@ export interface PlanetPhysicModel {
   obliquity: number;
 }
 
+type MinMax = [min: number, max: number];
+const HABITABLE_WORLD_DENSITY: MinMax = [3, 8]; // h/cm3
+const TERRAN_MASS_RANGE: MinMax = [0.1, 10];
+
+// const GAS_MASS_RANGE: MinMax = [];
+
 export class PlanetPhysic {
   private constructor() {}
 
@@ -18,38 +27,152 @@ export class PlanetPhysic {
   // static JUPITER_MASS =
   static JUPITER_MASS_IN_EARTH_MASS = 317.83;
   static JUPITER_RADIUS_IN_EARTH_RADIUS = 11.209;
-  static readonly PLANET_CLASSIFICATION = [
+
+  static MIN_PLANET_MASS = 0.1;
+  static MAX_PLANET_MASS = 13 * this.JUPITER_MASS_IN_EARTH_MASS;
+
+  static readonly PLANET_CLASSIFICATION: {
+    class: string;
+    subClass: string;
+    mass: MinMax;
+    radius: MinMax;
+    cmf?: MinMax;
+    gravity?: MinMax;
+    probability: number;
+    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => boolean;
+  }[] = [
     {
-      type: 'rocky',
+      class: 'lava',
+      subClass: 'terrestial',
+      mass: [0.1, 2],
+      radius: [0.5, 1.2],
+      // gravity: [0.4, 1.6],
+      // cmf: [0.3, 0.4],
+      probability: 0.5,
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner * 0.7,
+    },
+    {
+      /* rocky planet without surface water */
+      class: 'rocky',
+      subClass: 'terrestial',
       mass: [0.1, 10],
       radius: [0.5, 1.5],
       gravity: [0.4, 1.6],
       cmf: [0.3, 0.4],
+      probability: 0.5,
+      when: () => true,
     },
     {
-      type: 'watery',
+      /* earth like planet, with ocean and landmasses */
+      class: 'terran',
+      subClass: 'terrestial',
+      mass: [0.1, 10],
+      radius: [0.5, 1.5],
+      gravity: [0.4, 1.6],
+      cmf: [0.3, 0.4],
+      probability: 1,
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+        orbit.distance > star.habitable_zone_inner && orbit.distance < star.habitable_zone_outer,
     },
     {
-      type: 'super_mercury',
+      /* ocean planet without core, or with very small = no resources available, no advanced life */
+      class: 'coreless-watery',
+      subClass: 'terrestial',
+      mass: [0.1, 10],
+      radius: [0.5, 1.5],
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+        orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
+      probability: 0.1,
     },
     {
-      type: 'jupiter',
-      mass: [10, 2 * this.JUPITER_MASS_IN_EARTH_MASS],
+      /* ocean planet with core and islands */
+      class: 'watery',
+      subClass: 'terrestial',
+      mass: [0.1, 10],
+      radius: [0.5, 1.5],
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+        orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
+      probability: 0.3,
     },
     {
-      type: 'gas_dwarf',
-      radius: [2, 0.8 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
-      mass: [1, 20],
+      class: 'icy',
+      subClass: 'terrestial',
+      mass: [0.1, 10],
+      radius: [0.5, 1.5],
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line,
+      probability: 0.4,
     },
     {
-      type: 'super_jupiter',
-      mass: [2 * this.JUPITER_MASS_IN_EARTH_MASS, 13 * this.JUPITER_MASS_IN_EARTH_MASS],
-      radius: [0.8 * this.JUPITER_RADIUS_IN_EARTH_RADIUS, 1.2 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
+      /* hot ice planet - enought big mass (and graviti) keeps ice under big pressure, don't allow melt even in 700K */
+      class: 'hot-icy',
+      subClass: 'terrestial',
+      mass: [3, 10],
+      radius: [0.5, 1.5],
+      probability: 0.05,
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner * 0.5,
     },
     {
-      type: 'puffy_giant',
+      /* iron reach and big core, form close to star, where asteroid has heavy elements */
+      class: 'super_mercury',
+      subClass: 'terrestial',
+      mass: [1, 10],
+      radius: [0.5, 1.5],
+      probability: 0.05,
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner,
+    },
+
+    {
+      class: 'puffy_giant',
+      subClass: 'liquid',
       mass: [1 * this.JUPITER_MASS_IN_EARTH_MASS, 2 * this.JUPITER_MASS_IN_EARTH_MASS],
       radius: [1 * this.JUPITER_RADIUS_IN_EARTH_RADIUS, 3 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.frost_line * 0.5,
+      probability: 0.2,
+    },
+    {
+      class: 'jupiter', // jupiter like
+      subClass: 'liquid',
+      mass: [10, 2 * this.JUPITER_MASS_IN_EARTH_MASS],
+      radius: [0.9 * this.JUPITER_RADIUS_IN_EARTH_RADIUS, 1.5 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+        orbit.distance > star.frost_line && orbit.distance < star.outer_limit * 0.6,
+      // orbit.distance < star.frost_line + (star.outer_limit - star.frost_line) * 0.4,
+      probability: 0.2,
+    },
+    {
+      /* jupiter migrated from behind frost_line (todo: earth like planet with 2Me can be created after migration) */
+      class: 'hot_jupiter',
+      subClass: 'liquid',
+      mass: [1 * this.JUPITER_MASS_IN_EARTH_MASS, 2 * this.JUPITER_MASS_IN_EARTH_MASS],
+      radius: [0.9 * this.JUPITER_RADIUS_IN_EARTH_RADIUS, 1.5 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
+      probability: 0.05,
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > 0.04 && orbit.distance < 0.5,
+    },
+    {
+      class: 'super_jupiter',
+      subClass: 'liquid',
+      mass: [2 * this.JUPITER_MASS_IN_EARTH_MASS, 13 * this.JUPITER_MASS_IN_EARTH_MASS],
+      radius: [0.8 * this.JUPITER_RADIUS_IN_EARTH_RADIUS, 1.2 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+        orbit.distance > star.frost_line + 1 && orbit.distance < star.frost_line + 2,
+      probability: 0.5,
+    },
+    {
+      class: 'gas_dwarf',
+      subClass: 'liquid',
+      mass: [1, 20],
+      radius: [2, 0.8 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.outer_limit * 0.5,
+      probability: 0.2,
+    },
+
+    {
+      class: 'ice_giant', // neptune like, todo hot_neptune
+      subClass: 'ice',
+      mass: [50, 150],
+      radius: [2, 1 * this.JUPITER_RADIUS_IN_EARTH_RADIUS],
+      probability: 0.3,
+      when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line * 1.2,
     },
   ];
 
