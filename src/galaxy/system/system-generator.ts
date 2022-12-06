@@ -1,35 +1,21 @@
 import { Vector3 } from 'three';
 
-import { RandomObject } from '../utils';
+import { RandomObject } from '../../utils';
 
-import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
-import { StarGenerator, StarModel } from './star-generator';
+import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
+import { StarGenerator, StarModel } from '../star';
+import { PlanetGenerator, PlanetModel } from '../planet';
+import { StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../physic';
+import { OrbitGenerator } from '../physic/orbit-generator';
+
+import { SystemModel } from './types.d';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
-import { PlanetGenerator, PlanetModel } from './planet';
+import { EmptyZone, EmptyZoneModel } from './empty-zone';
 import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';
-import { EmptyZone, EmptyZoneModel } from './system/empty-zone';
-
-import { StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from './physic';
-import { OrbitGenerator } from './physic/orbit-generator';
 
 type OnOrbitGenerator = PlanetGenerator | DebrisBeltGenerator | EmptyZone;
 
-export interface SystemModel {
-  starColor?: string;
-  habitable?: boolean;
-  starRadius?: number;
-  name?: string;
-  position?: Vector3;
-  temperature?: number;
-  starsSeed?: number;
-  planetsSeed?: number;
-
-  stars?: StarModel[];
-  orbits?: (PlanetModel | DebrisBeltModel | EmptyZoneModel)[];
-  options?: {};
-}
-
-export interface SystemOptions extends RandomGeneratorOptions {
+interface SystemOptions extends RandomGeneratorOptions {
   // name?: string;
   // position: Vector3;
   // temperature?: number;

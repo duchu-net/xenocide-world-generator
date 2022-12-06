@@ -1,8 +1,9 @@
-import { RandomObject, Seed } from '../utils';
-import { RandomGenerator } from './basic-generator';
-import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from './physic';
-import { OrbitGenerator, OrbitModel, ORBIT_OBJECT_TYPES } from './physic/orbit-generator';
-import { StarGenerator, StarModel } from './star-generator';
+import { RandomObject, Seed } from '../../utils';
+
+import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from '../physic';
+import { OrbitGenerator, OrbitModel, ORBIT_OBJECT_TYPES } from '../physic/orbit-generator';
+import { RandomGenerator } from '../basic-generator';
+import { StarGenerator, StarModel } from '../star';
 
 interface SystemOrbitOptions {
   seed?: Seed;
@@ -12,8 +13,7 @@ interface SystemOrbitOptions {
 }
 export interface SystemOrbitModel extends Partial<OrbitModel> {
   options?: Partial<SystemOrbitOptions>;
-
-  fromStar?: number;
+  order?: number;
 }
 
 const defaultOptions: Partial<SystemOrbitOptions> = {
@@ -21,27 +21,14 @@ const defaultOptions: Partial<SystemOrbitOptions> = {
 };
 
 export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, SystemOrbitOptions> {
-  // public readonly options: SystemOrbitOptions;
-  // random: RandomObject;
+  public orbits: OrbitGenerator[] = [];
+  public topology?: string;
+  public beetwen_orbits_factor = [1.4, 2];
+  public modyficators: (
+    | typeof SystemOrbitsGenerator.ClassicSystem
+    | typeof SystemOrbitsGenerator.HabitableMoonSystem
+  )[] = [];
 
-  // Evry value is in AU unit
-  // inner_limit = 0.15;
-  // habitable_zone_inner = 0.95;
-  // habitable_zone_outer = 1.37;
-  // frost_line = 4.85;
-  // outer_limit = 40;
-
-  topology?: string;
-  orbits: OrbitGenerator[] = [];
-  beetwen_orbits_factor = [1.4, 2];
-  modyficators: (typeof SystemOrbitsGenerator.ClassicSystem | typeof SystemOrbitsGenerator.HabitableMoonSystem)[] = [];
-
-  // constructor(options: SystemOrbitOptions) {
-  //   this.options = { ...defaultOptions, ...options };
-
-  //   if (!options.seed) this.options.seed = RandomObject.randomSeed();
-  //   this.random = options.random || new RandomObject(this.options.seed);
-  // }
   constructor(model: SystemOrbitModel, options: SystemOrbitOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
   }
@@ -79,6 +66,9 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
     const { physic } = this.options.star;
     let firstOrbitdistance = null;
 
+    const createOrbit = (distance: number) =>
+      this.orbits.push(new OrbitGenerator({ distance, order: this.orbits.length }, { seed: this.random.seed() }));
+
     // Get fist orbit distance
     if (this.options.prefer_habitable) {
       // Make sure at least one habitable will be generated
@@ -86,13 +76,13 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
     } else {
       firstOrbitdistance = this.random.real(physic.inner_limit, physic.outer_limit);
     }
-    this.orbits.push(new OrbitGenerator({ distance: firstOrbitdistance }, { seed: this.random.seed() }));
+    createOrbit(firstOrbitdistance);
     // Fill orbits down
     let lastDistance = firstOrbitdistance;
     while (true) {
       const nextOrbit = lastDistance / this.random.real(this.beetwen_orbits_factor[0], this.beetwen_orbits_factor[1]);
       if (nextOrbit < physic.inner_limit) break;
-      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }, { seed: this.random.seed() }));
+      createOrbit(nextOrbit);
       lastDistance = nextOrbit;
     }
     // Fill orbits up
@@ -100,15 +90,13 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
     while (true) {
       const nextOrbit = lastDistance * this.random.real(this.beetwen_orbits_factor[0], this.beetwen_orbits_factor[1]);
       if (nextOrbit > physic.outer_limit) break;
-      this.orbits.push(new OrbitGenerator({ distance: nextOrbit }, { seed: this.random.seed() }));
+      createOrbit(nextOrbit);
       lastDistance = nextOrbit;
     }
     // Sort by distance
-    this.orbits.sort((a, b) => a.model.distance - b.model.distance);
+    this.orbits.sort((ox, oy) => OrbitPhysic.sortByDistance(ox.model, oy.model));
     // Fill from sun order
-    for (const [index, orbit] of this.orbits.entries()) {
-      orbit.updateModel('fromStar', index + 1);
-    }
+    this.orbits.forEach((orbit, index) => orbit.updateModel('order', index + 1));
   }
 
   fillOrbitZone() {
@@ -144,12 +132,12 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
         let tags = [];
         for (const orbitObject of ORBIT_OBJECT_TYPES) {
           if (orbitObject.when?.(planetOrbit.options.star?.physic as StarPhysicModel, orbit.model))
-            tags.push(orbitObject.type);
+            tags.push(orbitObject.type as string);
         }
-        if (prefer_habitable && tags.indexOf('earth') > -1) {
+        if (prefer_habitable && tags.includes('earth')) {
           tags = ['earth'];
         }
-        orbit.tags = tags;
+        orbit.setTags(tags);
       }
     };
   }
@@ -161,7 +149,7 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
       let findedHabitable = false;
       let findedGasGiant = false;
       for (const orbit of planetOrbit.orbits) {
-        const isGiant = orbit.tags.some((tgs: string) => tgs == 'gas_giant');
+        const isGiant = orbit.hasTag('gas_giant');
         if (orbit.model.zone == 'habitable' && !findedHabitable) {
           orbit.lockTag('gas_giant');
           // orbit.generateMoons(random, { min_one: ['earth'] })

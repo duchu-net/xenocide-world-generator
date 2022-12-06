@@ -1,13 +1,13 @@
 import { Vector3 } from 'three';
 
-import { Names } from '../generators/Names';
-import { StarName } from '../generators/StarName';
+import { Names } from '../utils/Names';
+import { StarName } from '../utils/StarName';
 import { GalaxyClass, GalaxyClassShape } from '../interfaces';
 import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 
 import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
-import { SystemGenerator, SystemModel } from './system-generator';
 import { StarPhysics } from './physic';
+import { SystemGenerator, SystemModel } from './system';
 
 export interface GalaxyModel {
   systemsSeed?: number; // todo

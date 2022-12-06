@@ -1,82 +1,78 @@
 import { RandomObject } from '../../utils';
-import { RandomGenerator } from '../basic-generator';
-import { OrbitPhysicModel } from './orbit-physic';
+import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
+import { OrbitPhysicModel, SystemZone } from './orbit-physic';
 import { StarPhysicModel } from './star-physic';
 
-export interface OrbitModel extends OrbitPhysicModel {
-  distance: number;
-  zone?: string;
-
-  type?: string;
-  subtype?: string;
-
-  fromStar?: number;
-  orbitalPeriod?: number;
-  orbitalPeriodInDays?: number;
+enum SystemBodyType {
+  EMPTY = 'EMPTY',
+  PLANET = 'PLANET',
+  ASTEROID_BELT = 'ASTEROID_BELT',
+}
+enum PlanetType {
+  lava = 'lava',
+  barren = 'barren',
+  desert = 'desert',
+  earth = 'earth',
+  ocean = 'ocean',
+  ice = 'ice',
+  ice_giant = 'ice_giant',
+  gas_giant = 'gas_giant',
+  EMPTY = 'EMPTY',
 }
 
-interface OrbitOptions {}
+export interface OrbitModel extends OrbitPhysicModel {
+  /** zone in system */
+  zone?: SystemZone;
+  /** orbiting body type */
+  type?: SystemBodyType;
+  /** planet type */
+  subtype?: PlanetType;
+}
+
+interface OrbitOptions extends RandomGeneratorOptions {
+  maxInclinationDeg: number;
+}
+
+const defaultOptions = {
+  maxInclinationDeg: 15,
+};
 
 const denormalize = (normalized: number, min: number, max: number) => normalized * (max - min) + min;
 const normalize = (value: number, min: number, max: number) => (value - min) / (max - min);
 
 export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
   override schemaName = 'orbit-model';
-  // type?: string;
-  // subtype?: string;
-  // distance: number;
-  // zone?: string;
-  // orbitalPeriod?: number;
-  tags: string[] = [];
-  lock: boolean = false;
 
-  // fromStar?: number; // todo move to system?
-  // orbitalPeriodInDays?: number;
+  protected tags: string[] = [];
+  protected lock: boolean = false;
 
   constructor(model: OrbitModel, options: Partial<OrbitOptions> = {}) {
-    super(model, options);
-
-    // this.zone = props.zone;
-    // this.orbitalPeriod = props.orbitalPeriod;
-
+    super(model, { ...defaultOptions, ...options });
     // this.distance = this.cutDecimals(props.distance, 2);
-
     this.generateOrbit();
   }
 
   generateOrbit() {
-    // const inclination = denormalize(this.random.integer(-1, 1) ^ 5, -15, 15);
+    const { maxInclinationDeg } = this.options;
     const pow = 3;
-    const random = this.random.integer(-15, 15);
-    let inclination = normalize(Math.pow(random, pow), Math.pow(-15, pow), Math.pow(15, pow));
-    inclination = denormalize(inclination, -15, 15);
-    //  normalize((this.random.integer(0, 15) / 15) ^ pow, 0, 1 ^ pow);
-    // console.log({ inclination, random });
-    this.updateModel('inclination', inclination); // kąt
-    // // this.updateModel('periapsis', 1);
+    const temp1 = 15;
+    // todo near orbit has orbit inclination closer to 0
+    // const temp1 = Math.pow(this.model.distance, pow);
+
+    const random = this.random.integer(-temp1, temp1);
+    let inclination = normalize(Math.pow(random, pow), Math.pow(-temp1, pow), Math.pow(temp1, pow));
+    inclination = denormalize(inclination, -maxInclinationDeg, maxInclinationDeg);
+
+    this.updateModel('inclination', inclination);
     this.updateModel('longitude', this.random.integer(-180, 180));
-    // console.log({ inclination, random, longitude: this.model.longitude });
     this.updateModel('anomaly', this.random.integer(-180, 180));
   }
 
-  // toJSON() {
-  //   return this.toModel();
-  // }
-  // toModel(): OrbitModel {
-  //   return {
-  //     type: this.type,
-  //     zone: this.zone,
-  //     subtype: this.subtype,
-  //     fromStar: this.fromStar,
-  //     distance: this.distance,
-  //     orbitalPeriod: this.orbitalPeriod,
-  //     orbitalPeriodInDays: this.orbitalPeriodInDays, // todo not used?
-  //   };
-  // }
-
-  cutDecimals(number: number, position = 2) {
-    const factor = Math.pow(10, position);
-    return Math.floor(number * factor) / factor;
+  setTags(tags: string[]) {
+    this.tags = tags;
+  }
+  hasTag(tagName: string) {
+    return this.tags.includes(tagName);
   }
   lockTag(tags: OrbitGenerator['tags'] | OrbitGenerator['tags'][0]) {
     if (!Array.isArray(tags)) tags = [tags];
@@ -87,14 +83,15 @@ export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
     this.lock = true;
     this.tags = [];
   }
+
   generateType(random: RandomObject) {
     const tags = this.tags;
     if (tags.length == 0 || (tags.length == 1 && tags[0] == 'EMPTY')) {
-      this.updateModel('subtype', 'EMPTY');
-      this.updateModel('type', 'EMPTY');
+      this.updateModel('type', SystemBodyType.EMPTY);
+      this.updateModel('subtype', PlanetType.EMPTY);
       return;
     }
-    const weighted = [];
+    const weighted: [number, string][] = [];
     for (const tag of tags) {
       const orbitObject = ORBIT_OBJECT_TYPES.find((ot) => ot.type == tag);
       if (!orbitObject) continue;
@@ -105,6 +102,12 @@ export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
     const type = ['EMPTY', 'ASTEROID_BELT'].indexOf(subtype) > -1 ? subtype : 'PLANET';
     this.updateModel('type', type);
   }
+
+  // cutDecimals(number: number, position = 2) {
+  //   const factor = Math.pow(10, position);
+  //   return Math.floor(number * factor) / factor;
+  // }
+
   // static MOONS_TOPOLOGIES = [
   //   // { probability: 1, name: 'EMPTY' },
   //   { probability: .5, name: 'terrestial_moons', modificators: [Orbit.TerrestialMoons] }, // ['barren', 'ice']
@@ -124,56 +127,60 @@ export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
   // static GiantMoons() {}
 }
 
-export const ORBIT_OBJECT_TYPES = [
-  { type: 'EMPTY', probability: 0.05, when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => true },
+export const ORBIT_OBJECT_TYPES: {
+  type: OrbitModel['type'] | OrbitModel['subtype'];
+  probability: number;
+  when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => boolean;
+}[] = [
+  { type: PlanetType.EMPTY, probability: 0.05, when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => true },
   {
-    type: 'lava',
+    type: PlanetType.lava,
     probability: 0.2,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner * 0.7,
   },
   {
-    type: 'barren',
+    type: PlanetType.barren,
     probability: 0.1,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.habitable_zone_inner * 0.18,
   },
   {
-    type: 'desert',
+    type: PlanetType.desert,
     probability: 0.2,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.habitable_zone_inner * 0.7 && orbit.distance < star.frost_line,
   },
   {
-    type: 'ASTEROID_BELT',
+    type: SystemBodyType.ASTEROID_BELT,
     probability: 0.2,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line * 0.1,
   },
   {
-    type: 'earth',
+    type: PlanetType.earth,
     probability: 1,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.habitable_zone_inner && orbit.distance < star.habitable_zone_outer,
   },
   {
-    type: 'ocean',
+    type: PlanetType.ocean,
     probability: 0.3,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
   },
   {
-    type: 'ice',
+    type: PlanetType.ice,
     probability: 0.3,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line,
   },
   {
-    type: 'gas_giant',
+    type: PlanetType.gas_giant,
     probability: 0.5,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.frost_line && orbit.distance < star.frost_line + (star.outer_limit - star.frost_line) * 0.5,
   },
   {
-    type: 'ice_giant',
+    type: PlanetType.ice_giant,
     probability: 0.6,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.frost_line && orbit.distance > star.frost_line + (star.outer_limit - star.frost_line) * 0.1,
   },
-] as const;
+];

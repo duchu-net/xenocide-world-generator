@@ -1,5 +1,5 @@
-import { decimalToRoman } from '../utils';
-import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
+import { decimalToRoman } from '../../utils';
+import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { SystemOrbitModel } from './system-orbits-generator';
 
 export interface DebrisBeltOptions extends RandomGeneratorOptions {

@@ -1,6 +1,8 @@
 import { decimalToRoman } from '../../utils';
+
 import { ModelHandler } from '../basic-generator';
-import { SystemOrbitModel } from '../system-orbits-generator';
+
+import { SystemOrbitModel } from './system-orbits-generator';
 
 export interface EmptyZoneModel {
   name?: string;

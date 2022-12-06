@@ -1,16 +1,11 @@
-import { numberToGreekChar } from '../utils';
-import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
-import { StarPhysicModel, StarPhysics, StarStellarClass } from './physic';
+import { numberToGreekChar } from '../../utils';
 
-export interface StarModel {
-  mass?: number;
-  spectralClass?: StarStellarClass;
-  name?: string;
-  physic?: StarPhysicModel;
-  options?: {};
-}
+import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
+import { StarPhysicModel, StarPhysics, StarStellarClass } from '../physic';
 
-export interface StarOptions extends RandomGeneratorOptions {
+import { StarModel } from './types';
+
+interface StarOptions extends RandomGeneratorOptions {
   name?: string;
   temperature?: number;
 }

@@ -1,7 +1,19 @@
-import { MarkovModelBuilder } from '../utils';
 import STARS_NAMES from '../../resources/STARS_NAMES';
 
+import { MarkovModelBuilder } from './MarkovNames';
+import { MarkovModel } from './MarkovNames/MarkovModel';
+import { RandomObject } from './RandomObject';
+
 export class StarName {
+  private constructor() {}
+  static instance?: MarkovModel;
+  static getInstance() {
+    if (StarName.instance) return StarName.instance;
+    console.log(STARS_NAMES);
+    StarName.instance = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
+    return StarName.instance;
+  }
+
   static _prefixStrategies = [
     // [1.0, StarName.Greek],
     [1.0, StarName.Decorator],
@@ -9,8 +21,8 @@ export class StarName {
     [1.0, StarName.Letter],
     [1.0, StarName.Integer],
     [0.3, StarName.Decimal],
-    [0.0, (r) => 'Al'],
-    [0.0, (r) => 'San'],
+    [0.0, () => 'Al'],
+    [0.0, () => 'San'],
   ];
   static _suffixStrategies = [
     // [1.0, StarName.Greek],
@@ -23,9 +35,9 @@ export class StarName {
   static _namingStrategies = [
     [1, StarName.PlainMarkov],
     [1, StarName.WithDecoration(1, StarName.WithDecoration(0.001, StarName.PlainMarkov))],
-    [0.05, (r) => StarName.Letter(r) + '-' + StarName.Integer(r)],
+    [0.05, (random: RandomObject) => StarName.Letter(random) + '-' + StarName.Integer(random)],
     [0.01, StarName.NamedStar],
-    [0.01, (r) => r.choice(StarName.specialLocations)],
+    [0.01, (random: RandomObject) => random.choice(StarName.specialLocations)],
   ];
   static specialLocations = [
     'Epsilon Eridani',
@@ -65,62 +77,56 @@ export class StarName {
   ];
   static decorators = ['Major', 'Majoris', 'Minor', 'Minoris', 'Prime', 'Secundis', 'System'];
 
-  static Greek(random) {
+  static Greek(random: RandomObject) {
     // console.log('Greek');
     return random.choice(StarName.greekLetters);
   }
-  static Decorator(random) {
+  static Decorator(random: RandomObject) {
     // console.log('Decorator');
     return random.choice(StarName.decorators);
   }
-  static RomanNumeral(random) {
+  static RomanNumeral(random: RandomObject) {
     // console.log('RomanNumeral');
     var integer = random.NormallyDistributedSingle4(10, 15, 1, 200);
     var bigInteger = random.NormallyDistributedSingle4(400, 100, 200, 3000);
     return StarName.ToRoman(random.unit() > 0.8 ? integer : bigInteger);
   }
-  static Integer(random) {
+  static Integer(random: RandomObject) {
     // console.log('Integer');
     const number = random.NormallyDistributedSingle4(100, 5, 1, 1000);
-    return Math.abs(parseInt(number));
+    return Math.abs(number);
   }
-  static Decimal(random) {
+  static Decimal(random: RandomObject) {
     // console.log('Decimal');
     var number = random.NormallyDistributedSingle4(100, 5, 1, 1000);
-    return Math.abs(number.toFixed(2));
+    return Math.abs(parseInt(number.toFixed(2)));
   }
-  static Letter(random) {
+  static Letter(random: RandomObject) {
     // console.log('Letter');
     return String.fromCharCode(random.integer(65, 90));
   }
 
-  static getInstance() {
-    if (StarName.instance) return StarName.instance;
-    console.log(STARS_NAMES);
-    StarName.instance = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
-    return StarName.instance;
-  }
   // static markovNameModel = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
-  static PlainMarkov(random) {
+  static PlainMarkov(random: RandomObject) {
     // console.log('PlainMarkov');
     return StarName.getInstance().Generate(random);
   }
-  static NamedStar(random) {
+  static NamedStar(random: RandomObject) {
     // console.log('NamedStar');
     return random.choice(STARS_NAMES);
   }
 
-  static WithDecoration(probability, func) {
-    return (r) => {
+  static WithDecoration(probability: number, func: (random: RandomObject) => string) {
+    return (random: RandomObject) => {
       // console.log('WithDecoration');
-      const result = func(r);
-      if (r.unit() > probability) return result;
+      const result = func(random);
+      if (random.unit() > probability) return result;
 
-      const prefix = r.weighted(StarName._prefixStrategies)(r) + ' ';
-      const suffix = ' ' + r.weighted(StarName._suffixStrategies)(r);
+      const prefix = random.weighted(StarName._prefixStrategies)(random) + ' ';
+      const suffix = ' ' + random.weighted(StarName._suffixStrategies)(random);
 
       switch (
-        r.weighted([
+        random.weighted([
           [0.4, 'neither'],
           [1.0, 'prefix'],
           [1.0, 'suffix'],
@@ -139,7 +145,7 @@ export class StarName {
     };
   }
 
-  static ToRoman(number) {
+  static ToRoman(number: number): string {
     if (number < 1) return '';
     if (number >= 1000) return 'M' + StarName.ToRoman(number - 1000);
     if (number >= 900) return 'CM' + StarName.ToRoman(number - 900);
@@ -157,10 +163,10 @@ export class StarName {
     throw new RangeError();
   }
 
-  static Generate(random) {
+  static Generate(random: RandomObject) {
     return random.weighted(StarName._namingStrategies)(random).trim();
   }
-  static async GenerateCount(random, count = 1) {
+  static async GenerateCount(random: RandomObject, count = 1) {
     const names = [];
     while (names.length < count) {
       const name = await StarName.Generate(random);

@@ -1,20 +1,31 @@
 import { StarPhysicModel } from './star-physic';
 
 export interface OrbitPhysicModel {
+  /**
+   * (r radius, Au) average distance from center of mass,
+   * here we have perfect round orbit, so: distance = semiMajorAxis = semiMinorAxis
+   */
   distance: number;
-
-  // ORBIT
-  inclination?: number; // (i, DEG) nachylenie orbity
+  /** (i inclination, DEG) inclination (nachylenie orbity) */
+  inclination?: number;
+  /** (Ω Omega, 0-360 DEG) longitude of the ascending node (długość węzła wstępującego) */
   longitude?: number;
-  anomaly?: number; // (θ theta, 0-360 DEG) anomalia prawdziwa
+  /** (θ theta, 0-360 DEG) true anomaly (anomalia prawdziwa) */
+  anomaly?: number;
+  /** (P, EARTH YEAR) orbital period (okres orbitalny/rok ziemski) */
+  orbitalPeriod?: number;
+  /** (x, EARTH DEYS) orbital period in days (okres orbitalny/dzień ziemski) */
+  orbitalPeriodInDays?: number;
+  /** sequential order from center */
+  order: number;
 
-  semi_major_axis?: number; // (a) półoś wielka
-  eccentricity?: number; // (e, 0-1) ekscentryczność/mimośród
-  longitude_of_the_ascending_node?: number; // (Ω Omega, 0-360 DEG) długość węzła wstępującego
-  argument_of_periapsis?: number; // (ω, omega, 0-360 DEG)  argument perycentrum
-  // true_anomaly?: number; // (θ theta, 0-360 DEG) anomalia prawdziwa
-  orbitalPeriod?: number; // (P, EARTH YEAR) okres orbitalny/rok
-  orbital_velocity?: number; // (Vo, EARTH SPEED) prędkość orbitalna
+  // todo proposal: eliptic orbits
+  // semiMajorAxis?: number; // (a) półoś wielka
+  // semiMinorAxis?: number; // (b) półoś mała
+  // eccentricity?: number; // (e, 0-1) ekscentryczność/mimośród
+  // argumentOfPeriapsis?: number; // (ω, omega, 0-360 DEG)  argument perycentrum
+  // todo: not needed? position is calculated with Simulation Clock
+  // orbitalVelocity?: number; // (Vo, EARTH SPEED) prędkość orbitalna
 }
 
 export enum SystemZone {
@@ -24,11 +35,25 @@ export enum SystemZone {
 }
 
 export class OrbitPhysic {
-  static calcOrbitalPeriod(star_mass: number, semi_major_axis: number) {
-    return Math.sqrt(Math.pow(semi_major_axis, 3) / star_mass);
+  private constructor() {}
+
+  static readonly EARTH_YEAR_IN_DAYS = 365;
+
+  /**
+   * @param centerMass center of mass mass
+   * @param distance average distance from center of mass
+   * @returns orbital period in EARTH_YEARS
+   */
+  static calcOrbitalPeriod(centerMass: number, distance: number) {
+    return Math.sqrt(Math.pow(distance, 3) / centerMass);
   }
+
+  /**
+   * @param orbitalPeriod orbital period in EARTH_YEAR
+   * @returns orbital period in EARTH_DAYS
+   */
   static convertOrbitalPeriodToDays(orbitalPeriod: number) {
-    return Math.floor(orbitalPeriod * 365);
+    return Math.floor(orbitalPeriod * this.EARTH_YEAR_IN_DAYS);
   }
 
   static calcZone(distance: number, physic: StarPhysicModel) {
@@ -41,6 +66,10 @@ export class OrbitPhysic {
       default:
         return SystemZone.Outer;
     }
+  }
+
+  static sortByDistance(mx: OrbitPhysicModel, my: OrbitPhysicModel) {
+    return mx.distance - my.distance;
   }
 
   // todo
