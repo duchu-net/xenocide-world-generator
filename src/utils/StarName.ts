@@ -9,7 +9,7 @@ export class StarName {
   static instance?: MarkovModel;
   static getInstance() {
     if (StarName.instance) return StarName.instance;
-    console.log(STARS_NAMES);
+    // console.log(STARS_NAMES);
     StarName.instance = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
     return StarName.instance;
   }
