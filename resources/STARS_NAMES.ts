@@ -897,8 +897,7 @@ export const HONOR_HARRINGTON_STARS_NAMES = [
   'Zanzibar',
   'Zulu',
 ];
-
-export const STAR_NAMES = [
+export const getStarsNames = () => [
   ...REAL_STARS_NAMES,
   ...DUNE_STARS_NAMES,
   ...COSMERE_STARS_NAMES,
@@ -907,5 +906,3 @@ export const STAR_NAMES = [
   ...FOUNDATION_STARS_NAMES,
   ...HONOR_HARRINGTON_STARS_NAMES,
 ];
-
-export default Array.from(new Set<string>(STAR_NAMES));

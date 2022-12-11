@@ -95,16 +95,22 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       let nameIndex = 0;
       for (const orbitGenerator of this.generateOrbits()) {
         let orbitObject: OnOrbitGenerator;
-        if (orbitGenerator.model.type === 'PLANET')
-          orbitObject = new PlanetGenerator({
-            name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
-            orbit: orbitGenerator.toModel(),
-          });
-        else if (orbitGenerator.model.type === 'ASTEROID_BELT') {
-          orbitObject = new DebrisBeltGenerator({
-            name: DebrisBeltGenerator.getSequentialName(nameIndex++),
-            orbit: orbitGenerator.toModel(),
-          });
+        if (orbitGenerator.model.bodyType === 'PLANET')
+          orbitObject = new PlanetGenerator(
+            {
+              name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
+              orbit: orbitGenerator.toModel(),
+            },
+            { star: this.stars[0].toModel(), seed: this.random.seed() }
+          );
+        else if (orbitGenerator.model.bodyType === 'ASTEROID_BELT') {
+          orbitObject = new DebrisBeltGenerator(
+            {
+              name: DebrisBeltGenerator.getSequentialName(nameIndex++),
+              orbit: orbitGenerator.toModel(),
+            },
+            { seed: this.random.seed() }
+          );
         } else {
           orbitObject = new EmptyZone({
             name: EmptyZone.getSequentialName(nameIndex++),

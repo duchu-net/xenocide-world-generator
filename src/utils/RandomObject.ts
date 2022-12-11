@@ -35,7 +35,8 @@ export class RandomObject {
     return list[this.next(list.length - 1)];
   }
 
-  weighted(list: any[] | {}) {
+  weighted(list: [] | {}) {
+    // weighted<T>(list: T[] | {}): T[1] {
     if (typeof list !== 'object') throw new TypeError('list must be array or object');
     if (!Array.isArray(list)) {
       list = Object.entries(list).map((e) => [e[1], e[0]]);

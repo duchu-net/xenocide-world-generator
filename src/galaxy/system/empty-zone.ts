@@ -7,6 +7,9 @@ import { SystemOrbitModel } from './system-orbits-generator';
 export interface EmptyZoneModel {
   name?: string;
   orbit?: SystemOrbitModel;
+  type?: string; // not used
+  subType?: string; // not used
+  schemaName?: 'EmptyZoneModel';
 }
 
 export class EmptyZone extends ModelHandler<EmptyZoneModel> {

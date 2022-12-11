@@ -1,3 +1,8 @@
+import { PlanetModel } from '../planet';
+
+import { EmptyZoneModel } from './empty-zone';
+import { DebrisBeltModel } from './debris-belt-generator';
+
 export interface SystemModel {
   starColor?: string;
   habitable?: boolean;

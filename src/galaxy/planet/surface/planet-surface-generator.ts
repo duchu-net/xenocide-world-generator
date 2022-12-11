@@ -35,41 +35,49 @@ const defaultOptions: PlanetSurfaceOptions = {
   heatLevel: 1 / 100 + 1,
   moistureLevel: 1 / 100 + 1,
   seed: 19191919,
-  strategyName: 'terrestial-earth',
+  strategyName: 'terran',
   byStrategy: false,
 };
 
 export const surfaceStrategy = [
   {
-    name: 'terrestial-earth',
+    name: 'terran',
     modyficators: [
       [TerrainSurfaceModificator, { plateCount: 20, subdivisions: 9 }],
       [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
     ] as const,
   },
   {
-    name: 'terrestial-ocean',
+    name: 'watery',
     modyficators: [
       [TerrainSurfaceModificator, { plateCount: 7, subdivisions: 9, oceanicRate: 1, moistureLevel: 1 }],
       [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
     ] as const,
   },
+  // {
+  //   name: 'terrestial-desert',
+  //   modyficators: [
+  //     [TerrainSurfaceModificator, { plateCount: 20, subdivisions: 9, oceanicRate: 0, moistureLevel: 0, heatLevel: 1 }],
+  //     [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
+  //   ] as const,
+  // },
+  // {
+  //   name: 'terrestial-lava',
+  //   modyficators: [
+  //     [TerrainSurfaceModificator, { plateCount: 20, oceanicRate: 0.7, subdivisions: 9 }],
+  //     [BiomeSurfaceModificator, { strategy: 'terrestial-lava' }],
+  //   ] as const,
+  // },
   {
-    name: 'terrestial-desert',
-    modyficators: [
-      [TerrainSurfaceModificator, { plateCount: 20, subdivisions: 9, oceanicRate: 0, moistureLevel: 0, heatLevel: 1 }],
-      [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
-    ] as const,
+    name: 'jupiter',
+    modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
   },
   {
-    name: 'terrestial-lava',
-    modyficators: [
-      [TerrainSurfaceModificator, { plateCount: 20, oceanicRate: 0.7, subdivisions: 9 }],
-      [BiomeSurfaceModificator, { strategy: 'terrestial-lava' }],
-    ] as const,
+    name: 'hot_jupiter',
+    modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
   },
   {
-    name: 'gas-giant',
+    name: 'super_jupiter',
     modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
   },
 ];

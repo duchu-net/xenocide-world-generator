@@ -1,11 +1,13 @@
-import STARS_NAMES from '../../resources/STARS_NAMES';
-import GALAXIES_NAMES from '../../resources/GALAXIES_NAMES';
+import { getStarsNames } from '../../resources/STARS_NAMES';
+import { getGalaxiesNames } from '../../resources/GALAXIES_NAMES';
 // import PLANETS_NAMES from '../../resources/PLANETS_NAMES'
 
 import RandomObject from './RandomObject';
 import { MarkovModelBuilder, MarkovModel } from './MarkovNames';
 
 export class Names {
+  private constructor() {}
+
   static names = [
     'Trevor',
     'Yeltsin',
@@ -110,31 +112,14 @@ export class Names {
   ];
   static decorators = ['Major', 'Majoris', 'Minor', 'Minoris', 'Prime', 'Secundis', 'System'];
 
-  static _system_markov: MarkovModel;
-  static get systemNamingStrategies() {
-    return [
-      [1, Names.PlainMarkovT(this._system_markov, [...STARS_NAMES, ...Names.names])],
-      [0.1, Names.Named([...GALAXIES_NAMES, ...Names.names])],
-    ];
-  }
-  static GenerateSystemName(random: RandomObject, count = 1) {
-    return random.weighted(Names.systemNamingStrategies)(random);
-  }
-
-  static _galaxy_markov: MarkovModel;
-  static get galaxyNamingStrategies() {
-    return [
-      [1, Names.PlainMarkovT(this._galaxy_markov, [...STARS_NAMES, ...Names.names])],
-      [0.1, Names.Named(GALAXIES_NAMES)],
-    ];
-  }
   static PlainMarkovT(destination: MarkovModel, names: string[]) {
     return (random: RandomObject) => {
       if (!destination) {
-        const m = new MarkovModelBuilder(2);
-        m.TeachArray(names);
-        destination = m.toModel();
+        const model = new MarkovModelBuilder(2);
+        model.TeachArray(names);
+        destination = model.toModel();
       }
+      console.log(destination, names);
       return destination.Generate(random);
     };
   }
@@ -143,36 +128,56 @@ export class Names {
       return random.choice(names).toLowerCase(); //+ "'s Star"
     };
   }
+
+  static _system_markov: MarkovModel;
+  static get systemNamingStrategies() {
+    return [
+      [1, this.PlainMarkovT(this._system_markov, [...getStarsNames(), ...this.names])],
+      [0.1, this.Named([...getGalaxiesNames(), ...this.names])],
+    ];
+  }
+  static GenerateSystemName(random: RandomObject, count = 1) {
+    return random.weighted(this.systemNamingStrategies)(random);
+  }
+
+  static _galaxy_markov: MarkovModel;
+  static getGalaxyNamingStrategies() {
+    return [
+      [1, this.PlainMarkovT(this._galaxy_markov, [...getStarsNames(), ...this.names])],
+      [0.1, this.Named(getGalaxiesNames())],
+    ];
+  }
+
   static GenerateGalaxyName(random: RandomObject, count = 1) {
-    return random.weighted(Names.galaxyNamingStrategies)(random);
+    return random.weighted(this.getGalaxyNamingStrategies())(random);
   }
 
   static _markov: MarkovModel;
   static get namingStrategies() {
     return [
-      [1, Names.PlainMarkovT(this._markov, Names.names)],
-      [0.1, Names.Named(Names.names)],
+      [1, this.PlainMarkovT(this._markov, this.names)],
+      [0.1, this.Named(this.names)],
     ];
   }
 
   // static PlainMarkov(random) {
-  //   if (!Names._markov) {
+  //   if (!this._markov) {
   //     const m = new MarkovModelBuilder(2)
-  //     m.TeachArray(Names.names)
-  //     Names._markov = m.toModel()
+  //     m.TeachArray(this.names)
+  //     this._markov = m.toModel()
   //   }
-  //   return Names._markov.Generate(random)
+  //   return this._markov.Generate(random)
   // }
   // static NamedStar(random) {
-  //   return random.choice(Names.names).toLowerCase() //+ "'s Star"
+  //   return random.choice(this.names).toLowerCase() //+ "'s Star"
   // }
 
   static Generate(random: RandomObject, count = 1) {
-    return random.weighted(Names.namingStrategies)(random);
+    return random.weighted(this.namingStrategies)(random);
 
     // var choices = []
     // while (choices.length < count) {
-    //   var newChoice = Names.Generate(random)
+    //   var newChoice = this.Generate(random)
     //   // if (choices.Add(newChoice))
     //   choices.push(newChoice)
     //   yield newChoice
@@ -180,4 +185,4 @@ export class Names {
   }
 }
 
-export default Names;
+export default this;

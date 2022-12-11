@@ -1,4 +1,4 @@
-import STARS_NAMES from '../../resources/STARS_NAMES';
+import { getStarsNames } from '../../resources/STARS_NAMES';
 
 import { MarkovModelBuilder } from './MarkovNames';
 import { MarkovModel } from './MarkovNames/MarkovModel';
@@ -10,7 +10,7 @@ export class StarName {
   static getInstance() {
     if (StarName.instance) return StarName.instance;
     // console.log(STARS_NAMES);
-    StarName.instance = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
+    StarName.instance = new MarkovModelBuilder(3).TeachArray(getStarsNames()).toModel();
     return StarName.instance;
   }
 
@@ -113,7 +113,7 @@ export class StarName {
   }
   static NamedStar(random: RandomObject) {
     // console.log('NamedStar');
-    return random.choice(STARS_NAMES);
+    return random.choice(getStarsNames());
   }
 
   static WithDecoration(probability: number, func: (random: RandomObject) => string) {

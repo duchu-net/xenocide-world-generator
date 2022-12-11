@@ -1,23 +1,21 @@
-// @ts-nocheck
 import MarkovModel from './MarkovModel';
 
 export class MarkovModelBuilder {
-  _order = null;
-  _startingStrings = new Map<string, number>();
-  _productions = new Map();
+  private _startingStrings: Map<string, number>;
+  private _productions: Map<string, Map<string, number>>;
 
-  // (int)
-  constructor(order) {
-    this._order = order;
+  constructor(private _order: number) {
+    this._startingStrings = new Map();
+    this._productions = new Map();
   }
 
-  TeachArray(examples) {
+  TeachArray(examples: string[]) {
     examples.forEach((e) => this.Teach(e));
     // for (const example of examples) this.Teach(example);
     return this;
   }
 
-  Teach(example) {
+  Teach(example: string) {
     example = example.toLowerCase();
 
     //if the example is shorter than the order, just add a production that this example instantly leads to null
@@ -29,9 +27,10 @@ export class MarkovModelBuilder {
 
     //Chomp string into "order" length parts, and the single letter which follows it
     for (let i = 0; i < example.length - this._order + 1; i++) {
-      var key = example.substring(i, i + this._order).trim();
+      const key = example.substring(i, i + this._order).trim();
       if (i == 0) MarkovModelBuilder.AddOrUpdateMap(this._startingStrings, key, 1, (a) => a + 1);
-      var sub = i + this._order == example.length ? '' : example.substring(i + this._order, i + this._order + 1).trim();
+      const sub =
+        i + this._order == example.length ? '' : example.substring(i + this._order, i + this._order + 1).trim();
       this.Increment(key, sub);
     }
 
@@ -39,28 +38,28 @@ export class MarkovModelBuilder {
   }
 
   toModel() {
-    const startingStrings = new Map(this.Normalize(this._startingStrings));
+    const normalized = this.Normalize(this._startingStrings);
+    const startingStrings = new Map(normalized);
     const productions = new Map([...this._productions.entries()].map((a) => [a[0], new Map(this.Normalize(a[1]))]));
 
     return new MarkovModel(this._order, startingStrings, productions);
   }
 
-  Normalize(stringCounts: Map<string, number> = []): [string, number][] {
-    const total = [...(stringCounts.values ? stringCounts.values() : stringCounts)].reduce((a, b) => a + b, 0);
-    return [...stringCounts.entries()].map(([key, value]) => {
-      return [key, value / total];
-    });
+  Normalize(stringCounts: Map<string, number> = new Map()) {
+    /* fix: somehow Map.entries and Map.values not working with SB */
+    const values = Array.from(stringCounts, ([key, value]) => value);
+    const entries = Array.from(stringCounts, ([key, value]) => [key, value] as const);
+    const total = values.reduce((a, b) => a + b, 0);
+    return entries.map(([key, value]) => [key, value / total] as const);
   }
 
-  Increment(key, value) {
-    if (!this._productions.has(key)) {
-      this._productions.set(key, new Map());
-    }
-    MarkovModelBuilder.AddOrUpdateMap(this._productions.get(key), value, 1, (a) => a + 1);
+  Increment(key: string, value: string) {
+    if (!this._productions.has(key)) this._productions.set(key, new Map());
+    MarkovModelBuilder.AddOrUpdateMap(this._productions.get(key) as Map<string, number>, value, 1, (a) => a + 1);
   }
 
-  static AddOrUpdateMap(map, key, value, update) {
+  static AddOrUpdateMap(map: Map<string, number>, key: string, value: number, update: (value: number) => number) {
     if (!map.has(key)) map.set(key, value);
-    else map.set(key, update(map.get(key)));
+    else map.set(key, update(map.get(key) as number));
   }
 }

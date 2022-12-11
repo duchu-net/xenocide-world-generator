@@ -13,11 +13,14 @@ const defaultOptions: DebrisBeltOptions = {
 export interface DebrisBeltModel {
   id?: string;
   name?: string;
+  type?: string; // todo eg. icy, iron, etc.?
+  subType?: string; // todo dust - planet ring, rocky - big
   physic?: {
     mass?: number;
   };
   orbit?: SystemOrbitModel; // OrbitModel;
   options?: {}; // todo generator options???
+  schemaName?: 'DebrisBeltModel';
 }
 
 // export interface DebrisBeltGeneratorModel {

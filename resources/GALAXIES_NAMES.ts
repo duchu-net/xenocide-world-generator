@@ -15,7 +15,7 @@ export const REAL_GALAXIES_NAMES = [
   'Milky Way',
   'Triangulum',
   'Centaurus A',
-  "Bode",
+  'Bode',
   'Messier',
   'Canis Major',
   'Centaurus A',
@@ -34,20 +34,11 @@ export const REAL_GALAXIES_NAMES = [
   'Mice',
   'Sagittarius',
   'Omega Centauri',
-  'Mayall'
-]
+  'Mayall',
+];
 
-export const STARGATE_GALAXIES_NAMES = [
+export const STARGATE_GALAXIES_NAMES = [];
 
-]
+export const DUNE_GALAXIES_NAMES = [];
 
-export const DUNE_GALAXIES_NAMES = [
- 
-]
-
-
-export default [...(new Set([
-  ...REAL_GALAXIES_NAMES,
-  ...DUNE_GALAXIES_NAMES,
-  ...STARGATE_GALAXIES_NAMES,
-]))]
+export const getGalaxiesNames = () => [...REAL_GALAXIES_NAMES, ...DUNE_GALAXIES_NAMES, ...STARGATE_GALAXIES_NAMES];

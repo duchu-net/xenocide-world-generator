@@ -22,7 +22,7 @@ const HABITABLE_WORLD_DENSITY: MinMax = [3, 8]; // h/cm3
 const TERRAN_MASS_RANGE: MinMax = [0.1, 10];
 const PLANET_MASS: MinMax = [0.1, 13 * JUPITER_MASS_IN_EARTH_MASS];
 
-interface PlanetClassifier {
+export interface PlanetClassifier {
   class: string;
   subClass: string;
   mass: MinMax;
@@ -54,7 +54,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     radius: [0.5, 1.5],
     gravity: [0.4, 1.6],
     cmf: [0.3, 0.4],
-    probability: 0.2,
+    probability: 0.1,
     color: ['gray'],
     when: () => true,
   },
@@ -75,11 +75,11 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
   {
     /* ocean planet without core, or with very small = no resources available, no advanced life */
     class: 'coreless-watery',
-    subClass: 'terrestial',
+    subClass: 'liquid',
     mass: [0.1, 10],
     radius: [0.5, 1.5],
     probability: 0.1,
-    color: ['blue'],
+    color: ['dodgerblue'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
   },
@@ -100,7 +100,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [0.1, 10],
     radius: [0.5, 1.5],
     probability: 0.2,
-    color: ['smokewhite'],
+    color: ['lightcyan'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line,
   },
   {
@@ -120,7 +120,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [1, 10],
     radius: [0.5, 1.5],
     probability: 0.05,
-    color: ['gray'],
+    color: ['silver'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner,
   },
 
@@ -159,7 +159,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     subClass: 'gas',
     mass: [2 * JUPITER_MASS_IN_EARTH_MASS, 13 * JUPITER_MASS_IN_EARTH_MASS],
     radius: [0.8 * JUPITER_RADIUS_IN_EARTH_RADIUS, 1.2 * JUPITER_RADIUS_IN_EARTH_RADIUS],
-    probability: 0.5,
+    probability: 0.3,
     color: ['gray'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.frost_line + 1 && orbit.distance < star.frost_line + 2,
@@ -177,13 +177,16 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
   {
     class: 'ice_giant', // neptune like, todo hot_neptune
     subClass: 'ice',
-    mass: [50, 150],
-    radius: [2, 1 * JUPITER_RADIUS_IN_EARTH_RADIUS],
+    mass: [10, 50],
+    radius: [3, .6 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.2,
     color: ['LightSkyBlue'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line * 1.2,
   },
 ];
+
+export type PlanetClass = typeof PLANET_CLASSIFICATION[number]['class'];
+export type PlanetSubClass = typeof PLANET_CLASSIFICATION[number]['subClass'];
 
 export class PlanetPhysic {
   private constructor() {}
@@ -219,8 +222,8 @@ export class PlanetPhysic {
     return Math.pow(mass / radius, 2);
   }
 
-  static getClass(planetClass: string) {
-    return this.PLANET_CLASSIFICATION.find((matrice) => matrice.class === planetClass);
+  static getClass(planetClass: PlanetClass) {
+    return this.PLANET_CLASSIFICATION.find((matrice) => matrice.class === planetClass) as PlanetClassifier;
   }
   static getClassColor(planetClass: string) {
     return this.getClass(planetClass)?.color[0] || 'white';
