@@ -14,13 +14,16 @@ export interface PlanetPhysicModel {
   obliquity: number;
 }
 
+const EARTH_RADIUS = 6371;
 const JUPITER_MASS_IN_EARTH_MASS = 317.83;
 const JUPITER_RADIUS_IN_EARTH_RADIUS = 11.209;
+const JUPITER_RADIUS = EARTH_RADIUS * JUPITER_RADIUS_IN_EARTH_RADIUS;
 
 type MinMax = [min: number, max: number];
 const HABITABLE_WORLD_DENSITY: MinMax = [3, 8]; // h/cm3
 const TERRAN_MASS_RANGE: MinMax = [0.1, 10];
 const PLANET_MASS: MinMax = [0.1, 13 * JUPITER_MASS_IN_EARTH_MASS];
+const PLANET_RADIUS: MinMax = [0.5, 3 * JUPITER_RADIUS_IN_EARTH_RADIUS];
 
 export interface PlanetClassifier {
   class: string;
@@ -178,7 +181,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     class: 'ice_giant', // neptune like, todo hot_neptune
     subClass: 'ice',
     mass: [10, 50],
-    radius: [3, .6 * JUPITER_RADIUS_IN_EARTH_RADIUS],
+    radius: [3, 0.6 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.2,
     color: ['LightSkyBlue'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line * 1.2,
@@ -191,9 +194,14 @@ export type PlanetSubClass = typeof PLANET_CLASSIFICATION[number]['subClass'];
 export class PlanetPhysic {
   private constructor() {}
 
+  /* (km) */
+  static EARTH_RADIUS = EARTH_RADIUS;
   // static EARTH_MASS =
   // static JUPITER_MASS =
   static PLANET_MASS = PLANET_MASS;
+  static PLANET_RADIUS = PLANET_RADIUS;
+
+  static JUPITER_RADIUS = JUPITER_RADIUS;
   static JUPITER_MASS_IN_EARTH_MASS = JUPITER_MASS_IN_EARTH_MASS;
   static JUPITER_RADIUS_IN_EARTH_RADIUS = JUPITER_RADIUS_IN_EARTH_RADIUS;
 

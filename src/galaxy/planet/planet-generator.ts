@@ -73,7 +73,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
-    if (!model.surfaceSeed) this.model.surfaceSeed = this.random.next();
+    if (!model.surfaceSeed) this.model.surfaceSeed = this.random.seed();
     this.regions = (model.regions as RegionModel[]) || [];
 
     const type = model.type || options.planetType;
@@ -108,12 +108,12 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
 
   *generateSurface() {
     try {
-      const surface = new PlanetSurfaceGenerator({}, { strategyName: this.model.type });
+      const surface = new PlanetSurfaceGenerator({}, { strategyName: this.model.type, seed: this.model.surfaceSeed });
       surface.generateSurface();
       this.regions = surface.planet.topology.tiles.map((tile) => ({
         id: tile.id.toString(),
         biome: tile.biome as RegionModel['biome'],
-        color: tile.color && `#${tile.color.getHexString()}`,
+        color: tile.color ? `#${tile.color.getHexString()}` : this.meta.color[0],
         corners: tile.corners.map((corner) => corner.position),
       }));
       // for (const region of surface.generateSurface()) {

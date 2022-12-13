@@ -129,12 +129,8 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
 
   *generateOrbits(): IterableIterator<OrbitGenerator> {
     const random = new RandomObject(this.model.planetsSeed);
-
     const planetOrbits = new SystemOrbitsGenerator({}, { star: this.stars[0], random });
-
-    for (const orbit of planetOrbits.generateOrbits()) {
-      yield orbit;
-    }
+    for (const orbit of planetOrbits.generateOrbits()) yield orbit;
   }
 
   override toModel(): SystemModel {

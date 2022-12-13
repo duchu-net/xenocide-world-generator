@@ -41,6 +41,13 @@ const defaultOptions: PlanetSurfaceOptions = {
 
 export const surfaceStrategy = [
   {
+    name: 'lava',
+    modyficators: [
+      [TerrainSurfaceModificator, { plateCount: 20, oceanicRate: 0.7, subdivisions: 9 }],
+      [BiomeSurfaceModificator, { strategy: 'terrestial-lava' }],
+    ] as const,
+  },
+  {
     name: 'terran',
     modyficators: [
       [TerrainSurfaceModificator, { plateCount: 20, subdivisions: 9 }],
@@ -61,13 +68,11 @@ export const surfaceStrategy = [
   //     [BiomeSurfaceModificator, { strategy: 'terrestial-earth' }],
   //   ] as const,
   // },
-  // {
-  //   name: 'terrestial-lava',
-  //   modyficators: [
-  //     [TerrainSurfaceModificator, { plateCount: 20, oceanicRate: 0.7, subdivisions: 9 }],
-  //     [BiomeSurfaceModificator, { strategy: 'terrestial-lava' }],
-  //   ] as const,
-  // },
+
+  {
+    name: 'puffy_giant',
+    modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
+  },
   {
     name: 'jupiter',
     modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
@@ -78,6 +83,10 @@ export const surfaceStrategy = [
   },
   {
     name: 'super_jupiter',
+    modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
+  },
+  {
+    name: 'gas_dwarf',
     modyficators: [[BiomeSurfaceModificator, { strategy: 'gas-giant' }]] as const,
   },
 ];
