@@ -8,7 +8,7 @@ import { PlanetGenerator, PlanetModel } from '../planet';
 import { StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../physic';
 import { OrbitGenerator } from '../physic/orbit-generator';
 
-import { SystemModel } from './types.d';
+import { SystemModel } from './types';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
 import { EmptyZone, EmptyZoneModel } from './empty-zone';
 import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';

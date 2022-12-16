@@ -3,7 +3,7 @@ import { Vector3 } from 'three';
 import { decimalToRoman, Seed } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
-import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic } from '../physic';
+import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, StarPhysicModel } from '../physic';
 import { StarModel } from '../star';
 import { SystemOrbitModel } from '../system';
 
@@ -81,7 +81,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
       this.meta = PlanetPhysic.getClass(type);
     } else {
       const availableClasses = PlanetPhysic.PLANET_CLASSIFICATION.filter((planetTopology) =>
-        planetTopology.when(this.options.star?.physic, this.model.orbit as OrbitPhysicModel)
+        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.model.orbit as OrbitPhysicModel)
       );
       this.meta = this.random.weighted(availableClasses.map((top) => [top.probability, top])) as PlanetClassifier;
     }
