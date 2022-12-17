@@ -19,7 +19,7 @@ export class ModelHandler<ObjectModel> {
   }
 
   toModel(model: Partial<ObjectModel> = {}): ObjectModel {
-    return { schema: this.schemaName, ...this.model, ...model };
+    return { schemaName: this.schemaName, ...this.model, ...model };
   }
 
   /**

@@ -8,25 +8,25 @@ enum SystemBodyType {
   PLANET = 'PLANET',
   ASTEROID_BELT = 'ASTEROID_BELT',
 }
-enum PlanetType {
-  lava = 'lava',
-  barren = 'barren',
-  desert = 'desert',
-  earth = 'earth',
-  ocean = 'ocean',
-  ice = 'ice',
-  ice_giant = 'ice_giant',
-  gas_giant = 'gas_giant',
-  EMPTY = 'EMPTY',
-}
+// enum PlanetType {
+//   lava = 'lava',
+//   barren = 'barren',
+//   desert = 'desert',
+//   earth = 'earth',
+//   ocean = 'ocean',
+//   ice = 'ice',
+//   ice_giant = 'ice_giant',
+//   gas_giant = 'gas_giant',
+//   EMPTY = 'EMPTY',
+// }
 
 export interface OrbitModel extends OrbitPhysicModel {
   /** zone in system */
   zone?: SystemZone;
   /** orbiting body type */
-  type?: SystemBodyType;
-  /** planet type */
-  subtype?: PlanetType;
+  bodyType?: SystemBodyType;
+  // /** planet type */
+  // subtype?: PlanetType;
 }
 
 interface OrbitOptions extends RandomGeneratorOptions {
@@ -87,8 +87,8 @@ export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
   generateType(random: RandomObject) {
     const tags = this.tags;
     if (tags.length == 0 || (tags.length == 1 && tags[0] == 'EMPTY')) {
-      this.updateModel('type', SystemBodyType.EMPTY);
-      this.updateModel('subtype', PlanetType.EMPTY);
+      this.updateModel('bodyType', SystemBodyType.EMPTY);
+      // this.updateModel('subtype', PlanetType.EMPTY);
       return;
     }
     const weighted: [number, string][] = [];
@@ -97,10 +97,11 @@ export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
       if (!orbitObject) continue;
       weighted.push([orbitObject.probability, tag]);
     }
-    const subtype = random.weighted(weighted);
-    this.updateModel('subtype', subtype);
-    const type = ['EMPTY', 'ASTEROID_BELT'].indexOf(subtype) > -1 ? subtype : 'PLANET';
-    this.updateModel('type', type);
+    const bodyType = random.weighted(weighted);
+    // const subtype = random.weighted(weighted);
+    // this.updateModel('subtype', subtype);
+    // const type = ['EMPTY', 'ASTEROID_BELT'].includes(subtype) ? subtype : 'PLANET';
+    this.updateModel('bodyType', bodyType);
   }
 
   // cutDecimals(number: number, position = 2) {
@@ -128,59 +129,64 @@ export class OrbitGenerator extends RandomGenerator<OrbitModel, OrbitOptions> {
 }
 
 export const ORBIT_OBJECT_TYPES: {
-  type: OrbitModel['type'] | OrbitModel['subtype'];
+  type: OrbitModel['bodyType'];
   probability: number;
   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => boolean;
 }[] = [
-  { type: PlanetType.EMPTY, probability: 0.05, when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => true },
-  {
-    type: PlanetType.lava,
-    probability: 0.2,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner * 0.7,
-  },
-  {
-    type: PlanetType.barren,
-    probability: 0.1,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.habitable_zone_inner * 0.18,
-  },
-  {
-    type: PlanetType.desert,
-    probability: 0.2,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
-      orbit.distance > star.habitable_zone_inner * 0.7 && orbit.distance < star.frost_line,
-  },
+  { type: SystemBodyType.EMPTY, probability: 0.05, when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => true },
+  // {
+  //   type: PlanetType.lava,
+  //   probability: 0.2,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner * 0.7,
+  // },
+  // {
+  //   type: PlanetType.barren,
+  //   probability: 0.1,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.habitable_zone_inner * 0.18,
+  // },
+  // {
+  //   type: PlanetType.desert,
+  //   probability: 0.2,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+  //     orbit.distance > star.habitable_zone_inner * 0.7 && orbit.distance < star.frost_line,
+  // },
   {
     type: SystemBodyType.ASTEROID_BELT,
     probability: 0.2,
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line * 0.1,
   },
   {
-    type: PlanetType.earth,
+    type: SystemBodyType.PLANET,
     probability: 1,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
-      orbit.distance > star.habitable_zone_inner && orbit.distance < star.habitable_zone_outer,
+    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => true,
   },
-  {
-    type: PlanetType.ocean,
-    probability: 0.3,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
-      orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
-  },
-  {
-    type: PlanetType.ice,
-    probability: 0.3,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line,
-  },
-  {
-    type: PlanetType.gas_giant,
-    probability: 0.5,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
-      orbit.distance > star.frost_line && orbit.distance < star.frost_line + (star.outer_limit - star.frost_line) * 0.5,
-  },
-  {
-    type: PlanetType.ice_giant,
-    probability: 0.6,
-    when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
-      orbit.distance > star.frost_line && orbit.distance > star.frost_line + (star.outer_limit - star.frost_line) * 0.1,
-  },
+  // {
+  //   type: PlanetType.earth,
+  //   probability: 1,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+  //     orbit.distance > star.habitable_zone_inner && orbit.distance < star.habitable_zone_outer,
+  // },
+  // {
+  //   type: PlanetType.ocean,
+  //   probability: 0.3,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+  //     orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
+  // },
+  // {
+  //   type: PlanetType.ice,
+  //   probability: 0.3,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line,
+  // },
+  // {
+  //   type: PlanetType.gas_giant,
+  //   probability: 0.5,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+  //     orbit.distance > star.frost_line && orbit.distance < star.frost_line + (star.outer_limit - star.frost_line) * 0.5,
+  // },
+  // {
+  //   type: PlanetType.ice_giant,
+  //   probability: 0.6,
+  //   when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
+  //     orbit.distance > star.frost_line && orbit.distance > star.frost_line + (star.outer_limit - star.frost_line) * 0.1,
+  // },
 ];

@@ -157,6 +157,8 @@ class GasGiantBiomeStrategy implements BiomeStrategy {
   }
 }
 
+const carnelian = `#A81B18`;
+const roseEbony = '#5A4548';
 class LavaBiomeStrategy implements BiomeStrategy {
   name = 'terran-lava';
   generateBiomes(tiles: Tile[], planetRadius: number, random: RandomObject) {
@@ -167,10 +169,10 @@ class LavaBiomeStrategy implements BiomeStrategy {
 
       if (elevation <= 0) {
         tile.biome = 'lava';
-        tile.color = new Color('darkred').lerp(colorDeviance, 0.03);
+        tile.color = new Color(carnelian).lerp(colorDeviance, 0.03);
       } else {
         tile.biome = 'rocks';
-        tile.color = new Color('black').lerp(new Color('silver').lerp(colorDeviance.multiplyScalar(0.2), 0.3), 0.05);
+        tile.color = new Color(roseEbony).lerp(new Color('silver').lerp(colorDeviance.multiplyScalar(0.2), 0.3), 0.05);
         // tile.color = new Color('black').lerp(new Color('silver').lerp(colorDeviance, 0.1), 0.025);
         // tile.color = new Color('saddlebrown').lerp(new Color('silver').lerp(colorDeviance, 0.7), 0.1);
         // tile.color = new Color('saddlebrown').lerp(colorDeviance, 0.05);

@@ -1,3 +1,3 @@
-export * from './types.d';
+export * from './types';
 export * from './system-generator';
 export * from './system-orbits-generator';

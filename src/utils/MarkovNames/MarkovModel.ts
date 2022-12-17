@@ -4,12 +4,11 @@ export class MarkovModel {
   constructor(
     public order: number,
     public startingStrings = new Map<string, number>(),
-    public productions = new Map()
+    public productions = new Map<string, Map<string, number>>()
   ) {}
 
   Generate(random: RandomObject) {
     let builder = '';
-    // @ts-ignore
     let lastSelected = MarkovModel.WeightedRandom(random, this.startingStrings);
 
     do {
@@ -18,7 +17,7 @@ export class MarkovModel {
       if (builder.length < this.order) break;
 
       //Key to use to find next production
-      var key = builder.substring(builder.length - this.order);
+      const key = builder.substring(builder.length - this.order);
 
       //Find production rules for this key
       const prod = [];
@@ -31,10 +30,9 @@ export class MarkovModel {
     return builder;
   }
 
-  static WeightedRandom(random: RandomObject, _items = []) {
-    var num = random.unit();
-    // @ts-ignore
-    const items = _items.set ? Array.from(_items.entries()) : _items;
+  static WeightedRandom(random: RandomObject, _items: Map<string, number> = new Map()) {
+    let num = random.unit();
+    const items = Array.from(_items.entries());
     for (let i = 0; i < items.length; i++) {
       num -= items[i][1];
       if (num <= 0) return items[i][0];

@@ -8,7 +8,7 @@ import { PlanetGenerator, PlanetModel } from '../planet';
 import { StarStellarClass, STAR_COUNT_DISTIBUTION_IN_SYSTEMS } from '../physic';
 import { OrbitGenerator } from '../physic/orbit-generator';
 
-import { SystemModel } from './types.d';
+import { SystemModel } from './types';
 import { SystemOrbitsGenerator } from './system-orbits-generator';
 import { EmptyZone, EmptyZoneModel } from './empty-zone';
 import { DebrisBeltGenerator, DebrisBeltModel } from './debris-belt-generator';
@@ -95,16 +95,22 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       let nameIndex = 0;
       for (const orbitGenerator of this.generateOrbits()) {
         let orbitObject: OnOrbitGenerator;
-        if (orbitGenerator.model.type === 'PLANET')
-          orbitObject = new PlanetGenerator({
-            name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
-            orbit: orbitGenerator.toModel(),
-          });
-        else if (orbitGenerator.model.type === 'ASTEROID_BELT') {
-          orbitObject = new DebrisBeltGenerator({
-            name: DebrisBeltGenerator.getSequentialName(nameIndex++),
-            orbit: orbitGenerator.toModel(),
-          });
+        if (orbitGenerator.model.bodyType === 'PLANET')
+          orbitObject = new PlanetGenerator(
+            {
+              name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
+              orbit: orbitGenerator.toModel(),
+            },
+            { star: this.stars[0].toModel(), seed: this.random.seed() }
+          );
+        else if (orbitGenerator.model.bodyType === 'ASTEROID_BELT') {
+          orbitObject = new DebrisBeltGenerator(
+            {
+              name: DebrisBeltGenerator.getSequentialName(nameIndex++),
+              orbit: orbitGenerator.toModel(),
+            },
+            { seed: this.random.seed() }
+          );
         } else {
           orbitObject = new EmptyZone({
             name: EmptyZone.getSequentialName(nameIndex++),
@@ -123,12 +129,8 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
 
   *generateOrbits(): IterableIterator<OrbitGenerator> {
     const random = new RandomObject(this.model.planetsSeed);
-
     const planetOrbits = new SystemOrbitsGenerator({}, { star: this.stars[0], random });
-
-    for (const orbit of planetOrbits.generateOrbits()) {
-      yield orbit;
-    }
+    for (const orbit of planetOrbits.generateOrbits()) yield orbit;
   }
 
   override toModel(): SystemModel {

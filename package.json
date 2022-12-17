@@ -30,7 +30,7 @@
   "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme",
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "three": "^0.97.0",
+    "three": "^0.144.0",
     "three-math": "^0.69.0"
   },
   "devDependencies": {

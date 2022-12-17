@@ -116,15 +116,12 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
     }
   }
 
-  // toModel(): SystemOrbitModel {
-  //   return { ...this.model };
-  // }
-
   // static _generationStrategies = [
   //   [1, PlanetOrbitGenerator.ClassicSystem],
   //   [.1, PlanetOrbitGenerator.HabitableMoonSystem],
   //   [.05, PlanetOrbitGenerator.HotJupiterSystem]
   // ]
+  // todo fix that after planet rework - not working properly
   static ClassicSystem(random: RandomObject, { prefer_habitable }: { prefer_habitable?: boolean }) {
     return (planetOrbit: SystemOrbitsGenerator) => {
       // planetOrbit.topology = 'classic'

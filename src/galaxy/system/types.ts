@@ -1,3 +1,11 @@
+import { Vector3 } from 'three';
+
+import { StarModel } from '../star/types';
+import { PlanetModel } from '../planet';
+
+import { EmptyZoneModel } from './empty-zone';
+import { DebrisBeltModel } from './debris-belt-generator';
+
 export interface SystemModel {
   starColor?: string;
   habitable?: boolean;
