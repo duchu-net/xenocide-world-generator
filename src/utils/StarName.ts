@@ -94,7 +94,7 @@ export class StarName {
   static Integer(random: RandomObject) {
     // console.log('Integer');
     const number = random.NormallyDistributedSingle4(100, 5, 1, 1000);
-    return Math.abs(number);
+    return Math.trunc(Math.abs(number));
   }
   static Decimal(random: RandomObject) {
     // console.log('Decimal');
