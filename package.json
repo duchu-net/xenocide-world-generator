@@ -3,5 +3,9 @@
   "version": "0.0.1-rc.2",
   "license": "ISC",
   "author": "Patryk Androsiuk (http://duchu.net)",
-  "type": "commonjs"
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/duchu-net/xenocide-world-generator/issues"
+  },
+  "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme"
 }
