@@ -2,7 +2,7 @@ import { Vector3 } from 'three';
 
 import { Names } from '../utils/Names';
 import { StarName } from '../utils/StarName';
-import { GalaxyClass, GalaxyClassShape } from '../interfaces';
+import { GalaxyClass, GalaxyClassShape, Position } from '../interfaces';
 import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 
 import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
@@ -13,7 +13,7 @@ export interface GalaxyModel {
   systemsSeed?: number; // todo
   name?: string;
   code?: string;
-  position?: Vector3;
+  position?: Position;
   classification?: GalaxyClass;
   systems?: SystemModel[];
 

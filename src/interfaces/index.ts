@@ -1,3 +1,9 @@
+export interface Position {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export enum GalaxyClass {
   Spiral = 'spiral',
   Grid = 'grid',
@@ -128,6 +134,6 @@ export const CONSTELATIONS_NAMES = [
   'capra',
   'haedi',
   'cerberus',
-  'corona firmiana'
+  'corona firmiana',
   // https://en.wikipedia.org/wiki/Former_constellations
 ];

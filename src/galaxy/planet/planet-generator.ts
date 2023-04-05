@@ -33,6 +33,7 @@ const defaultOptions: PlanetOptions = {
 export interface PlanetModel {
   id?: string;
   name?: string;
+  code?: string;
   // type?: string;
   radius?: number;
   surfaceSeed?: Seed;
@@ -115,6 +116,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
         biome: tile.biome as RegionModel['biome'],
         color: tile.color ? `#${tile.color.getHexString()}` : this.meta.color[0],
         corners: tile.corners.map((corner) => corner.position),
+        neighbors: tile.tiles.map((tile) => tile.id),
       }));
       // for (const region of surface.generateSurface()) {
       //   yield region;
