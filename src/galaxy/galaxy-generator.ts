@@ -8,6 +8,7 @@ import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
 import { StarPhysics } from './physic';
 import { SystemGenerator, SystemModel } from './system';
+import { codename } from '../utils';
 
 export interface GalaxyModel {
   systemsSeed?: number; // todo
@@ -37,8 +38,7 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
     super(model, { ...defaultOptions, ...model.options, ...options });
 
     if (!model.name) this.model.name = Names.GenerateGalaxyName(this.random); // todo name generator should be static inside Galaxy?
-    if (!model.code)
-      this.model.code = `GALAXY.${String(this.model.name).toUpperCase().replace(new RegExp(' ', 'g'), '')}`;
+    if (!model.code) this.model.code = codename(this.model.name);
     if (!model.position) this.model.position = new Vector3();
 
     // todo check that

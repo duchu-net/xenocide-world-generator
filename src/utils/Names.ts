@@ -119,7 +119,7 @@ export class Names {
         model.TeachArray(names);
         destination = model.toModel();
       }
-      console.log(destination, names);
+      // console.log(destination, names);
       return destination.Generate(random);
     };
   }

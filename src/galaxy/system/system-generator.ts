@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { RandomObject } from '../../utils';
+import { codename, RandomObject } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { StarGenerator, StarModel } from '../star';
@@ -43,10 +43,12 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   override schemaName = 'SystemModel';
   public readonly stars: StarGenerator[] = [];
   public readonly orbits: OnOrbitGenerator[] = [];
+  public readonly planets: PlanetGenerator[] = [];
 
   constructor(model: SystemModel, options: Partial<SystemOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
+    if (!model.code) this.model.code = codename(this.model.name);
     if (!model.position) this.model.position = new Vector3();
     if (!model.starsSeed) this.model.starsSeed = this.random.next();
     if (!model.planetsSeed) this.model.planetsSeed = this.random.next();
@@ -95,7 +97,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       let nameIndex = 0;
       for (const orbitGenerator of this.generateOrbits()) {
         let orbitObject: OnOrbitGenerator;
-        if (orbitGenerator.model.bodyType === 'PLANET')
+        if (orbitGenerator.model.bodyType === 'PLANET') {
           orbitObject = new PlanetGenerator(
             {
               name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
@@ -103,7 +105,8 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
             },
             { star: this.stars[0].toModel(), seed: this.random.seed() }
           );
-        else if (orbitGenerator.model.bodyType === 'ASTEROID_BELT') {
+          this.planets.push(orbitObject);
+        } else if (orbitGenerator.model.bodyType === 'ASTEROID_BELT') {
           orbitObject = new DebrisBeltGenerator(
             {
               name: DebrisBeltGenerator.getSequentialName(nameIndex++),

@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { decimalToRoman, Seed } from '../../utils';
+import { codename, decimalToRoman, Seed } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, StarPhysicModel } from '../physic';
@@ -17,6 +17,7 @@ export interface RegionModel {
   id: string;
   biome?: RegionBiome;
   corners: Vector3[];
+  neighbors: string[];
   effects?: {}[];
 }
 
@@ -31,7 +32,6 @@ const defaultOptions: PlanetOptions = {
 };
 
 export interface PlanetModel {
-  id?: string;
   name?: string;
   code?: string;
   // type?: string;
@@ -74,6 +74,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
+    if (!model.code) this.model.code = codename(this.model.name);
     if (!model.surfaceSeed) this.model.surfaceSeed = this.random.seed();
     this.regions = (model.regions as RegionModel[]) || [];
 
@@ -116,7 +117,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
         biome: tile.biome as RegionModel['biome'],
         color: tile.color ? `#${tile.color.getHexString()}` : this.meta.color[0],
         corners: tile.corners.map((corner) => corner.position),
-        neighbors: tile.tiles.map((tile) => tile.id),
+        neighbors: tile.tiles.map((tile) => tile.id.toString()),
       }));
       // for (const region of surface.generateSurface()) {
       //   yield region;

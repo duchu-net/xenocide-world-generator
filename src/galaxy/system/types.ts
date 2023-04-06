@@ -7,6 +7,7 @@ import { EmptyZoneModel } from './empty-zone';
 import { DebrisBeltModel } from './debris-belt-generator';
 
 export interface SystemModel {
+  code?: string;
   starColor?: string;
   habitable?: boolean;
   starRadius?: number;
