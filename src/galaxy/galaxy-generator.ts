@@ -11,9 +11,9 @@ import { SystemGenerator, SystemModel } from './system';
 import { codename } from '../utils';
 
 export interface GalaxyModel {
+  id?: string;
   systemsSeed?: number; // todo
   name?: string;
-  code?: string;
   position?: Position;
   classification?: GalaxyClass;
   systems?: SystemModel[];
@@ -38,7 +38,7 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
     super(model, { ...defaultOptions, ...model.options, ...options });
 
     if (!model.name) this.model.name = Names.GenerateGalaxyName(this.random); // todo name generator should be static inside Galaxy?
-    if (!model.code) this.model.code = codename(this.model.name);
+    if (!model.id) this.model.id = codename(this.model.name);
     if (!model.position) this.model.position = new Vector3();
 
     // todo check that

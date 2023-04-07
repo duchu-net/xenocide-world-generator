@@ -32,8 +32,8 @@ const defaultOptions: PlanetOptions = {
 };
 
 export interface PlanetModel {
+  id?: string;
   name?: string;
-  code?: string;
   // type?: string;
   radius?: number;
   surfaceSeed?: Seed;
@@ -74,7 +74,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
-    if (!model.code) this.model.code = codename(this.model.name);
+    if (!model.id) this.model.id = codename(this.model.name);
     if (!model.surfaceSeed) this.model.surfaceSeed = this.random.seed();
     this.regions = (model.regions as RegionModel[]) || [];
 

@@ -48,7 +48,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   constructor(model: SystemModel, options: Partial<SystemOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
-    if (!model.code) this.model.code = codename(this.model.name);
+    if (!model.id) this.model.id = codename(this.model.name);
     if (!model.position) this.model.position = new Vector3();
     if (!model.starsSeed) this.model.starsSeed = this.random.next();
     if (!model.planetsSeed) this.model.planetsSeed = this.random.next();
