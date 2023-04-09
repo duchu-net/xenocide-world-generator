@@ -1,4 +1,5 @@
 import { getStarsNames } from '../../resources/STARS_NAMES';
+import { capitalize } from './alphabet';
 
 import { MarkovModelBuilder } from './MarkovNames';
 import { MarkovModel } from './MarkovNames/MarkovModel';
@@ -75,7 +76,7 @@ export class StarName {
     'Psi',
     'Omega',
   ];
-  static decorators = ['Major', 'Majoris', 'Minor', 'Minoris', 'Prime', 'Secundis', 'System'];
+  static decorators = ['Major', 'Majoris', 'Minor', 'Minoris', 'Prime', 'Secundis'];
 
   static Greek(random: RandomObject) {
     // console.log('Greek');
@@ -109,7 +110,8 @@ export class StarName {
   // static markovNameModel = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
   static PlainMarkov(random: RandomObject) {
     // console.log('PlainMarkov');
-    return StarName.getInstance().Generate(random);
+    const str = StarName.getInstance().Generate(random); // todo capitalize?
+    return capitalize(str);
   }
   static NamedStar(random: RandomObject) {
     // console.log('NamedStar');

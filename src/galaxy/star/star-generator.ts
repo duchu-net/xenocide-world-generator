@@ -1,4 +1,4 @@
-import { numberToGreekChar } from '../../utils';
+import { codename, numberToGreekChar } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { StarPhysicModel, StarPhysics, StarStellarClass } from '../physic';
@@ -44,6 +44,7 @@ export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
 
   setName(name: string) {
     this.model.name = name;
+    this.model.id = codename(name)
   }
 
   static getSequentialName(systemName: string, starIndex: number) {

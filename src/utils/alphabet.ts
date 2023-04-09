@@ -69,5 +69,9 @@ export const decimalToRoman = (num: number): string => {
 };
 
 export const codename = (str?: string) => {
-  return str?.toLowerCase().replace(' ', '-');
+  return str?.toLowerCase().replace(' ', '_');
 };
+
+export const capitalize = (str: string) => {
+  return  str && str[0].toLocaleUpperCase() + str.substring(1)
+}
