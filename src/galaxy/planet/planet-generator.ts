@@ -5,21 +5,9 @@ import { codename, decimalToRoman, Seed } from '../../utils';
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, StarPhysicModel } from '../physic';
 import { StarModel } from '../star';
-import { SystemOrbitModel } from '../system';
+import { PlanetModel, RegionModel } from './planet-generator.model';
 
 import { PlanetSurfaceGenerator } from './surface/planet-surface-generator';
-
-export enum RegionBiome {
-  Ocean = 'ocean',
-}
-
-export interface RegionModel {
-  id: string;
-  biome?: RegionBiome;
-  corners: Vector3[];
-  neighbors: string[];
-  effects?: {}[];
-}
 
 export interface PlanetOptions extends RandomGeneratorOptions {
   // surfaceSeed?: Seed;
@@ -30,36 +18,6 @@ export interface PlanetOptions extends RandomGeneratorOptions {
 const defaultOptions: PlanetOptions = {
   // position: new Vector3(0, 0, 0),
 };
-
-export interface PlanetModel {
-  id?: string;
-  name?: string;
-  // type?: string;
-  radius?: number;
-  surfaceSeed?: Seed;
-  physic?: PlanetPhysic;
-  orbit?: SystemOrbitModel; // OrbitModel;
-  regions?: RegionModel[];
-  options?: {}; // todo generator options???
-
-  type?:
-    | 'lava'
-    | 'rocky'
-    | 'terran'
-    | 'coreless-watery'
-    | 'watery'
-    | 'icy'
-    | 'hot_icy'
-    | 'super_mercury'
-    | 'puffy_giant'
-    | 'jupiter'
-    | 'hot_jupiter'
-    | 'super_jupiter'
-    | 'gas_dwarf'
-    | 'ice_giant';
-  subType?: 'terrestial' | 'liquid' | 'ice';
-  schemaName?: 'PlanetModel';
-}
 
 // export interface PlanetGeneratorModel {
 //   model?: PlanetModel;
@@ -137,6 +95,6 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
 
   override toModel(): PlanetModel {
     const { star, ...options } = this.options;
-    return super.toModel({ regions: this.regions, options });
+    return super.toModel({ ...this.model, regions: this.regions, options });
   }
 }
