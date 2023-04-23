@@ -18,6 +18,8 @@ export interface RegionModel {
 export interface PlanetModel {
   id?: string;
   name?: string;
+  path?: string;
+  parentPath?: string;
   // type?: string;
   radius?: number;
   surfaceSeed?: Seed;

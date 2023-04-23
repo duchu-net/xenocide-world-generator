@@ -43,12 +43,14 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   override schemaName = 'SystemModel';
   public readonly stars: StarGenerator[] = [];
   public readonly orbits: OnOrbitGenerator[] = [];
+  public readonly belts: DebrisBeltGenerator[] = [];
   public readonly planets: PlanetGenerator[] = [];
 
   constructor(model: SystemModel, options: Partial<SystemOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
     if (!model.id) this.model.id = codename(this.model.name);
+    if (!model.path) this.model.path = `${this.model.parentPath}/${this.model.id}`;
     if (!model.position) this.model.position = new Vector3();
     if (!model.starsSeed) this.model.starsSeed = this.random.next();
     if (!model.planetsSeed) this.model.planetsSeed = this.random.next();
@@ -101,6 +103,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
           orbitObject = new PlanetGenerator(
             {
               name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
+              parentPath: this.model.path,
               orbit: orbitGenerator.toModel(),
             },
             { star: this.stars[0].toModel(), seed: this.random.seed() }
@@ -114,6 +117,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
             },
             { seed: this.random.seed() }
           );
+          this.belts.push(orbitObject);
         } else {
           orbitObject = new EmptyZone({
             name: EmptyZone.getSequentialName(nameIndex++),
@@ -121,7 +125,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
           });
         }
 
-        this.orbits.push(orbitObject);
+        this.orbits.push(orbitObject); // todo whole orbit logic should be separated, but accessible :?
         yield orbitObject;
       }
       // this.fillPlanetInfo(); // todo
@@ -138,8 +142,11 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
 
   override toModel(): SystemModel {
     return super.toModel({
-      stars: this.stars.map((star) => star.toModel()),
+      ...this.model,
       orbits: this.orbits.map((orbit) => orbit.toModel?.()),
+      stars: this.stars.map((star) => star.toModel()),
+      belts: this.belts.map((belt) => belt.toModel()),
+      planets: this.planets.map((planet) => planet.toModel()),
       options: this.options,
     });
   }

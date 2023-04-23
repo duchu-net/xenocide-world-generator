@@ -12,6 +12,7 @@ import { codename } from '../utils';
 
 export interface GalaxyModel {
   id?: string;
+  path?: string;
   systemsSeed?: number; // todo
   name?: string;
   position?: Position;
@@ -39,6 +40,7 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
 
     if (!model.name) this.model.name = Names.GenerateGalaxyName(this.random); // todo name generator should be static inside Galaxy?
     if (!model.id) this.model.id = codename(this.model.name);
+    if (!model.path) this.model.path = codename(this.model.name);
     if (!model.position) this.model.position = new Vector3();
 
     // todo check that
@@ -81,6 +83,7 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
       const systemGenerator = new SystemGenerator(
         {
           name: systemName,
+          parentPath: this.model.path,
           // seed: systemSeed,
           position: system.position,
           temperature: system.temperature, // todo not needed?
