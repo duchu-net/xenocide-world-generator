@@ -1,4 +1,4 @@
-import { decimalToRoman } from '../../utils';
+import { codename, decimalToRoman } from '../../utils';
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { SystemOrbitModel } from './system-orbits-generator';
 
@@ -13,6 +13,8 @@ const defaultOptions: DebrisBeltOptions = {
 export interface DebrisBeltModel {
   id?: string;
   name?: string;
+  path?: string;
+  parentPath?: string;
   type?: string; // todo eg. icy, iron, etc.?
   subType?: string; // todo dust - planet ring, rocky - big
   physic?: {
@@ -33,6 +35,9 @@ export class DebrisBeltGenerator extends RandomGenerator<DebrisBeltModel, Debris
 
   constructor(model: DebrisBeltModel, options: Partial<DebrisBeltOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
+
+    if (!model.id) this.model.id = codename(this.model.name);
+    if (!model.path) this.model.path = `${this.model.parentPath}/${this.model.id}`;
   }
 
   get subtype(): string {

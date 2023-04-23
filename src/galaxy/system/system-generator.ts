@@ -113,6 +113,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
           orbitObject = new DebrisBeltGenerator(
             {
               name: DebrisBeltGenerator.getSequentialName(nameIndex++),
+              parentPath: this.model.path,
               orbit: orbitGenerator.toModel(),
             },
             { seed: this.random.seed() }
