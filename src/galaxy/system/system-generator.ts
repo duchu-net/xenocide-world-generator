@@ -104,9 +104,8 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
             {
               name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
               parentPath: this.model.path,
-              orbit: orbitGenerator.toModel(),
             },
-            { star: this.stars[0].toModel(), seed: this.random.seed() }
+            { star: this.stars[0].toModel(), orbit: orbitGenerator.toModel(), seed: this.random.seed() }
           );
           this.planets.push(orbitObject);
         } else if (orbitGenerator.model.bodyType === 'ASTEROID_BELT') {

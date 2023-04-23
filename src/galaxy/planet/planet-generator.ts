@@ -3,7 +3,8 @@ import { Vector3 } from 'three';
 import { codename, decimalToRoman, Seed } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
-import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, StarPhysicModel } from '../physic';
+import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, PlanetPhysicModel, StarPhysicModel } from '../physic';
+import { OrbitModel } from '../physic/orbit-generator';
 import { StarModel } from '../star';
 import { PlanetModel, RegionModel } from './planet-generator.model';
 
@@ -13,6 +14,7 @@ export interface PlanetOptions extends RandomGeneratorOptions {
   // surfaceSeed?: Seed;
   // random?: RandomObject;
   star?: StarModel;
+  orbit?: OrbitModel;
   planetType?: string;
 }
 const defaultOptions: PlanetOptions = {
@@ -28,6 +30,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   override schemaName = 'PlanetModel';
   public regions: RegionModel[];
   private meta: PlanetClassifier;
+  public physic?: PlanetPhysicModel;
 
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
@@ -42,7 +45,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
       this.meta = PlanetPhysic.getClass(type);
     } else {
       const availableClasses = PlanetPhysic.PLANET_CLASSIFICATION.filter((planetTopology) =>
-        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.model.orbit as OrbitPhysicModel)
+        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.options.orbit as OrbitPhysicModel)
       );
       this.meta = this.random.weighted(availableClasses.map((top) => [top.probability, top])) as PlanetClassifier;
     }
@@ -56,15 +59,15 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   }
 
   recalculatePhysic() {
-    // const { type } = this.model;
-    // if (type) {
-    // }
-    // throw new Error('Method not implemented.');
+    const model = { ...this.options.orbit } as unknown as PlanetPhysicModel;
+    model.radius = this.model.radius as number;
+
+    this.physic = model;
   }
 
   get subtype(): string {
     // @ts-ignore
-    return this.model.orbit.subtype;
+    return this.model.subtype;
   }
 
   *generateSurface() {
@@ -95,7 +98,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   }
 
   override toModel(): PlanetModel {
-    const { star, ...options } = this.options;
-    return super.toModel({ ...this.model, regions: this.regions, options });
+    const { star, orbit, ...options } = this.options;
+    return super.toModel({ ...this.model, physic: this.physic, regions: this.regions, options });
   }
 }

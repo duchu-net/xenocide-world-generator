@@ -1,6 +1,6 @@
 import { Seed } from '../../utils';
 import { Vector3 } from 'three';
-import { PlanetPhysic } from '../physic';
+import { PlanetPhysicModel } from '../physic';
 import { SystemOrbitModel } from '../system';
 
 export enum RegionBiome {
@@ -23,8 +23,8 @@ export interface PlanetModel {
   // type?: string;
   radius?: number;
   surfaceSeed?: Seed;
-  physic?: PlanetPhysic;
-  orbit?: SystemOrbitModel; // OrbitModel;
+  physic?: PlanetPhysicModel & SystemOrbitModel;
+  // orbit?: SystemOrbitModel; // OrbitModel;
   regions?: RegionModel[];
   options?: {}; // todo generator options???
 
