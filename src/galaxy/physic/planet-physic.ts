@@ -14,6 +14,11 @@ export interface PlanetPhysicModel {
   obliquity: number;
 }
 
+const SECONDS_IN_DAY = 86400;
+const G = 6.6743e-11; // gravitational constant
+const EARTH_MASS_IN_KG = 5.972e24; // Earth mass in kg
+const AU_IN_M = 1.496e11; // Astronomical unit in meters
+
 const EARTH_RADIUS = 6371;
 const JUPITER_MASS_IN_EARTH_MASS = 317.83;
 const JUPITER_RADIUS_IN_EARTH_RADIUS = 11.209;
@@ -207,12 +212,26 @@ export class PlanetPhysic {
 
   static readonly PLANET_CLASSIFICATION = PLANET_CLASSIFICATION;
 
+  // todo needs check
   /**
    * @param radius planet radius
    * @returns rotation period in EARTH DAYS // todo in hours?
    */
-  static calcRotationPeriod(radius: number) {
-    return 1; // not good: -0.1 + 0.069 * radius;
+  static calcRotationalPeriod(mass: number, radius: number, distance: number): number {
+    // Convert mass from Earth masses to kg
+    const massInKg = mass * EARTH_MASS_IN_KG;
+    // Convert radius from Earth radii to meters
+    const radiusInMeters = radius * (EARTH_RADIUS * 1000);
+    // Convert distance from AU to meters
+    const distanceInMeters = distance * AU_IN_M;
+
+    const period = 2 * Math.PI * Math.sqrt(Math.pow(distanceInMeters, 3) / (G * massInKg));
+    // Adjust for the planet's radius
+    const circumference = 2 * Math.PI * radiusInMeters;
+    const adjustedPeriod = period * (circumference / distanceInMeters);
+    // console.log(period / SECONDS_IN_DAY, adjustedPeriod / SECONDS_IN_DAY);
+
+    return adjustedPeriod / SECONDS_IN_DAY /* todo - probably return completle fictional values xD */ / 100;
   }
 
   static calcDensity(mass: number, cmf = 0.35) {

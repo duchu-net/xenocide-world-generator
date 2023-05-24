@@ -30,7 +30,13 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   override schemaName = 'PlanetModel';
   public regions: RegionModel[];
   private meta: PlanetClassifier;
-  public physic?: PlanetPhysicModel;
+  public physic: PlanetPhysicModel = {
+    mass: 0,
+    density: 0,
+    radius: 0,
+    rotationPeriod: 0,
+    obliquity: 0,
+  };
 
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
@@ -59,10 +65,13 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   }
 
   recalculatePhysic() {
-    const model = { ...this.options.orbit } as unknown as PlanetPhysicModel;
-    model.radius = this.model.radius as number;
+    const { model, physic, options } = this;
+    Object.assign(physic, options.orbit);
+    physic.radius = model.radius || physic.radius;
 
-    this.physic = model;
+    // physic.mass = model.mass || physic.mass;
+    physic.mass = 1;
+    physic.rotationPeriod = PlanetPhysic.calcRotationalPeriod(physic.mass, physic.radius, options.orbit?.distance || 1);
   }
 
   get subtype(): string {
