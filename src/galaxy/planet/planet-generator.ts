@@ -42,7 +42,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
     super(model, { ...defaultOptions, ...model.options, ...options });
 
     if (!model.id) this.model.id = codename(this.model.name);
-    if (!model.path) this.model.path = `${this.model.parentPath}/${this.model.id}`;
+    if (!model.path) this.model.path = `${this.model.parentPath}/p:${this.model.id}`;
     if (!model.surfaceSeed) this.model.surfaceSeed = this.random.seed();
     this.regions = (model.regions as RegionModel[]) || [];
 

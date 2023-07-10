@@ -37,7 +37,7 @@ export class DebrisBeltGenerator extends RandomGenerator<DebrisBeltModel, Debris
     super(model, { ...defaultOptions, ...model.options, ...options });
 
     if (!model.id) this.model.id = codename(this.model.name);
-    if (!model.path) this.model.path = `${this.model.parentPath}/${this.model.id}`;
+    if (!model.path) this.model.path = `${this.model.parentPath}/b:${this.model.id}`;
   }
 
   get subtype(): string {
