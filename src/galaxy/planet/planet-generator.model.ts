@@ -9,6 +9,7 @@ export enum RegionBiome {
 
 export interface RegionModel {
   id: string;
+  path: string;
   biome?: RegionBiome;
   color?: string;
   corners: Vector3[];

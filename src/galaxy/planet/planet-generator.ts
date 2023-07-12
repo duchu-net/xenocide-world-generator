@@ -85,6 +85,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
       surface.generateSurface();
       this.regions = surface.planet.topology.tiles.map((tile) => ({
         id: tile.id.toString(),
+        path: `${this.model.path}/r:${tile.id.toString()}`,
         biome: tile.biome as RegionModel['biome'],
         color: tile.color ? `#${tile.color.getHexString()}` : this.meta.color[0],
         corners: tile.corners.map((corner) => corner.position),
