@@ -14,6 +14,7 @@ export interface WorldPath extends Pos {
   galaxy: string;
   system: string;
   target: '' | 'galaxy' | 'system' | typeof prefix[keyof typeof prefix];
+  groups: WorldPath['target'][];
 }
 
 export const parseWorldPath = (path = '') => {
@@ -29,12 +30,17 @@ export const parseWorldPath = (path = '') => {
     belt: '',
     construction: '',
     target: system ? 'system' : galaxy ? 'galaxy' : '',
+    // @ts-ignore
+    groups: [galaxy && 'galaxy', system && 'system'].filter(Boolean),
   };
   nodes.forEach((node, index) => {
     // @ts-ignore
     const pre = prefix[node.substring(0, 2)]; // todo: allow more letters in prefix
-    // @ts-ignore
-    if (pre) position[pre] = node.substring(2, node.length);
+    if (pre) {
+      position.groups.push(pre);
+      // @ts-ignore
+      position[pre] = node.substring(2, node.length);
+    }
     if (index === nodes.length - 1) position.target = pre;
   });
   return position;

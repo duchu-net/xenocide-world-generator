@@ -72,16 +72,20 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       const count = random.weighted(STAR_COUNT_DISTIBUTION_IN_SYSTEMS);
       // if (count <= 0) return;
       for (let i = 0; i < count; i++) {
-        // todo when spectralClass is provided, next star should be smaller
-        const star = new StarGenerator(spectralClass && i === 0 ? { spectralClass, parentPath: this.model.path } : {}, {
-          random,
-        });
+        const star = new StarGenerator(
+          {
+            // todo when spectralClass is provided, next star should be smaller
+            spectralClass: spectralClass && i === 0 ? spectralClass : undefined,
+            parentPath: this.model.path,
+          },
+          { random }
+        );
         this.stars.push(star);
         yield star;
       }
 
       StarGenerator.sortByMass(this.stars);
-      const isSingle = this.stars.length === 1;
+      const isSingle = this.stars.length===1;
       this.stars.forEach((star, index, arr) => {
         star.setName(
           isSingle ? this.name : StarGenerator.getSequentialName(this.name, index),
