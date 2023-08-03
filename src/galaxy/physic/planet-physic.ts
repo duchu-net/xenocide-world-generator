@@ -62,7 +62,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     radius: [0.5, 1.5],
     gravity: [0.4, 1.6],
     cmf: [0.3, 0.4],
-    probability: 0.1,
+    probability: 0.2,
     color: ['#9E9E9E'],
     when: () => true,
   },
@@ -149,7 +149,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     probability: 0.3,
     color: ['#FF5722'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
-      orbit.distance > star.frost_line && orbit.distance < star.outer_limit * 0.6,
+      orbit.distance > star.frost_line && orbit.distance < star.outer_limit * 0.7,
     // orbit.distance < star.frost_line + (star.outer_limit - star.frost_line) * 0.4,
   },
   {
