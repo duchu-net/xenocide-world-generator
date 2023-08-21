@@ -1,4 +1,4 @@
-import { numberToGreekChar } from '../../utils';
+import { codename, GREEK_LETTERS_NAMES, numberToGreekChar } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { StarPhysicModel, StarPhysics, StarStellarClass } from '../physic';
@@ -31,6 +31,7 @@ export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
       this.model.mass = this.random.real(this.meta.min_sol_mass, this.meta.max_sol_mass);
     }
     this.model.spectralClass = this.meta.class;
+    if (!model.path) this.model.path = `${this.model.parentPath}/s:${this.model.id}`;
 
     this.recalculatePhysic();
   }
@@ -42,12 +43,15 @@ export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
     return this.model.mass as number; // todo
   }
 
-  setName(name: string) {
+  setName(name: string, id?: string) {
     this.model.name = name;
+    const newId = id || name;
+    this.model.id = codename(newId);
+    this.model.path = `${this.model.parentPath}/s:${this.model.id}`;
   }
 
-  static getSequentialName(systemName: string, starIndex: number) {
-    return `${systemName} ${numberToGreekChar(starIndex)}`;
+  static getSequentialName(systemName: string, starIndex: number, standarize = false) {
+    return `${systemName} ${standarize ? GREEK_LETTERS_NAMES[starIndex] : numberToGreekChar(starIndex)}`;
   }
   static sortByMass(stars: StarGenerator[]) {
     return stars.sort((a, b) => b.mass - a.mass);

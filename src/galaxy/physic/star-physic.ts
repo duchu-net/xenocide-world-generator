@@ -62,7 +62,7 @@ export class StarPhysics {
       class: StarStellarClass.O,
       max_sol_mass: 50,
       min_sol_mass: 16,
-      max_kelvin_temperature: Number.MAX_SAFE_INTEGER,
+      max_kelvin_temperature: 100000,
       min_kelvin_temperature: 31000,
       organisms_evolution: false,
     },

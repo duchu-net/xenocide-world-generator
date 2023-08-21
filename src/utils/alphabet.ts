@@ -67,3 +67,11 @@ export const decimalToRoman = (num: number): string => {
   if (num >= 1) return `I${decimalToRoman(num - 1)}`;
   throw new RangeError();
 };
+
+export const codename = (str?: string) => {
+  return str?.toLowerCase().replace(/\s/g, '_');
+};
+
+export const capitalize = (str: string) => {
+  return  str && str[0].toLocaleUpperCase() + str.substring(1)
+}

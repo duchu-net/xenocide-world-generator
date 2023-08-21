@@ -1,64 +1,25 @@
 import { Vector3 } from 'three';
 
-import { decimalToRoman, Seed } from '../../utils';
+import { codename, decimalToRoman, Seed } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
-import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, StarPhysicModel } from '../physic';
+import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, PlanetPhysicModel, StarPhysicModel } from '../physic';
+import { OrbitModel } from '../physic/orbit-generator';
 import { StarModel } from '../star';
-import { SystemOrbitModel } from '../system';
+import { PlanetModel, RegionModel } from './planet-generator.model';
 
 import { PlanetSurfaceGenerator } from './surface/planet-surface-generator';
-
-export enum RegionBiome {
-  Ocean = 'ocean',
-}
-
-export interface RegionModel {
-  id: string;
-  biome?: RegionBiome;
-  corners: Vector3[];
-  effects?: {}[];
-}
 
 export interface PlanetOptions extends RandomGeneratorOptions {
   // surfaceSeed?: Seed;
   // random?: RandomObject;
   star?: StarModel;
+  orbit?: OrbitModel;
   planetType?: string;
 }
 const defaultOptions: PlanetOptions = {
   // position: new Vector3(0, 0, 0),
 };
-
-export interface PlanetModel {
-  id?: string;
-  name?: string;
-  // type?: string;
-  radius?: number;
-  surfaceSeed?: Seed;
-  physic?: PlanetPhysic;
-  orbit?: SystemOrbitModel; // OrbitModel;
-  regions?: RegionModel[];
-  options?: {}; // todo generator options???
-
-  type?:
-    | 'lava'
-    | 'rocky'
-    | 'terran'
-    | 'coreless-watery'
-    | 'watery'
-    | 'icy'
-    | 'hot_icy'
-    | 'super_mercury'
-    | 'puffy_giant'
-    | 'jupiter'
-    | 'hot_jupiter'
-    | 'super_jupiter'
-    | 'gas_dwarf'
-    | 'ice_giant';
-  subType?: 'terrestial' | 'liquid' | 'ice';
-  schemaName?: 'PlanetModel';
-}
 
 // export interface PlanetGeneratorModel {
 //   model?: PlanetModel;
@@ -69,10 +30,19 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   override schemaName = 'PlanetModel';
   public regions: RegionModel[];
   private meta: PlanetClassifier;
+  public physic: PlanetPhysicModel = {
+    mass: 0,
+    density: 0,
+    radius: 0,
+    rotationPeriod: 0,
+    obliquity: 0,
+  };
 
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
+    if (!model.id) this.model.id = codename(this.model.name);
+    if (!model.path) this.model.path = `${this.model.parentPath}/p:${this.model.id}`;
     if (!model.surfaceSeed) this.model.surfaceSeed = this.random.seed();
     this.regions = (model.regions as RegionModel[]) || [];
 
@@ -81,7 +51,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
       this.meta = PlanetPhysic.getClass(type);
     } else {
       const availableClasses = PlanetPhysic.PLANET_CLASSIFICATION.filter((planetTopology) =>
-        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.model.orbit as OrbitPhysicModel)
+        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.options.orbit as OrbitPhysicModel)
       );
       this.meta = this.random.weighted(availableClasses.map((top) => [top.probability, top])) as PlanetClassifier;
     }
@@ -95,15 +65,18 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   }
 
   recalculatePhysic() {
-    // const { type } = this.model;
-    // if (type) {
-    // }
-    // throw new Error('Method not implemented.');
+    const { model, physic, options } = this;
+    Object.assign(physic, options.orbit);
+    physic.radius = model.radius || physic.radius;
+
+    // physic.mass = model.mass || physic.mass;
+    physic.mass = 1;
+    physic.rotationPeriod = PlanetPhysic.calcRotationalPeriod(physic.mass, physic.radius, options.orbit?.distance || 1);
   }
 
   get subtype(): string {
     // @ts-ignore
-    return this.model.orbit.subtype;
+    return this.model.subtype;
   }
 
   *generateSurface() {
@@ -112,9 +85,11 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
       surface.generateSurface();
       this.regions = surface.planet.topology.tiles.map((tile) => ({
         id: tile.id.toString(),
+        path: `${this.model.path}/r:${tile.id.toString()}`,
         biome: tile.biome as RegionModel['biome'],
         color: tile.color ? `#${tile.color.getHexString()}` : this.meta.color[0],
         corners: tile.corners.map((corner) => corner.position),
+        neighbors: tile.tiles.map((tile) => tile.id.toString()),
       }));
       // for (const region of surface.generateSurface()) {
       //   yield region;
@@ -133,7 +108,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   }
 
   override toModel(): PlanetModel {
-    const { star, ...options } = this.options;
-    return super.toModel({ regions: this.regions, options });
+    const { star, orbit, ...options } = this.options;
+    return super.toModel({ ...this.model, physic: this.physic, regions: this.regions, options });
   }
 }

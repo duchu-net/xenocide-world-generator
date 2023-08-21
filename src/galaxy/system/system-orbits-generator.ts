@@ -123,12 +123,12 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
   // ]
   // todo fix that after planet rework - not working properly
   static ClassicSystem(random: RandomObject, { prefer_habitable }: { prefer_habitable?: boolean }) {
-    return (planetOrbit: SystemOrbitsGenerator) => {
-      // planetOrbit.topology = 'classic'
-      for (const orbit of planetOrbit.orbits) {
+    return (systemOrbit: SystemOrbitsGenerator) => {
+      // systemOrbit.topology = 'classic'
+      for (const orbit of systemOrbit.orbits) {
         let tags = [];
         for (const orbitObject of ORBIT_OBJECT_TYPES) {
-          if (orbitObject.when?.(planetOrbit.options.star?.physic as StarPhysicModel, orbit.model))
+          if (orbitObject.when?.(systemOrbit.options.star?.physic as StarPhysicModel, orbit.model))
             tags.push(orbitObject.type as string);
         }
         if (prefer_habitable && tags.includes('earth')) {

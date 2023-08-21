@@ -1,56 +1,11 @@
 {
-  "name": "xenocide-world-generator",
-  "version": "0.1-rc.1",
-  "description": "",
-  "main": "./lib/library.js",
-  "scripts": {
-    "dev": "npm run clean && cross-env WEBPACK_ENV=dev webpack --mode development --progress --colors --watch",
-    "build": "cross-env WEBPACK_ENV=production webpack --mode production --progress --colors",
-    "build:watch": "npm run build -- --watch",
-    "test": "mocha --require babel-core/register --colors -w ./src/**/*.spec.js",
-    "test:galaxy": "mocha --require babel-core/register --colors -w ./src/**/Galaxy.spec.js",
-    "test:system": "mocha --require babel-core/register --colors -w ./src/**/System.spec.js",
-    "test:now": "mocha --require babel-register --colors -w ./src/**/*.now.spec.js",
-    "clean": "rimraf lib dist es",
-    ":start": "node app.js --experimental-modules",
-    ":dev2": "nodemon app.js --experimental-modules",
-    ":build:watch": "echo \"build && watch the COMMONJS version of the package - for other version, run specific tasks\" && npm run build:commonjs:watch",
-    ":build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib --ignore spec.js",
-    ":build:commonjs:watch": "npm run build:commonjs -- --watch"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/duchu-net/xenocide-world-generator.git"
-  },
-  "author": "Patryk Androsiuk (http://duchu.net)",
+  "name": "@xeno/world-generator",
+  "version": "0.0.1-rc.2",
   "license": "ISC",
+  "author": "Patryk Androsiuk (http://duchu.net)",
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/duchu-net/xenocide-world-generator/issues"
   },
-  "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme",
-  "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "three": "^0.144.0",
-    "three-math": "^0.69.0"
-  },
-  "devDependencies": {
-    "@types/three": "^0.144.0",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.4",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "cross-env": "^5.1.4",
-    "eslint": "^5.14.1",
-    "mocha": "^5.0.5",
-    "nodemon": "^1.17.2",
-    "rimraf": "^2.6.2",
-    "webpack": "^4.3.0",
-    "webpack-cli": "^2.0.13",
-    "typescript": "~4.8.2"
-  }
+  "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme"
 }

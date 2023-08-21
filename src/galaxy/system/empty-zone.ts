@@ -5,7 +5,9 @@ import { ModelHandler } from '../basic-generator';
 import { SystemOrbitModel } from './system-orbits-generator';
 
 export interface EmptyZoneModel {
+  id?: string;
   name?: string;
+  path?: string;
   orbit?: SystemOrbitModel;
   type?: string; // not used
   subType?: string; // not used

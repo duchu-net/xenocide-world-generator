@@ -14,6 +14,11 @@ export interface PlanetPhysicModel {
   obliquity: number;
 }
 
+const SECONDS_IN_DAY = 86400;
+const G = 6.6743e-11; // gravitational constant
+const EARTH_MASS_IN_KG = 5.972e24; // Earth mass in kg
+const AU_IN_M = 1.496e11; // Astronomical unit in meters
+
 const EARTH_RADIUS = 6371;
 const JUPITER_MASS_IN_EARTH_MASS = 317.83;
 const JUPITER_RADIUS_IN_EARTH_RADIUS = 11.209;
@@ -46,7 +51,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     // gravity: [0.4, 1.6],
     // cmf: [0.3, 0.4],
     probability: 0.2,
-    color: ['red'],
+    color: ['#FF5722'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner * 0.7,
   },
   {
@@ -57,8 +62,8 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     radius: [0.5, 1.5],
     gravity: [0.4, 1.6],
     cmf: [0.3, 0.4],
-    probability: 0.1,
-    color: ['gray'],
+    probability: 0.2,
+    color: ['#9E9E9E'],
     when: () => true,
   },
   {
@@ -70,7 +75,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     gravity: [0.4, 1.6],
     cmf: [0.3, 0.4],
     probability: 1,
-    color: ['DarkOliveGreen'],
+    color: ['#4CAF50'],
     // color: ['green'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.habitable_zone_inner && orbit.distance < star.habitable_zone_outer,
@@ -82,7 +87,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [0.1, 10],
     radius: [0.5, 1.5],
     probability: 0.1,
-    color: ['dodgerblue'],
+    color: ['#2196F3'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
   },
@@ -93,7 +98,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [0.1, 10],
     radius: [0.5, 1.5],
     probability: 0.2,
-    color: ['LightSeaGreen'],
+    color: ['#00BCD4'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.habitable_zone_inner && orbit.distance < star.frost_line,
   },
@@ -103,7 +108,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [0.1, 10],
     radius: [0.5, 1.5],
     probability: 0.2,
-    color: ['lightcyan'],
+    color: ['#03A9F4'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line,
   },
   {
@@ -113,7 +118,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [3, 10],
     radius: [0.5, 1.5],
     probability: 0.05,
-    color: ['gray'],
+    color: ['#E91E63'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner * 0.5,
   },
   {
@@ -123,7 +128,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [1, 10],
     radius: [0.5, 1.5],
     probability: 0.05,
-    color: ['silver'],
+    color: ['#FFC107'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.habitable_zone_inner,
   },
 
@@ -133,7 +138,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [1 * JUPITER_MASS_IN_EARTH_MASS, 2 * JUPITER_MASS_IN_EARTH_MASS],
     radius: [1 * JUPITER_RADIUS_IN_EARTH_RADIUS, 3 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.1,
-    color: ['gray'],
+    color: ['#FF9800'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance < star.frost_line * 0.5,
   },
   {
@@ -142,9 +147,9 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [10, 2 * JUPITER_MASS_IN_EARTH_MASS],
     radius: [0.9 * JUPITER_RADIUS_IN_EARTH_RADIUS, 1.5 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.3,
-    color: ['GoldenRod'],
+    color: ['#FF5722'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
-      orbit.distance > star.frost_line && orbit.distance < star.outer_limit * 0.6,
+      orbit.distance > star.frost_line && orbit.distance < star.outer_limit * 0.7,
     // orbit.distance < star.frost_line + (star.outer_limit - star.frost_line) * 0.4,
   },
   {
@@ -154,7 +159,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [1 * JUPITER_MASS_IN_EARTH_MASS, 2 * JUPITER_MASS_IN_EARTH_MASS],
     radius: [0.9 * JUPITER_RADIUS_IN_EARTH_RADIUS, 1.5 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.05,
-    color: ['gray'],
+    color: ['#F44336'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > 0.04 && orbit.distance < 0.5,
   },
   {
@@ -163,7 +168,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [2 * JUPITER_MASS_IN_EARTH_MASS, 13 * JUPITER_MASS_IN_EARTH_MASS],
     radius: [0.8 * JUPITER_RADIUS_IN_EARTH_RADIUS, 1.2 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.3,
-    color: ['gray'],
+    color: ['#9C27B0'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) =>
       orbit.distance > star.frost_line + 1 && orbit.distance < star.frost_line + 2,
   },
@@ -173,7 +178,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [1, 20],
     radius: [2, 0.8 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.2,
-    color: ['gray'],
+    color: ['#FFEB3B'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.outer_limit * 0.5,
   },
 
@@ -183,7 +188,7 @@ const PLANET_CLASSIFICATION: PlanetClassifier[] = [
     mass: [10, 50],
     radius: [3, 0.6 * JUPITER_RADIUS_IN_EARTH_RADIUS],
     probability: 0.2,
-    color: ['LightSkyBlue'],
+    color: ['#673AB7'],
     when: (star: StarPhysicModel, orbit: OrbitPhysicModel) => orbit.distance > star.frost_line * 1.2,
   },
 ];
@@ -207,12 +212,26 @@ export class PlanetPhysic {
 
   static readonly PLANET_CLASSIFICATION = PLANET_CLASSIFICATION;
 
+  // todo needs check
   /**
    * @param radius planet radius
    * @returns rotation period in EARTH DAYS // todo in hours?
    */
-  static calcRotationPeriod(radius: number) {
-    return 1; // not good: -0.1 + 0.069 * radius;
+  static calcRotationalPeriod(mass: number, radius: number, distance: number): number {
+    // Convert mass from Earth masses to kg
+    const massInKg = mass * EARTH_MASS_IN_KG;
+    // Convert radius from Earth radii to meters
+    const radiusInMeters = radius * (EARTH_RADIUS * 1000);
+    // Convert distance from AU to meters
+    const distanceInMeters = distance * AU_IN_M;
+
+    const period = 2 * Math.PI * Math.sqrt(Math.pow(distanceInMeters, 3) / (G * massInKg));
+    // Adjust for the planet's radius
+    const circumference = 2 * Math.PI * radiusInMeters;
+    const adjustedPeriod = period * (circumference / distanceInMeters);
+    // console.log(period / SECONDS_IN_DAY, adjustedPeriod / SECONDS_IN_DAY);
+
+    return adjustedPeriod / SECONDS_IN_DAY /* todo - probably return completle fictional values xD */ / 100;
   }
 
   static calcDensity(mass: number, cmf = 0.35) {

@@ -2,18 +2,20 @@ import { Vector3 } from 'three';
 
 import { Names } from '../utils/Names';
 import { StarName } from '../utils/StarName';
-import { GalaxyClass, GalaxyClassShape } from '../interfaces';
+import { GalaxyClass, GalaxyClassShape, Position } from '../interfaces';
 import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 
 import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
 import { StarPhysics } from './physic';
 import { SystemGenerator, SystemModel } from './system';
+import { codename } from '../utils';
 
 export interface GalaxyModel {
+  id?: string;
+  path?: string;
   systemsSeed?: number; // todo
   name?: string;
-  code?: string;
-  position?: Vector3;
+  position?: Position;
   classification?: GalaxyClass;
   systems?: SystemModel[];
 
@@ -37,8 +39,8 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
     super(model, { ...defaultOptions, ...model.options, ...options });
 
     if (!model.name) this.model.name = Names.GenerateGalaxyName(this.random); // todo name generator should be static inside Galaxy?
-    if (!model.code)
-      this.model.code = `GALAXY.${String(this.model.name).toUpperCase().replace(new RegExp(' ', 'g'), '')}`;
+    if (!model.id) this.model.id = codename(this.model.name);
+    if (!model.path) this.model.path = codename(this.model.name);
     if (!model.position) this.model.position = new Vector3();
 
     // todo check that
@@ -81,6 +83,7 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
       const systemGenerator = new SystemGenerator(
         {
           name: systemName,
+          parentPath: this.model.path,
           // seed: systemSeed,
           position: system.position,
           temperature: system.temperature, // todo not needed?

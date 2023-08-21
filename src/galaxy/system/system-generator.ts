@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { RandomObject } from '../../utils';
+import { codename, RandomObject } from '../../utils';
 
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { StarGenerator, StarModel } from '../star';
@@ -43,10 +43,14 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   override schemaName = 'SystemModel';
   public readonly stars: StarGenerator[] = [];
   public readonly orbits: OnOrbitGenerator[] = [];
+  public readonly belts: DebrisBeltGenerator[] = [];
+  public readonly planets: PlanetGenerator[] = [];
 
   constructor(model: SystemModel, options: Partial<SystemOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
+    if (!model.id) this.model.id = codename(this.model.name);
+    if (!model.path) this.model.path = `${this.model.parentPath}/${this.model.id}`;
     if (!model.position) this.model.position = new Vector3();
     if (!model.starsSeed) this.model.starsSeed = this.random.next();
     if (!model.planetsSeed) this.model.planetsSeed = this.random.next();
@@ -68,16 +72,26 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       const count = random.weighted(STAR_COUNT_DISTIBUTION_IN_SYSTEMS);
       // if (count <= 0) return;
       for (let i = 0; i < count; i++) {
-        // todo when spectralClass is provided, next star should be smaller
-        const star = new StarGenerator(spectralClass && i === 0 ? { spectralClass } : {}, { random });
+        const star = new StarGenerator(
+          {
+            // todo when spectralClass is provided, next star should be smaller
+            spectralClass: spectralClass && i === 0 ? spectralClass : undefined,
+            parentPath: this.model.path,
+          },
+          { random }
+        );
         this.stars.push(star);
         yield star;
       }
 
       StarGenerator.sortByMass(this.stars);
-      this.stars.forEach((star, index, arr) =>
-        star.setName(arr.length === 1 ? this.name : StarGenerator.getSequentialName(this.name, index))
-      );
+      const isSingle = this.stars.length===1;
+      this.stars.forEach((star, index, arr) => {
+        star.setName(
+          isSingle ? this.name : StarGenerator.getSequentialName(this.name, index),
+          isSingle ? '' : StarGenerator.getSequentialName(this.name, index, true)
+        );
+      });
 
       if (this.stars[0]) {
         this.model.starColor = this.stars[0].physic?.color;
@@ -95,22 +109,25 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       let nameIndex = 0;
       for (const orbitGenerator of this.generateOrbits()) {
         let orbitObject: OnOrbitGenerator;
-        if (orbitGenerator.model.bodyType === 'PLANET')
+        if (orbitGenerator.model.bodyType === 'PLANET') {
           orbitObject = new PlanetGenerator(
             {
               name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
-              orbit: orbitGenerator.toModel(),
+              parentPath: this.model.path,
             },
-            { star: this.stars[0].toModel(), seed: this.random.seed() }
+            { star: this.stars[0].toModel(), orbit: orbitGenerator.toModel(), seed: this.random.seed() }
           );
-        else if (orbitGenerator.model.bodyType === 'ASTEROID_BELT') {
+          this.planets.push(orbitObject);
+        } else if (orbitGenerator.model.bodyType === 'ASTEROID_BELT') {
           orbitObject = new DebrisBeltGenerator(
             {
               name: DebrisBeltGenerator.getSequentialName(nameIndex++),
+              parentPath: this.model.path,
               orbit: orbitGenerator.toModel(),
             },
             { seed: this.random.seed() }
           );
+          this.belts.push(orbitObject);
         } else {
           orbitObject = new EmptyZone({
             name: EmptyZone.getSequentialName(nameIndex++),
@@ -118,7 +135,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
           });
         }
 
-        this.orbits.push(orbitObject);
+        this.orbits.push(orbitObject); // todo whole orbit logic should be separated, but accessible :?
         yield orbitObject;
       }
       // this.fillPlanetInfo(); // todo
@@ -135,8 +152,11 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
 
   override toModel(): SystemModel {
     return super.toModel({
-      stars: this.stars.map((star) => star.toModel()),
+      ...this.model,
       orbits: this.orbits.map((orbit) => orbit.toModel?.()),
+      stars: this.stars.map((star) => star.toModel()),
+      belts: this.belts.map((belt) => belt.toModel()),
+      planets: this.planets.map((planet) => planet.toModel()),
       options: this.options,
     });
   }

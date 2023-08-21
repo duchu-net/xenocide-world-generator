@@ -7,6 +7,9 @@ import { EmptyZoneModel } from './empty-zone';
 import { DebrisBeltModel } from './debris-belt-generator';
 
 export interface SystemModel {
+  id?: string;
+  path?: string;
+  parentPath?: string;
   starColor?: string;
   habitable?: boolean;
   starRadius?: number;
@@ -18,5 +21,7 @@ export interface SystemModel {
 
   stars?: StarModel[];
   orbits?: (PlanetModel | DebrisBeltModel | EmptyZoneModel)[];
+  belts?: DebrisBeltModel[];
+  planets?: PlanetModel[];
   options?: {};
 }

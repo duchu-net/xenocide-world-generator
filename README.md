@@ -37,15 +37,15 @@ const galaxy = new Galaxy({ classification: 'grid', buildData: { gridOptions: [1
 // Spiral shape
 // const galaxy = new Galaxy({ classification: 'spiral' })
 
-console.log('*** Galaxy generated:', galaxy.name, galaxy.code);
+console.log('*** Galaxy generated:', galaxy.name, galaxy.id);
 for (let system of galaxy.generateSystems()) {
   // await system.build()
-  console.log('** System generated:', system.name, system.code);
+  console.log('** System generated:', system.name, system.id);
   for (let star of system.generateStars()) {
-    console.log('* Star generated:', star.designation, star.code);
+    console.log('* Star generated:', star.designation, star.id);
   }
   for (let planet of system.generatePlanets()) {
-    console.log('* Planet generated:', planet.designation, planet.code);
+    console.log('* Planet generated:', planet.designation, planet.id);
   }
 }
 console.log(galaxy.statistics);
