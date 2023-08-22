@@ -1,5 +1,5 @@
-import RandomObject from '../utils/RandomObject'
-import SteppedAction from '../utils/SteppedAction'
+import RandomObject from '../../utils/RandomObject'
+import SteppedAction from '../../utils/SteppedAction'
 // import Generator from './Generator'
 // import {
 //   SPECTRAL_CLASSIFICATION,

@@ -1,4 +1,4 @@
-import { RandomObject, Seed } from '../utils';
+import { RandomObject, Seed } from '../../utils';
 
 export interface CelestialModel {
   id?: string;
