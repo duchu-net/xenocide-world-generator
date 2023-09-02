@@ -1,7 +1,7 @@
 import { Color, Spherical } from 'three';
 
 import { RandomObject } from '../../../../utils';
-import { PlanetSurface } from '../types';
+import { PlanetSurface } from '../surface.types';
 import { Tile } from '../utils';
 
 import { SurfaceModificator } from './surface-modificator';

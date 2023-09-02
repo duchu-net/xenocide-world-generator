@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { Mesh } from '../types';
+import { Mesh, MeshEdge, MeshFace, MeshNode } from '../surface.types';
 
 function slerp(p0: Vector3, p1: Vector3, t: number) {
   const omega = Math.acos(p0.dot(p1));
@@ -11,6 +11,26 @@ function slerp(p0: Vector3, p1: Vector3, t: number) {
     .divideScalar(Math.sin(omega));
 }
 
+const createEdge = (edge: Partial<MeshEdge> & Pick<MeshEdge, 'n'>): MeshEdge => ({
+  n: edge.n,
+  f: edge.f ?? [],
+  subdivided_n: edge.subdivided_n ?? [],
+  subdivided_e: edge.subdivided_e ?? [],
+});
+
+const noopVector = new Vector3();
+const createFace = (face: Partial<MeshFace>): MeshFace => ({
+  n: face.n ?? [],
+  e: face.e ?? [],
+  centroid: face.centroid ?? noopVector,
+});
+
+const createNode = (node: Partial<MeshNode> & Pick<MeshNode, 'p'>): MeshNode => ({
+  e: node.e ?? [],
+  f: node.f ?? [],
+  p: node.p,
+});
+
 export class IcosahedronBuilder {
   private constructor() {}
 
@@ -18,16 +38,10 @@ export class IcosahedronBuilder {
   static generateSubdividedIcosahedron(degree: number = 10): Mesh {
     const icosahedron = IcosahedronBuilder.generateIcosahedron();
 
-    const nodes: Mesh['nodes'] = icosahedron.nodes.map((node) => ({
-      p: node.p,
-      e: [],
-      f: [],
-    }));
+    const nodes = icosahedron.nodes.map((node) => createNode({ p: node.p }));
 
-    const edges: { n: number[]; f: number[] }[] = [];
+    const edges = [];
     icosahedron.edges.forEach((edge) => {
-      edge.subdivided_n = [];
-      edge.subdivided_e = [];
       const n0 = icosahedron.nodes[edge.n[0]];
       const n1 = icosahedron.nodes[edge.n[1]];
       const p0 = n0.p;
@@ -40,16 +54,16 @@ export class IcosahedronBuilder {
         const nodeIndex = nodes.length;
         edge.subdivided_e.push(edgeIndex);
         edge.subdivided_n.push(nodeIndex);
-        edges.push({ n: [priorNodeIndex, nodeIndex], f: [] });
+        edges.push(createEdge({ n: [priorNodeIndex, nodeIndex] }));
         priorNodeIndex = nodeIndex;
         nodes.push({ p: slerp(p0, p1, s / degree), e: [edgeIndex, edgeIndex + 1], f: [] });
       }
       edge.subdivided_e.push(edges.length);
       nodes[edge.n[1]].e.push(edges.length);
-      edges.push({ n: [priorNodeIndex, edge.n[1]], f: [] });
+      edges.push(createEdge({ n: [priorNodeIndex, edge.n[1]] }));
     });
 
-    const faces = [];
+    const faces: MeshFace[] = [];
     for (let i = 0; i < icosahedron.faces.length; ++i) {
       const face = icosahedron.faces[i];
       const edge0 = icosahedron.edges[face.e[0]];
@@ -61,18 +75,13 @@ export class IcosahedronBuilder {
       const delta = point1.clone().sub(point0);
 
       const getEdgeNode0 = (k: number) =>
-        // @ts-ignore
         face.n[0] === edge0.n[0] ? edge0.subdivided_n[k] : edge0.subdivided_n[degree - 2 - k];
       const getEdgeNode1 = (k: number) =>
-        // @ts-ignore
         face.n[1] === edge1.n[0] ? edge1.subdivided_n[k] : edge1.subdivided_n[degree - 2 - k];
-      // @ts-ignore
       const getEdgeNode2 = (k: number) =>
-        // @ts-ignore
         face.n[0] === edge2.n[0] ? edge2.subdivided_n[k] : edge2.subdivided_n[degree - 2 - k];
 
       const faceNodes = [face.n[0]];
-      // @ts-ignore
       for (let j = 0; j < edge0.subdivided_n.length; ++j) faceNodes.push(getEdgeNode0(j));
       faceNodes.push(face.n[1]);
 
@@ -89,13 +98,10 @@ export class IcosahedronBuilder {
       faceNodes.push(face.n[2]);
 
       const getEdgeEdge0 = (k: number) =>
-        // @ts-ignore
         face.n[0] === edge0.n[0] ? edge0.subdivided_e[k] : edge0.subdivided_e[degree - 1 - k];
       const getEdgeEdge1 = (k: number) =>
-        // @ts-ignore
         face.n[1] === edge1.n[0] ? edge1.subdivided_e[k] : edge1.subdivided_e[degree - 1 - k];
       const getEdgeEdge2 = (k: number) =>
-        // @ts-ignore
         face.n[0] === edge2.n[0] ? edge2.subdivided_e[k] : edge2.subdivided_e[degree - 1 - k];
 
       const faceEdges0 = [];
@@ -104,7 +110,7 @@ export class IcosahedronBuilder {
       for (let s = 1; s < degree; ++s) {
         for (let t = 0; t < degree - s; ++t) {
           faceEdges0.push(edges.length);
-          const edge = { n: [faceNodes[nodeIndex], faceNodes[nodeIndex + 1]], f: [] };
+          const edge = createEdge({ n: [faceNodes[nodeIndex], faceNodes[nodeIndex + 1]] });
           nodes[edge.n[0]].e.push(edges.length);
           nodes[edge.n[1]].e.push(edges.length);
           edges.push(edge);
@@ -118,7 +124,7 @@ export class IcosahedronBuilder {
       for (let s = 0; s < degree; ++s) {
         for (let t = 1; t < degree - s; ++t) {
           faceEdges1.push(edges.length);
-          const edge = { n: [faceNodes[nodeIndex], faceNodes[nodeIndex + degree - s]], f: [] };
+          const edge = createEdge({ n: [faceNodes[nodeIndex], faceNodes[nodeIndex + degree - s]] });
           nodes[edge.n[0]].e.push(edges.length);
           nodes[edge.n[1]].e.push(edges.length);
           edges.push(edge);
@@ -134,7 +140,7 @@ export class IcosahedronBuilder {
         faceEdges2.push(getEdgeEdge2(s));
         for (let t = 1; t < degree - s; ++t) {
           faceEdges2.push(edges.length);
-          const edge = { n: [faceNodes[nodeIndex], faceNodes[nodeIndex + degree - s + 1]], f: [] };
+          const edge = createEdge({ n: [faceNodes[nodeIndex], faceNodes[nodeIndex + degree - s + 1]] });
           nodes[edge.n[0]].e.push(edges.length);
           nodes[edge.n[1]].e.push(edges.length);
           edges.push(edge);
@@ -147,10 +153,10 @@ export class IcosahedronBuilder {
       let edgeIndex = 0;
       for (let s = 0; s < degree; ++s) {
         for (let t = 1; t < degree - s + 1; ++t) {
-          const subFace = {
+          const subFace = createFace({
             n: [faceNodes[nodeIndex], faceNodes[nodeIndex + 1], faceNodes[nodeIndex + degree - s + 1]],
             e: [faceEdges0[edgeIndex], faceEdges1[edgeIndex], faceEdges2[edgeIndex]],
-          };
+          });
           nodes[subFace.n[0]].f.push(faces.length);
           nodes[subFace.n[1]].f.push(faces.length);
           nodes[subFace.n[2]].f.push(faces.length);
@@ -168,10 +174,10 @@ export class IcosahedronBuilder {
       edgeIndex = 0;
       for (let s = 1; s < degree; ++s) {
         for (let t = 1; t < degree - s + 1; ++t) {
-          const subFace = {
+          const subFace = createFace({
             n: [faceNodes[nodeIndex], faceNodes[nodeIndex + degree - s + 2], faceNodes[nodeIndex + degree - s + 1]],
             e: [faceEdges2[edgeIndex + 1], faceEdges0[edgeIndex + degree - s + 1], faceEdges1[edgeIndex]],
-          };
+          });
           nodes[subFace.n[0]].f.push(faces.length);
           nodes[subFace.n[1]].f.push(faces.length);
           nodes[subFace.n[2]].f.push(faces.length);
@@ -194,55 +200,55 @@ export class IcosahedronBuilder {
     const du = 1.0 / Math.sqrt(phi * phi + 1.0);
     const dv = phi * du;
 
-    const nodes: Mesh['nodes'] = [
-      { p: new Vector3(0, +dv, +du), e: [], f: [] },
-      { p: new Vector3(0, +dv, -du), e: [], f: [] },
-      { p: new Vector3(0, -dv, +du), e: [], f: [] },
-      { p: new Vector3(0, -dv, -du), e: [], f: [] },
-      { p: new Vector3(+du, 0, +dv), e: [], f: [] },
-      { p: new Vector3(-du, 0, +dv), e: [], f: [] },
-      { p: new Vector3(+du, 0, -dv), e: [], f: [] },
-      { p: new Vector3(-du, 0, -dv), e: [], f: [] },
-      { p: new Vector3(+dv, +du, 0), e: [], f: [] },
-      { p: new Vector3(+dv, -du, 0), e: [], f: [] },
-      { p: new Vector3(-dv, +du, 0), e: [], f: [] },
-      { p: new Vector3(-dv, -du, 0), e: [], f: [] },
-    ];
+    const nodes: MeshNode[] = [
+      { p: new Vector3(0, +dv, +du) },
+      { p: new Vector3(0, +dv, -du) },
+      { p: new Vector3(0, -dv, +du) },
+      { p: new Vector3(0, -dv, -du) },
+      { p: new Vector3(+du, 0, +dv) },
+      { p: new Vector3(-du, 0, +dv) },
+      { p: new Vector3(+du, 0, -dv) },
+      { p: new Vector3(-du, 0, -dv) },
+      { p: new Vector3(+dv, +du, 0) },
+      { p: new Vector3(+dv, -du, 0) },
+      { p: new Vector3(-dv, +du, 0) },
+      { p: new Vector3(-dv, -du, 0) },
+    ].map(createNode);
 
-    const edges: Mesh['edges'] = [
-      { n: [0, 1], f: [] },
-      { n: [0, 4], f: [] },
-      { n: [0, 5], f: [] },
-      { n: [0, 8], f: [] },
-      { n: [0, 10], f: [] },
-      { n: [1, 6], f: [] },
-      { n: [1, 7], f: [] },
-      { n: [1, 8], f: [] },
-      { n: [1, 10], f: [] },
-      { n: [2, 3], f: [] },
-      { n: [2, 4], f: [] },
-      { n: [2, 5], f: [] },
-      { n: [2, 9], f: [] },
-      { n: [2, 11], f: [] },
-      { n: [3, 6], f: [] },
-      { n: [3, 7], f: [] },
-      { n: [3, 9], f: [] },
-      { n: [3, 11], f: [] },
-      { n: [4, 5], f: [] },
-      { n: [4, 8], f: [] },
-      { n: [4, 9], f: [] },
-      { n: [5, 10], f: [] },
-      { n: [5, 11], f: [] },
-      { n: [6, 7], f: [] },
-      { n: [6, 8], f: [] },
-      { n: [6, 9], f: [] },
-      { n: [7, 10], f: [] },
-      { n: [7, 11], f: [] },
-      { n: [8, 9], f: [] },
-      { n: [10, 11], f: [] },
-    ];
+    const edges: MeshEdge[] = [
+      { n: [0, 1] },
+      { n: [0, 4] },
+      { n: [0, 5] },
+      { n: [0, 8] },
+      { n: [0, 10] },
+      { n: [1, 6] },
+      { n: [1, 7] },
+      { n: [1, 8] },
+      { n: [1, 10] },
+      { n: [2, 3] },
+      { n: [2, 4] },
+      { n: [2, 5] },
+      { n: [2, 9] },
+      { n: [2, 11] },
+      { n: [3, 6] },
+      { n: [3, 7] },
+      { n: [3, 9] },
+      { n: [3, 11] },
+      { n: [4, 5] },
+      { n: [4, 8] },
+      { n: [4, 9] },
+      { n: [5, 10] },
+      { n: [5, 11] },
+      { n: [6, 7] },
+      { n: [6, 8] },
+      { n: [6, 9] },
+      { n: [7, 10] },
+      { n: [7, 11] },
+      { n: [8, 9] },
+      { n: [10, 11] },
+    ].map(createEdge);
 
-    const faces: Mesh['faces'] = [
+    const faces: MeshFace[] = [
       { n: [0, 1, 8], e: [0, 7, 3] },
       { n: [0, 4, 5], e: [1, 18, 2] },
       { n: [0, 5, 10], e: [2, 21, 4] },
@@ -263,7 +269,7 @@ export class IcosahedronBuilder {
       { n: [5, 11, 10], e: [22, 29, 21] },
       { n: [6, 9, 8], e: [25, 28, 24] },
       { n: [7, 10, 11], e: [26, 29, 27] },
-    ];
+    ].map(createFace);
 
     for (let i = 0; i < edges.length; ++i) for (let j = 0; j < edges[i].n.length; ++j) nodes[j].e.push(i);
     for (let i = 0; i < faces.length; ++i) for (let j = 0; j < faces[i].n.length; ++j) nodes[j].f.push(i);
