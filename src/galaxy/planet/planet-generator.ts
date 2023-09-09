@@ -61,10 +61,10 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
     this.model.radius = this.model.radius || this.random.real(this.meta.radius[0], this.meta.radius[1]);
 
     // this.generateTopology();
-    this.recalculatePhysic();
+    this.initializePhysic();
   }
 
-  recalculatePhysic() {
+  initializePhysic() {
     const { model, physic, options } = this;
     Object.assign(physic, options.orbit);
     physic.radius = model.radius || physic.radius;

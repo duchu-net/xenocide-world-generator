@@ -40,7 +40,7 @@ export class IcosahedronBuilder {
 
     const nodes = icosahedron.nodes.map((node) => createNode({ p: node.p }));
 
-    const edges = [];
+    const edges: MeshEdge[] = [];
     icosahedron.edges.forEach((edge) => {
       const n0 = icosahedron.nodes[edge.n[0]];
       const n1 = icosahedron.nodes[edge.n[1]];
@@ -56,7 +56,7 @@ export class IcosahedronBuilder {
         edge.subdivided_n.push(nodeIndex);
         edges.push(createEdge({ n: [priorNodeIndex, nodeIndex] }));
         priorNodeIndex = nodeIndex;
-        nodes.push({ p: slerp(p0, p1, s / degree), e: [edgeIndex, edgeIndex + 1], f: [] });
+        nodes.push(createNode({ p: slerp(p0, p1, s / degree), e: [edgeIndex, edgeIndex + 1] }));
       }
       edge.subdivided_e.push(edges.length);
       nodes[edge.n[1]].e.push(edges.length);
@@ -91,7 +91,7 @@ export class IcosahedronBuilder {
         const p1 = nodes[getEdgeNode1(s - 1)].p;
         for (let t = 1; t < degree - s; ++t) {
           faceNodes.push(nodes.length);
-          nodes.push({ p: slerp(p0, p1, t / (degree - s)), e: [], f: [] });
+          nodes.push(createNode({ p: slerp(p0, p1, t / (degree - s)) }));
         }
         faceNodes.push(getEdgeNode1(s - 1));
       }
@@ -104,7 +104,7 @@ export class IcosahedronBuilder {
       const getEdgeEdge2 = (k: number) =>
         face.n[0] === edge2.n[0] ? edge2.subdivided_e[k] : edge2.subdivided_e[degree - 1 - k];
 
-      const faceEdges0 = [];
+      const faceEdges0: number[] = [];
       for (let j = 0; j < degree; ++j) faceEdges0.push(getEdgeEdge0(j));
       let nodeIndex = degree + 1;
       for (let s = 1; s < degree; ++s) {
@@ -119,7 +119,7 @@ export class IcosahedronBuilder {
         ++nodeIndex;
       }
 
-      const faceEdges1 = [];
+      const faceEdges1: number[] = [];
       nodeIndex = 1;
       for (let s = 0; s < degree; ++s) {
         for (let t = 1; t < degree - s; ++t) {
@@ -134,7 +134,7 @@ export class IcosahedronBuilder {
         nodeIndex += 2;
       }
 
-      const faceEdges2 = [];
+      const faceEdges2: number[] = [];
       nodeIndex = 1;
       for (let s = 0; s < degree; ++s) {
         faceEdges2.push(getEdgeEdge2(s));

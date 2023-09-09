@@ -85,13 +85,8 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       }
 
       StarGenerator.sortByMass(this.stars);
-      const isSingle = this.stars.length===1;
-      this.stars.forEach((star, index, arr) => {
-        star.setName(
-          isSingle ? this.name : StarGenerator.getSequentialName(this.name, index),
-          isSingle ? '' : StarGenerator.getSequentialName(this.name, index, true)
-        );
-      });
+      const isSingleStar = this.stars.length === 1;
+      this.stars.forEach((star, index) => (isSingleStar ? star.name(this.name) : star.name(this.name, index)));
 
       if (this.stars[0]) {
         this.model.starColor = this.stars[0].physic?.color;
@@ -144,9 +139,9 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
     }
   }
 
-  *generateOrbits(): IterableIterator<OrbitGenerator> {
+  private *generateOrbits(): IterableIterator<OrbitGenerator> {
     const random = new RandomObject(this.model.planetsSeed);
-    const planetOrbits = new SystemOrbitsGenerator({}, { star: this.stars[0], random });
+    const planetOrbits = new SystemOrbitsGenerator({}, { star: this.stars[0].toModel(), random });
     for (const orbit of planetOrbits.generateOrbits()) yield orbit;
   }
 
