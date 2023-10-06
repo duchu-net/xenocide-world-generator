@@ -18,9 +18,6 @@ const defaultOptions: StarOptions = {
   // seed: 999,
 };
 
-const getSequentialName = (systemName: string, starIndex: number, standarize = false) =>
-  `${systemName} ${standarize ? GREEK_LETTERS_NAMES[starIndex] : numberToGreekChar(starIndex)}`;
-
 export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
   public physic: StarPhysicModel;
   private meta: StarStellarClassData;
@@ -76,8 +73,8 @@ export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
     let id = initialName;
     let name = initialName;
     if (sequenceIndex !== undefined) {
-      id = getSequentialName(initialName, sequenceIndex, true);
-      name = getSequentialName(initialName, sequenceIndex);
+      id = StarGenerator.getSequentialName(initialName, sequenceIndex, true);
+      name = StarGenerator.getSequentialName(initialName, sequenceIndex);
     }
     this.model.id = codename(id);
     this.model.name = name;
@@ -118,6 +115,9 @@ export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
     return { ...this.model, physic: this.physic, meta: this.meta };
   }
 
+  static getSequentialName(systemName: string, starIndex: number, standarize = false) {
+    return `${systemName} ${standarize ? GREEK_LETTERS_NAMES[starIndex] : numberToGreekChar(starIndex)}`;
+  }
   static sortByMass(stars: StarGenerator[]) {
     return stars.sort((a, b) => b.mass() - a.mass());
   }

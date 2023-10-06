@@ -64,6 +64,9 @@ console.log(galaxy.statistics);
 - [4X games (Wikipedia)](https://en.wikipedia.org/wiki/4X)
 - [Stellar classification (Wikipedia)](https://en.wikipedia.org/wiki/Stellar_classification)
 - [Holdridge life zones (Wikipedia)](https://en.wikipedia.org/wiki/Holdridge_life_zones)
+- [Planet IX](https://planetix.com/)
+- [Prosperous Universe](https://prosperousuniverse.com/)
+- [Astro Empires](https://www.astroempires.com/)
 
 // todo
 // own tsconfig not from nx
