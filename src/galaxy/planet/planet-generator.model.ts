@@ -1,5 +1,6 @@
-import { Seed } from '../../utils';
 import { Vector3 } from 'three';
+
+import { Seed } from '../../utils';
 import { PlanetPhysicModel } from '../physic';
 import { SystemOrbitModel } from '../system';
 
@@ -24,11 +25,13 @@ export interface PlanetModel {
   parentPath?: string;
   // type?: string;
   radius?: number;
-  surfaceSeed?: Seed;
   physic?: PlanetPhysicModel & SystemOrbitModel;
   // orbit?: SystemOrbitModel; // OrbitModel;
   regions?: RegionModel[];
-  options?: {}; // todo generator options???
+  options?: {
+    seed?: Seed;
+    surfaceSeed?: Seed;
+  }; // todo generator options???
 
   type?:
     | 'lava'

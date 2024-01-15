@@ -1,23 +1,23 @@
-import { Vector3 } from 'three';
-
 import { codename, decimalToRoman, Seed } from '../../utils';
-
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, PlanetPhysicModel, StarPhysicModel } from '../physic';
 import { OrbitModel } from '../physic/orbit-generator';
 import { StarModel } from '../star';
-import { PlanetModel, RegionModel } from './planet-generator.model';
 
 import { PlanetSurfaceGenerator } from './surface/planet-surface-generator';
+import { PlanetModel, RegionModel } from './planet-generator.model';
 
 export interface PlanetOptions extends RandomGeneratorOptions {
-  // surfaceSeed?: Seed;
+  seed: Seed;
+  surfaceSeed: Seed;
   // random?: RandomObject;
   star?: StarModel;
   orbit?: OrbitModel;
   planetType?: string;
 }
 const defaultOptions: PlanetOptions = {
+  seed: 0,
+  surfaceSeed: 0,
   // position: new Vector3(0, 0, 0),
 };
 
@@ -41,9 +41,10 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
+    if (!this.options.surfaceSeed) this.options.surfaceSeed = this.random.seed();
+
     if (!model.id) this.model.id = codename(this.model.name);
     if (!model.path) this.model.path = `${this.model.parentPath}/p:${this.model.id}`;
-    if (!model.surfaceSeed) this.model.surfaceSeed = this.random.seed();
     this.regions = (model.regions as RegionModel[]) || [];
 
     const type = model.type || options.planetType;
@@ -81,7 +82,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
 
   *generateSurface() {
     try {
-      const surface = new PlanetSurfaceGenerator({}, { strategyName: this.model.type, seed: this.model.surfaceSeed });
+      const surface = new PlanetSurfaceGenerator({}, { strategyName: this.model.type, seed: this.options.surfaceSeed });
       surface.generateSurface();
       this.regions = surface.planet.topology.tiles.map((tile) => ({
         id: tile.id.toString(),
@@ -109,6 +110,11 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
 
   override toModel(): PlanetModel {
     const { star, orbit, ...options } = this.options;
-    return super.toModel({ ...this.model, physic: this.physic, regions: this.regions, options });
+    return super.toModel({
+      ...this.model,
+      regions: this.regions,
+      physic: { ...this.physic },
+      options: { ...options },
+    });
   }
 }
