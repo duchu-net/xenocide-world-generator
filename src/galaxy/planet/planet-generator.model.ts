@@ -25,7 +25,8 @@ export interface PlanetModel {
   parentPath?: string;
   // type?: string;
   radius?: number;
-  physic?: PlanetPhysicModel & SystemOrbitModel;
+  physic?: PlanetPhysicModel;
+  orbit?: SystemOrbitModel;
   // orbit?: SystemOrbitModel; // OrbitModel;
   regions?: RegionModel[];
   options?: {

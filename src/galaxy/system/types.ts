@@ -21,7 +21,12 @@ export interface SystemModel {
 
   stars?: StarModel[];
   // orbits?: (PlanetModel | DebrisBeltModel | EmptyZoneModel)[];
-  orbits?: OrbitModel[];
+  // orbits?: OrbitModel[];
+  orbits?: (
+    | { bodyType: 'PLANET'; planetPath: string }
+    | { bodyType: 'ASTEROID_BELT'; beltPath: string }
+    | { bodyType: 'EMPTY' }
+  )[];
   belts?: DebrisBeltModel[];
   planets?: PlanetModel[];
   physic?: SystemPhysicModel;

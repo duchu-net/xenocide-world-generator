@@ -12,7 +12,6 @@ export interface PlanetOptions extends RandomGeneratorOptions {
   surfaceSeed: Seed;
   // random?: RandomObject;
   star?: StarModel;
-  orbit?: OrbitModel;
   planetType?: string;
 }
 const defaultOptions: PlanetOptions = {
@@ -52,7 +51,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
       this.meta = PlanetPhysic.getClass(type);
     } else {
       const availableClasses = PlanetPhysic.PLANET_CLASSIFICATION.filter((planetTopology) =>
-        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.options.orbit as OrbitPhysicModel)
+        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.model.orbit as OrbitPhysicModel)
       );
       this.meta = this.random.weighted(availableClasses.map((top) => [top.probability, top])) as PlanetClassifier;
     }
@@ -67,12 +66,12 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
 
   initializePhysic() {
     const { model, physic, options } = this;
-    Object.assign(physic, options.orbit);
+    // Object.assign(physic, options.orbit);
     physic.radius = model.radius || physic.radius;
 
     // physic.mass = model.mass || physic.mass;
     physic.mass = 1;
-    physic.rotationPeriod = PlanetPhysic.calcRotationalPeriod(physic.mass, physic.radius, options.orbit?.distance || 1);
+    physic.rotationPeriod = PlanetPhysic.calcRotationalPeriod(physic.mass, physic.radius, model.orbit?.distance || 1);
   }
 
   get subtype(): string {
@@ -109,7 +108,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   }
 
   override toModel(): PlanetModel {
-    const { star, orbit, ...options } = this.options;
+    const { star, ...options } = this.options;
     return super.toModel({
       ...this.model,
       regions: this.regions,

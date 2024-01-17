@@ -11,6 +11,9 @@ type Pos = { [K in typeof prefix[keyof typeof prefix]]: string };
 
 export interface WorldPath extends Pos {
   path: string;
+  systemPath: string;
+  planetPath: string;
+  starPath: string;
   galaxy: string;
   system: string;
   target: '' | 'galaxy' | 'system' | typeof prefix[keyof typeof prefix];
@@ -23,6 +26,7 @@ export const parseWorldPath = (path = '') => {
     path,
     galaxy,
     system,
+    systemPath: galaxy && system ? `${galaxy}/${system}` : '',
     star: '',
     planet: '',
     region: '',
@@ -43,5 +47,9 @@ export const parseWorldPath = (path = '') => {
     }
     if (index === nodes.length - 1) position.target = pre;
   });
+
+  position.starPath = position.target === 'star' ? path : '';
+  position.planetPath = position.target === 'planet' ? path : '';
+
   return position;
 };

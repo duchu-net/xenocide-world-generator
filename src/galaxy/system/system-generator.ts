@@ -46,7 +46,8 @@ const defaultOptions: SystemOptions = {
 export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions> {
   override schemaName = 'SystemModel';
   public readonly stars: StarGenerator[] = [];
-  public readonly orbits: OrbitGenerator[] = [];
+  // public readonly orbits: OrbitGenerator[] = [];
+  public readonly orbits: Required<SystemModel>['orbits'] = [];
   public readonly belts: DebrisBeltGenerator[] = [];
   public readonly planets: PlanetGenerator[] = [];
   public physic: SystemPhysicModel;
@@ -117,7 +118,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
       const random = new RandomObject(this.options.planetsSeed);
       let nameIndex = 0;
       for (const orbitGenerator of this.generateOrbits()) {
-        this.orbits.push(orbitGenerator);
+        // this.orbits.push(orbitGenerator);
         const orbit = orbitGenerator.toModel();
 
         let bodyGenerator: OnOrbitGenerator;
@@ -126,9 +127,11 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
             {
               name: PlanetGenerator.getSequentialName(this.name, nameIndex++),
               parentPath: this.model.path,
+              orbit,
             },
-            { star: this.getStarsModels()[0], orbit, seed: random.seed() }
+            { star: this.getStarsModels()[0], seed: random.seed() }
           );
+          this.orbits.push({ bodyType: orbit.bodyType, planetPath: bodyGenerator.model.path! });
           this.planets.push(bodyGenerator);
         } else if (orbit.bodyType === 'ASTEROID_BELT') {
           bodyGenerator = new DebrisBeltGenerator(
@@ -139,15 +142,17 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
             },
             { seed: random.seed() }
           );
+          this.orbits.push({ bodyType: orbit.bodyType, beltPath: bodyGenerator.model.path! });
           this.belts.push(bodyGenerator);
         } else {
           bodyGenerator = new EmptyZone({
             name: EmptyZone.getSequentialName(nameIndex++),
             orbit,
           });
+          this.orbits.push({ bodyType: 'EMPTY' });
         }
 
-        // this.orbits.push(bodyGenerator); // todo whole orbit logic should be separated, but accessible :?
+        // this.orbits.push({bodyType: orbit.bodyType, }); // todo whole orbit logic should be separated, but accessible :?
         yield bodyGenerator;
       }
       this.physic.planetsCount = this.planets.length;
@@ -171,7 +176,8 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   override toModel(): SystemModel {
     return super.toModel({
       ...this.model,
-      orbits: this.orbits.map((orbit) => orbit.toModel?.()),
+      // orbits: this.orbits.map((orbit) => orbit.toModel?.()),
+      orbits: this.orbits,
       stars: this.stars.map((star) => star.toModel()),
       belts: this.belts.map((belt) => belt.toModel()),
       planets: this.planets.map((planet) => planet.toModel()),
