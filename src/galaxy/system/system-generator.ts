@@ -52,7 +52,7 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   public readonly planets: PlanetGenerator[] = [];
   public physic: SystemPhysicModel;
 
-  constructor(model: SystemModel, options: Partial<SystemOptions> = defaultOptions) {
+  constructor(model: SystemModel, options: Partial<SystemOptions> = {}) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
     if (!this.options.starsSeed) this.options.starsSeed = this.random.seed();
@@ -164,11 +164,10 @@ export class SystemGenerator extends RandomGenerator<SystemModel, SystemOptions>
   }
 
   private *generateOrbits(): IterableIterator<OrbitGenerator> {
-    const random = new RandomObject(this.options.planetsSeed);
     const planetOrbits = new SystemOrbitsGenerator(
       {},
       // todo - when we generate from from existed system, we should use its model
-      { star: this.getStarsModels()[0], random }
+      { star: this.getStarsModels()[0], seed: this.options.planetsSeed }
     );
     for (const orbit of planetOrbits.generateOrbits()) yield orbit;
   }
