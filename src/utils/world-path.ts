@@ -1,4 +1,4 @@
-const prefix = {
+export const pathPrefix = {
   's:': 'star',
   'p:': 'planet',
   'r:': 'region',
@@ -7,7 +7,19 @@ const prefix = {
   'c:': 'construction',
 } as const;
 
-type Pos = { [K in typeof prefix[keyof typeof prefix]]: string };
+type Pos = { [K in typeof pathPrefix[keyof typeof pathPrefix]]: string };
+
+export const getPathTarget = (path: string): 'galaxy' | 'system' | typeof pathPrefix[keyof typeof pathPrefix] | '' => {
+  const groups = path.split('/');
+  console.log(groups)
+  if (!groups[0]) return '';
+  if (groups.length === 1) return 'galaxy';
+  if (groups.length === 2) return 'system';
+  const lastItem = groups.at(-1) ?? '';
+  const prefix = lastItem.split(':').at(0);
+  // @ts-ignore
+  return pathPrefix[`${prefix}:`] ?? '';
+};
 
 export interface WorldPath extends Pos {
   path: string;
@@ -16,7 +28,7 @@ export interface WorldPath extends Pos {
   starPath: string;
   galaxy: string;
   system: string;
-  target: '' | 'galaxy' | 'system' | typeof prefix[keyof typeof prefix];
+  target: '' | 'galaxy' | 'system' | typeof pathPrefix[keyof typeof pathPrefix];
   groups: WorldPath['target'][];
 }
 
@@ -39,7 +51,7 @@ export const parseWorldPath = (path = '') => {
   };
   nodes.forEach((node, index) => {
     // @ts-ignore
-    const pre = prefix[node.substring(0, 2)]; // todo: allow more letters in prefix
+    const pre = pathPrefix[node.substring(0, 2)]; // todo: allow more letters in pathPrefix
     if (pre) {
       position.groups.push(pre);
       // @ts-ignore
