@@ -11,7 +11,6 @@ type Pos = { [K in typeof pathPrefix[keyof typeof pathPrefix]]: string };
 
 export const getPathTarget = (path: string): 'galaxy' | 'system' | typeof pathPrefix[keyof typeof pathPrefix] | '' => {
   const groups = path.split('/');
-  console.log(groups)
   if (!groups[0]) return '';
   if (groups.length === 1) return 'galaxy';
   if (groups.length === 2) return 'system';
