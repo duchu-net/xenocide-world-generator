@@ -2,7 +2,7 @@ import { Vector3 } from 'three';
 
 import { RandomObject } from '../../../../utils';
 import { Corner, Tile } from '../utils';
-import { PlanetSurface } from '../types';
+import { PlanetSurface } from '../surface.types';
 
 interface Whorl {
   center: Vector3;

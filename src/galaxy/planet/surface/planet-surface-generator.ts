@@ -7,7 +7,7 @@ import { PlanetTopologyBuilder } from './builders/planet-topology-builder';
 import { BiomeSurfaceModificator } from './surface-strategy/biome-surface-modificator';
 import { TerrainSurfaceModificator } from './surface-strategy/terrain-surface-modificator';
 
-import { PlanetSurface } from './types';
+import { PlanetSurface } from './surface.types';
 
 function adjustRange(value: number, oldMin: number, oldMax: number, newMin: number, newMax: number) {
   return ((value - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin;

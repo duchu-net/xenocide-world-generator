@@ -1,8 +1,7 @@
 import { RandomObject, Seed } from '../../utils';
-
-import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from '../physic';
-import { OrbitGenerator, OrbitModel, ORBIT_OBJECT_TYPES } from '../physic/orbit-generator';
 import { RandomGenerator } from '../basic-generator';
+import { OrbitPhysic, OrbitPhysicModel, StarPhysicModel } from '../physic';
+import { ORBIT_OBJECT_TYPES,OrbitGenerator, OrbitModel } from '../physic/orbit-generator';
 import { StarGenerator, StarModel } from '../star';
 
 interface SystemOrbitOptions {
@@ -110,7 +109,8 @@ export class SystemOrbitsGenerator extends RandomGenerator<SystemOrbitModel, Sys
 
   fillOrbitPeriod() {
     for (const orbit of this.orbits) {
-      const orbitalPeriod = OrbitPhysic.calcOrbitalPeriod(this.options.star.mass as number, orbit.model.distance);
+      const mass = this.options.star.physic?.mass || this.options.star.mass as number;
+      const orbitalPeriod = OrbitPhysic.calcOrbitalPeriod(mass, orbit.model.distance);
       orbit.updateModel('orbitalPeriod', orbitalPeriod);
       orbit.updateModel('orbitalPeriodInDays', OrbitPhysic.convertOrbitalPeriodToDays(orbitalPeriod));
     }

@@ -1,6 +1,6 @@
 import { RandomObject } from '../../../../utils';
 
-import { PlanetSurface } from '../types';
+import { PlanetSurface } from '../surface.types';
 
 export class SurfaceModificator<SurfaceModificatorOptions> {
   constructor(public name: string, public options: SurfaceModificatorOptions) {}

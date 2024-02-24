@@ -1,6 +1,6 @@
 import { Plane, Sphere, Vector3 } from 'three';
 
-import { Mesh, Topology } from '../types';
+import { Mesh, Topology } from '../surface.types';
 import { Border, Corner, Tile } from '../utils';
 
 function calculateTriangleArea(pa: Vector3, pb: Vector3, pc: Vector3) {
@@ -23,7 +23,7 @@ export class PlanetTopologyBuilder {
       (face, index) =>
         new Corner(
           index,
-          (face.centroid as Vector3).clone().multiplyScalar(1000),
+          face.centroid.clone().multiplyScalar(1000),
           face.e.length,
           face.e.length,
           face.n.length

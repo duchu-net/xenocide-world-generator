@@ -148,7 +148,7 @@ export class Names {
     ];
   }
 
-  static GenerateGalaxyName(random: RandomObject, count = 1) {
+  static GenerateGalaxyName(random: RandomObject, count = 1): string {
     return random.weighted(this.getGalaxyNamingStrategies())(random);
   }
 

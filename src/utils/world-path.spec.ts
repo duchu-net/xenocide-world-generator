@@ -1,6 +1,19 @@
-import { parseWorldPath } from './world-path';
+import { getPathTarget, parseWorldPath } from './world-path';
 
+/**
+ * nx run world-generator:test --testFile=libs/world-generator/src/utils/world-path.spec.ts
+ */
 describe('WorldPath - world-path.ts', () => {
+  test('Should resolve world path target', () => {
+    expect(getPathTarget('')).toBeFalsy();
+    expect(getPathTarget('galaxy1')).toBe('galaxy');
+    expect(getPathTarget('galaxy1/system1')).toBe('system');
+    expect(getPathTarget('galaxy1/system1/s:star1')).toBe('star');
+    expect(getPathTarget('galaxy1/system1/b:belt1')).toBe('belt');
+    expect(getPathTarget('galaxy1/system1/p:planet1/m:moon1')).toBe('moon');
+    expect(getPathTarget('galaxy1/system1/p:planet1/r:region1/c:construction1')).toBe('construction');
+  });
+
   test('Path not contains designation', () => {
     const result = parseWorldPath('');
     expect(result.galaxy).toBeFalsy();

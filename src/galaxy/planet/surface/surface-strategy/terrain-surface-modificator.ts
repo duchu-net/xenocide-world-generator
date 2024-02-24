@@ -1,7 +1,7 @@
 import { Color, Vector3 } from 'three';
 
 import { RandomObject } from '../../../../utils';
-import { PlanetSurface, Topology } from '../types';
+import { PlanetSurface, Topology } from '../surface.types';
 import { Border, Corner, Plate, Tile } from '../utils';
 
 import { BiomeSurfaceModificator } from './biome-surface-modificator';

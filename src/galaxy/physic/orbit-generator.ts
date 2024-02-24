@@ -1,5 +1,6 @@
 import { RandomObject } from '../../utils';
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
+
 import { OrbitPhysicModel, SystemZone } from './orbit-physic';
 import { StarPhysicModel } from './star-physic';
 
@@ -21,6 +22,7 @@ enum SystemBodyType {
 // }
 
 export interface OrbitModel extends OrbitPhysicModel {
+  schemaName?: 'orbit-model';
   /** zone in system */
   zone?: SystemZone;
   /** orbiting body type */
