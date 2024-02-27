@@ -5,6 +5,8 @@ export const pathPrefix = {
   'm:': 'moon',
   'b:': 'belt',
   'c:': 'construction',
+  'a:': 'administration',
+  'q:': 'queue',
 } as const;
 
 type Pos = { [K in typeof pathPrefix[keyof typeof pathPrefix]]: string };
