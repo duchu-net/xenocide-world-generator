@@ -31,3 +31,10 @@ export const toFixedTrunc = (value: number, decimals: number): string => {
 export const truncDecimals = (value: number, decimals: number): number => {
   return parseFloat(toFixedTrunc(value, decimals));
 };
+
+/**
+ * Spherical coordinate system to polar angle
+ * @param phi phi (ϕ) in methematics meaning, angle with respect to polar axis
+ * @returns
+ */
+export const sphericalPhiToPolarAngle = (phi: number) => phi * (180 / Math.PI);

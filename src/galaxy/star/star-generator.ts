@@ -1,5 +1,4 @@
 import { codename, GREEK_LETTERS_NAMES, numberToGreekChar } from '../../utils';
-
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { StarPhysicModel, StarPhysics, StarStellarClass, StarStellarClassData } from '../physic';
 
@@ -78,7 +77,7 @@ export class StarGenerator extends RandomGenerator<StarModel, StarOptions> {
     }
     this.model.id = codename(id);
     this.model.name = name;
-    this.model.path = `${this.model.parentPath}/s:${this.model.id}`;
+    this.model.path = `${this.model.parentPath!}/s:${this.model.id}`;
   }
 
   private initializePhysic(mass: number) {

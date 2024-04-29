@@ -1,6 +1,6 @@
 import { Color, Spherical } from 'three';
 
-import { RandomObject } from '../../../../utils';
+import { RandomObject, sphericalPhiToPolarAngle } from '../../../../utils';
 import { PlanetSurface } from '../surface.types';
 import { Tile } from '../utils';
 
@@ -107,12 +107,6 @@ function adjustRange(value: number, oldMin: number, oldMax: number, newMin: numb
 function add(accumulator: number, factor: number) {
   return accumulator + factor;
 }
-/**
- * Spherical coordinate system to polar angle
- * @param phi phi (ϕ) in methematics meaning, angle with respect to polar axis
- * @returns
- */
-const sphericalPhiToPolarAngle = (phi: number) => phi * (180 / Math.PI);
 
 class GasGiantBiomeStrategy implements BiomeStrategy {
   name = 'gas-giant';

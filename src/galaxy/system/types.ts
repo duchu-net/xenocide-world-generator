@@ -1,5 +1,6 @@
 import { Vector3 } from 'three';
 
+import { GalaxyPath, SystemPath } from '../../global.types';
 import { SystemPhysicModel } from '../physic';
 import { OrbitModel } from '../physic/orbit-generator';
 import { PlanetModel } from '../planet';
@@ -10,9 +11,9 @@ import { EmptyZoneModel } from './empty-zone';
 
 export interface SystemModel {
   id?: string;
-  path?: string;
-  parentPath?: string;
-  name?: string;
+  path?: SystemPath;
+  parentPath?: GalaxyPath;
+  name?: `${string}`;
   starColor?: string;
   habitable?: boolean;
   starRadius?: number;

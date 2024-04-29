@@ -1,5 +1,6 @@
 import { Vector3 } from 'three';
 
+import { PlanetPath, SystemPath } from '../../global.types';
 import { Seed } from '../../utils';
 import { PlanetPhysicModel } from '../physic';
 import { SystemOrbitModel } from '../system';
@@ -21,8 +22,8 @@ export interface RegionModel {
 export interface PlanetModel {
   id?: string;
   name?: string;
-  path?: string;
-  parentPath?: string;
+  path?: PlanetPath;
+  parentPath?: SystemPath;
   // type?: string;
   radius?: number;
   physic?: PlanetPhysicModel;
