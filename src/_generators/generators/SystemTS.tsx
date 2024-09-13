@@ -1,3 +1,5 @@
+// todo remove it!
+
 import { Vector3 } from 'three';
 
 import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS, PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM } from '../CONSTANTS';

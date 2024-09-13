@@ -4,14 +4,14 @@ import { Mesh, Topology } from '../surface.types';
 import { Border, Corner, Tile } from '../utils';
 
 function calculateTriangleArea(pa: Vector3, pb: Vector3, pc: Vector3) {
-  var vab = new Vector3().subVectors(pb, pa);
-  var vac = new Vector3().subVectors(pc, pa);
-  var faceNormal = new Vector3().crossVectors(vab, vac);
-  var vabNormal = new Vector3().crossVectors(faceNormal, vab).normalize();
-  var plane = new Plane().setFromNormalAndCoplanarPoint(vabNormal, pa);
-  var height = plane.distanceToPoint(pc);
-  var width = vab.length();
-  var area = width * height * 0.5;
+  const vab = new Vector3().subVectors(pb, pa);
+  const vac = new Vector3().subVectors(pc, pa);
+  const faceNormal = new Vector3().crossVectors(vab, vac);
+  const vabNormal = new Vector3().crossVectors(faceNormal, vab).normalize();
+  const plane = new Plane().setFromNormalAndCoplanarPoint(vabNormal, pa);
+  const height = plane.distanceToPoint(pc);
+  const width = vab.length();
+  const area = width * height * 0.5;
   return area;
 }
 
@@ -21,13 +21,7 @@ export class PlanetTopologyBuilder {
   generatePlanetTopology(mesh: Mesh): Topology {
     const corners: Corner[] = mesh.faces.map(
       (face, index) =>
-        new Corner(
-          index,
-          face.centroid.clone().multiplyScalar(1000),
-          face.e.length,
-          face.e.length,
-          face.n.length
-        )
+        new Corner(index, face.centroid.clone().multiplyScalar(1000), face.e.length, face.e.length, face.n.length)
     );
     const borders: Border[] = mesh.edges.map((edge, index) => new Border(index, 2, 4, 2));
 
@@ -53,18 +47,18 @@ export class PlanetTopologyBuilder {
         const corner = corners[edge.f[j]];
         averageCorner.add(corner.position);
         border.corners[j] = corner;
-        for (var k = 0; k < corner.borders.length; ++k) {
+        for (let k = 0; k < corner.borders.length; ++k) {
           if (corner.borders[k] !== border) border.borders[n++] = corner.borders[k];
         }
       }
       border.midpoint = averageCorner.multiplyScalar(1 / border.corners.length);
-      for (var j = 0; j < edge.n.length; ++j) {
+      for (let j = 0; j < edge.n.length; ++j) {
         border.tiles[j] = tiles[edge.n[j]];
       }
     });
 
     corners.forEach((corner, index) => {
-      for (var j = 0; j < corner.borders.length; ++j) {
+      for (let j = 0; j < corner.borders.length; ++j) {
         corner.corners[j] = corner.borders[j].oppositeCorner(corner);
       }
     });
@@ -131,7 +125,7 @@ export class PlanetTopologyBuilder {
 
     corners.forEach((corner) => {
       corner.area = 0;
-      for (var j = 0; j < corner.tiles.length; ++j) {
+      for (let j = 0; j < corner.tiles.length; ++j) {
         corner.area += (corner.tiles[j].area as number) / corner.tiles[j].corners.length;
       }
     });
