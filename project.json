@@ -10,7 +10,7 @@
       "options": {
         "outputPath": "dist/libs/world-generator",
         "main": "libs/world-generator/src/index.ts",
-        "tsConfig": "libs/world-generator/tsconfig.lib.json",
+        "tsConfig": "libs/world-generator/tsconfig.json",
         "assets": ["libs/world-generator/*.md"]
       }
     },
