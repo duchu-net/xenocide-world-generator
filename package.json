@@ -15,9 +15,18 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsc -build ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
+    "build": "tsc -build tsconfig.cjs.json tsconfig.esm.json tsconfig.types.json",
     "prepublishOnly": "npm test && npm run build",
     "test": "jest"
+  },
+  "nx": {
+    "targets": {
+      "test": {
+        "dependsOn": [
+          "build"
+        ]
+      }
+    }
   },
   "dependencies": {
     "three": "^0.168.0"
