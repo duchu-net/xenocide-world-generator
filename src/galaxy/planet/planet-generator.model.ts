@@ -14,7 +14,7 @@ export interface RegionModel {
   path: string;
   biome?: RegionBiome;
   color?: string;
-  corners: Vector3[];
+  corners: { x: number; y: number; z: number }[];
   neighbors: string[];
   effects?: {}[];
 }
