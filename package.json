@@ -1,6 +1,6 @@
 {
   "name": "@xeno/world-generator",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "ISC",
   "author": "Patryk Androsiuk (http://duchu.net)",
   "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme",
@@ -9,6 +9,7 @@
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist/"
   ],
