@@ -1,0 +1,10 @@
+export declare const REAL_STARS_NAMES: string[];
+export declare const STARGATE_STARS_NAMES: never[];
+export declare const STARGATE_PLANETS_NAMES: string[];
+export declare const DUNE_STARS_NAMES: string[];
+export declare const DUNE_PLANETS_NAMES: string[];
+export declare const STAR_TREK_STARS_NAMES: string[];
+export declare const FOUNDATION_STARS_NAMES: string[];
+export declare const COSMERE_STARS_NAMES: string[];
+export declare const HONOR_HARRINGTON_STARS_NAMES: string[];
+export declare const getStarsNames: () => string[];
