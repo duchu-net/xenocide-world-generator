@@ -1,8 +1,8 @@
-import { getStarsNames } from '../../resources/STARS_NAMES';
-import { capitalize } from './alphabet';
+import { getStarsNames } from '../resources/STARS_NAMES';
 
-import { MarkovModelBuilder } from './MarkovNames';
 import { MarkovModel } from './MarkovNames/MarkovModel';
+import { capitalize } from './alphabet';
+import { MarkovModelBuilder } from './MarkovNames';
 import { RandomObject } from './RandomObject';
 
 export class StarName {
@@ -88,8 +88,8 @@ export class StarName {
   }
   static RomanNumeral(random: RandomObject) {
     // console.log('RomanNumeral');
-    var integer = random.NormallyDistributedSingle4(10, 15, 1, 200);
-    var bigInteger = random.NormallyDistributedSingle4(400, 100, 200, 3000);
+    const integer = random.NormallyDistributedSingle4(10, 15, 1, 200);
+    const bigInteger = random.NormallyDistributedSingle4(400, 100, 200, 3000);
     return StarName.ToRoman(random.unit() > 0.8 ? integer : bigInteger);
   }
   static Integer(random: RandomObject) {
@@ -99,7 +99,7 @@ export class StarName {
   }
   static Decimal(random: RandomObject) {
     // console.log('Decimal');
-    var number = random.NormallyDistributedSingle4(100, 5, 1, 1000);
+    const number = random.NormallyDistributedSingle4(100, 5, 1, 1000);
     return Math.abs(parseInt(number.toFixed(2)));
   }
   static Letter(random: RandomObject) {

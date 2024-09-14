@@ -1,19 +1,19 @@
 {
   "name": "@xeno/world-generator",
-  "version": "0.0.1-rc.3",
+  "version": "0.0.3",
   "license": "ISC",
   "author": "Patryk Androsiuk (http://duchu.net)",
   "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme",
   "bugs": {
     "url": "https://github.com/duchu-net/xenocide-world-generator/issues"
   },
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "files": [
-    "lib/"
+    "dist/"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "tsc -build ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "prepublishOnly": "npm test && npm run build",
     "test": "jest"
   },
