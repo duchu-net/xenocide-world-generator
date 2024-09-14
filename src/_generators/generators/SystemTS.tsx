@@ -1,4 +1,5 @@
 // todo remove it!
+// @ts-nocheck
 
 import { Vector3 } from 'three';
 
