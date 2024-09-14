@@ -158,7 +158,7 @@ export class StarPhysics {
         return 3200 * mass;
     }
   }
-  
+
   static calcRadius(mass: number) {
     const exponent = mass > 1 ? 0.5 : 0.8;
     return Math.pow(mass, exponent);
@@ -221,6 +221,13 @@ export class StarPhysics {
     const index = TemperatureColors.findIndex((c) => c[1] == closestTemp);
     return TemperatureColors[index][0];
   }
+
+  // static sortByMass<T extends { physic: StarPhysicModel }>(stars: T[]): T[];
+  // static sortByMass<T extends StarPhysicModel | { physic: StarPhysicModel }>(stars: T[]): T[] {
+  //   return stars.every((star) => 'physic' in star)
+  //     ? stars.sort((a, b) => b.physic.mass - a.physic.mass)
+  //     : stars.sort((a, b) => b.mass - a.mass);
+  // }
 }
 
 // --- Star Color utils --- //

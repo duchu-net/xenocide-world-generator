@@ -1,5 +1,7 @@
-import { Seed } from '../../utils';
 import { Vector3 } from 'three';
+
+import { PlanetPath, SystemPath } from '../../global.types';
+import { Seed } from '../../utils';
 import { PlanetPhysicModel } from '../physic';
 import { SystemOrbitModel } from '../system';
 
@@ -12,7 +14,7 @@ export interface RegionModel {
   path: string;
   biome?: RegionBiome;
   color?: string;
-  corners: Vector3[];
+  corners: { x: number; y: number; z: number }[];
   neighbors: string[];
   effects?: {}[];
 }
@@ -20,15 +22,18 @@ export interface RegionModel {
 export interface PlanetModel {
   id?: string;
   name?: string;
-  path?: string;
-  parentPath?: string;
+  path?: PlanetPath;
+  parentPath?: SystemPath;
   // type?: string;
   radius?: number;
-  surfaceSeed?: Seed;
-  physic?: PlanetPhysicModel & SystemOrbitModel;
+  physic?: PlanetPhysicModel;
+  orbit?: SystemOrbitModel;
   // orbit?: SystemOrbitModel; // OrbitModel;
   regions?: RegionModel[];
-  options?: {}; // todo generator options???
+  options?: {
+    seed?: Seed;
+    surfaceSeed?: Seed;
+  }; // todo generator options???
 
   type?:
     | 'lava'

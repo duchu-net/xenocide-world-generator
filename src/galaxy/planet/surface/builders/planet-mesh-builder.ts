@@ -2,7 +2,7 @@ import { Plane, Vector3 } from 'three';
 
 import { RandomObject } from '../../../../utils';
 import { RandomGeneratorOptions } from '../../../basic-generator';
-import { Mesh } from '../types';
+import { Mesh } from '../surface.types';
 
 import { IcosahedronBuilder } from './icosahedron-builder';
 

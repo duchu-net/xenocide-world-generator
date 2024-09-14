@@ -1,0 +1,14 @@
+{
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "command": "tsc -build tsconfig.cjs.json tsconfig.esm.json tsconfig.types.json"
+    },
+    "test": {
+      "command": "jest",
+      "dependsOn": [
+        "build"
+      ]
+    }
+  }
+}

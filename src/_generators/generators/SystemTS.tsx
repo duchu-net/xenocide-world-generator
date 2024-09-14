@@ -1,3 +1,6 @@
+// todo remove it!
+// @ts-nocheck
+
 import { Vector3 } from 'three';
 
 import { STAR_COUNT_DISTIBUTION_IN_SYSTEMS, PLANETS_COUNT_IN_SINGLE_STAR_SYSTEM } from '../CONSTANTS';
@@ -255,41 +258,6 @@ export class System {
     // this._subsystem = subsystem; // todo maybe? xD
     return this;
   }
-  // Offset(offset) {
-  //   this.position.add(offset)
-  //   return this
-  // }
-
-  // Swirl(axis, amount) {
-  //   var d = this.position.length();
-  //   var angle = Math.pow(d, 0.1) * amount;
-  //   this.position.applyAxisAngle(axis, angle)
-  //   return this
-  // }
-
-  // static get generationStrategies() {
-  //   return [
-  //     // [1, Names.PlainMarkov],
-  //     // [.1, Names.NamedStar],
-  //   ]
-  // }
-  // static generationStrategy(random) {
-  //   if (this._generation_strategy) return this._generation_strategy
-  //   const gs = random.weighted(STAR_COUNT_DISTIBUTION_IN_SYSTEMS)
-  //   // this._generation_strategy = gs
-  //   return gs
-  // }
-  // static async Generate(random) {
-  //   const stars = []
-  //   for await (let star of System.GenerateStars(random))
-  //     stars.push(star)
-  //   stars.sort((s1, s2) => s1.mass < s2.mass)
-  //   // console.log('stars', stars);
-  //   const subsystem = await System.GenerateSubsystem(random, stars)
-  //   // console.log('subsystem', subsystem, stars.length);
-  //   return new System(null, stars)
-  //     .Subsystem(subsystem)
-  // }
 
   static *GenerateStars(random, system) {
     try {

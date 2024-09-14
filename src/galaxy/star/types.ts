@@ -1,9 +1,10 @@
-import { StarStellarClass, StarPhysicModel } from '../physic/star-physic';
+import { StarPath, SystemPath } from '../../global.types';
+import { StarPhysicModel,StarStellarClass } from '../physic/star-physic';
 
 export interface StarModel {
   id?: string;
-  path?: string;
-  parentPath?: string;
+  path?: StarPath;
+  parentPath?: SystemPath;
   mass?: number;
   spectralClass?: StarStellarClass;
   name?: string;

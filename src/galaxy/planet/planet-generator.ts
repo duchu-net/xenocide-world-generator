@@ -1,23 +1,22 @@
-import { Vector3 } from 'three';
-
 import { codename, decimalToRoman, Seed } from '../../utils';
-
 import { RandomGenerator, RandomGeneratorOptions } from '../basic-generator';
 import { OrbitPhysicModel, PlanetClassifier, PlanetPhysic, PlanetPhysicModel, StarPhysicModel } from '../physic';
 import { OrbitModel } from '../physic/orbit-generator';
 import { StarModel } from '../star';
-import { PlanetModel, RegionModel } from './planet-generator.model';
 
 import { PlanetSurfaceGenerator } from './surface/planet-surface-generator';
+import { PlanetModel, RegionModel } from './planet-generator.model';
 
 export interface PlanetOptions extends RandomGeneratorOptions {
-  // surfaceSeed?: Seed;
+  seed: Seed;
+  surfaceSeed: Seed;
   // random?: RandomObject;
   star?: StarModel;
-  orbit?: OrbitModel;
   planetType?: string;
 }
 const defaultOptions: PlanetOptions = {
+  seed: 0,
+  surfaceSeed: 0,
   // position: new Vector3(0, 0, 0),
 };
 
@@ -41,9 +40,10 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   constructor(model: PlanetModel, options: Partial<PlanetOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
+    if (!this.options.surfaceSeed) this.options.surfaceSeed = this.random.seed();
+
     if (!model.id) this.model.id = codename(this.model.name);
-    if (!model.path) this.model.path = `${this.model.parentPath}/p:${this.model.id}`;
-    if (!model.surfaceSeed) this.model.surfaceSeed = this.random.seed();
+    if (!model.path) this.model.path = <PlanetModel['path']>`${this.model.parentPath!}/p:${this.model.id!}`;
     this.regions = (model.regions as RegionModel[]) || [];
 
     const type = model.type || options.planetType;
@@ -51,7 +51,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
       this.meta = PlanetPhysic.getClass(type);
     } else {
       const availableClasses = PlanetPhysic.PLANET_CLASSIFICATION.filter((planetTopology) =>
-        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.options.orbit as OrbitPhysicModel)
+        planetTopology.when(this.options.star?.physic as StarPhysicModel, this.model.orbit as OrbitPhysicModel)
       );
       this.meta = this.random.weighted(availableClasses.map((top) => [top.probability, top])) as PlanetClassifier;
     }
@@ -61,17 +61,17 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
     this.model.radius = this.model.radius || this.random.real(this.meta.radius[0], this.meta.radius[1]);
 
     // this.generateTopology();
-    this.recalculatePhysic();
+    this.initializePhysic();
   }
 
-  recalculatePhysic() {
+  initializePhysic() {
     const { model, physic, options } = this;
-    Object.assign(physic, options.orbit);
+    // Object.assign(physic, options.orbit);
     physic.radius = model.radius || physic.radius;
 
     // physic.mass = model.mass || physic.mass;
     physic.mass = 1;
-    physic.rotationPeriod = PlanetPhysic.calcRotationalPeriod(physic.mass, physic.radius, options.orbit?.distance || 1);
+    physic.rotationPeriod = PlanetPhysic.calcRotationalPeriod(physic.mass, physic.radius, model.orbit?.distance || 1);
   }
 
   get subtype(): string {
@@ -81,7 +81,7 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
 
   *generateSurface() {
     try {
-      const surface = new PlanetSurfaceGenerator({}, { strategyName: this.model.type, seed: this.model.surfaceSeed });
+      const surface = new PlanetSurfaceGenerator({}, { strategyName: this.model.type, seed: this.options.surfaceSeed });
       surface.generateSurface();
       this.regions = surface.planet.topology.tiles.map((tile) => ({
         id: tile.id.toString(),
@@ -108,7 +108,12 @@ export class PlanetGenerator extends RandomGenerator<PlanetModel, PlanetOptions>
   }
 
   override toModel(): PlanetModel {
-    const { star, orbit, ...options } = this.options;
-    return super.toModel({ ...this.model, physic: this.physic, regions: this.regions, options });
+    const { star, ...options } = this.options;
+    return super.toModel({
+      ...this.model,
+      regions: this.regions,
+      physic: { ...this.physic },
+      options: { ...options },
+    });
   }
 }

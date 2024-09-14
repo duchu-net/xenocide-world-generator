@@ -2,13 +2,15 @@ import { Vector3 } from 'three';
 
 import { RandomObject } from '../utils';
 
-import { Sphere } from './Sphere';
-import { Cluster } from './Cluster';
 import { BasicShape } from './BasicShape';
+import { Cluster } from './Cluster';
+import { Sphere } from './Sphere';
 
-interface SpiralShapeOptions {
+export type SpiralShapeOptions = {
+  /** Min. 120 */
   size: number;
   swirl: number;
+  /** Min space between stars */
   spacing: number;
   minimumArms: number;
   maximumArms: number;
@@ -26,7 +28,7 @@ interface SpiralShapeOptions {
   centerClusterPositionDeviation: number;
   centralVoidSizeMean: number;
   centralVoidSizeDeviation: number;
-}
+};
 
 const defaultOptions: SpiralShapeOptions = {
   size: 750,
@@ -63,9 +65,9 @@ export class Spiral implements BasicShape {
     const { centralVoidSizeDeviation, centralVoidSizeMean } = this.options;
 
     try {
-      var centralVoidSize = random.NormallyDistributedSingle(centralVoidSizeDeviation, centralVoidSizeMean);
+      let centralVoidSize = random.NormallyDistributedSingle(centralVoidSizeDeviation, centralVoidSizeMean);
       if (centralVoidSize < 0) centralVoidSize = 0;
-      var centralVoidSizeSqr = centralVoidSize * centralVoidSize;
+      const centralVoidSizeSqr = centralVoidSize * centralVoidSize;
 
       for (const star of this.GenerateArms(random)) {
         if (star.position.lengthSq() > centralVoidSizeSqr) yield star;

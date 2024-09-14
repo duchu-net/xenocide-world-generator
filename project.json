@@ -1,34 +1,4 @@
 {
   "name": "world-generator",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/world-generator/src",
-  "projectType": "library",
-  "targets": {
-    "build": {
-      "executor": "@nrwl/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/world-generator",
-        "main": "libs/world-generator/src/index.ts",
-        "tsConfig": "libs/world-generator/tsconfig.lib.json",
-        "assets": ["libs/world-generator/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/world-generator/**/*.ts"]
-      }
-    },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "libs/world-generator/jest.config.ts",
-        "passWithNoTests": true
-      }
-    }
-  },
-  "tags": []
+  "projectType": "library"
 }

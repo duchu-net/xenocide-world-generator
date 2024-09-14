@@ -1,6 +1,9 @@
 export interface SystemPhysicModel {
   // mass: number;
-  // color: string;
+  color: string;
+  starsCount: number;
+  planetsCount: number;
+  asteroidsCount: number;
   // radius: number;
   // volume: number;
   // density: number;
