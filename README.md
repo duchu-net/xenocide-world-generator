@@ -16,7 +16,7 @@ TypeScript world generator for 4X like games in 3D space
 > ~~For now generator is developed as part of a private project (galaxy simulator with [nx](https://nx.dev/)),  
 > so currently without plans to release as a separate bundle (but can be used as git submodule).~~
 
-# @xenocide/world-generator available on NPM and with TS from 0.0.4!
+## @xenocide/world-generator available on NPM and with TS from 0.0.4!
 
 ![Image](./docs/22-10-30.png)
 
