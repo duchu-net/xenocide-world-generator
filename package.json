@@ -1,9 +1,10 @@
 {
-  "name": "@xeno/world-generator",
+  "name": "@xenocide/world-generator",
   "version": "0.0.4",
   "license": "ISC",
   "author": "Patryk Androsiuk (http://duchu.net)",
   "homepage": "https://github.com/duchu-net/xenocide-world-generator#readme",
+  "repository": "git://github.com/duchu-net/xenocide-world-generator.git",
   "bugs": {
     "url": "https://github.com/duchu-net/xenocide-world-generator/issues"
   },
