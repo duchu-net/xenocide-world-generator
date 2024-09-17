@@ -1,4 +1,4 @@
-## @xenocide/world-generator
+# @xenocide/world-generator
 
 _"Dear World, You are the best for Us!"_ - Artifexian  
 TypeScript world generator for 4X like games in 3D space
@@ -16,11 +16,11 @@ TypeScript world generator for 4X like games in 3D space
 > ~~For now generator is developed as part of a private project (galaxy simulator with [nx](https://nx.dev/)),  
 > so currently without plans to release as a separate bundle (but can be used as git submodule).~~
 
-## @xenocide/world-generator available on NPM and with TS from 0.0.4!
+# @xenocide/world-generator available on NPM and with TS from 0.0.4!
 
 ![Image](./docs/22-10-30.png)
 
-### Install
+## Install
 
 ```bash
 npm i @xenocide/world-generator@0.0.4
@@ -36,7 +36,44 @@ import { GalaxyGenerator, GalaxyClass } from '@xenocide/world-generator';
 
 Supports ESM and CommonJS modules.
 
+### Examples
+
 New examples coming soon...
+
+<table>
+  <tbody>
+    <tr>
+      <td style="width:33%">Galaxy generator with React and SVG (<a href="https://codesandbox.io/p/sandbox/93rmlv?file=/src/generator.ts">live demo</a>).</td>
+      <td>
+        <a href="https://codesandbox.io/s/93rmlv">
+          <img src="./docs/demo-galaxy-svg-1.png" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>Planet generator with React and <a href="https://github.com/pmndrs/react-three-fiber">@react-three/fiber</a> (<a href="https://codesandbox.io/p/sandbox/5q9gvz?file=/src/generator.ts">live demo</a>).</td>
+      <td>
+        <a href="https://codesandbox.io/s/5q9gvz">
+          <img src="./docs/demo-planet-r3f-1.png" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>[*alpha JS version] Full featured generator demo with React, Redux and <a href="https://github.com/pmndrs/react-three-fiber">react-three-fiber</a> (<a href="https://codesandbox.io/p/sandbox/1c8gs?file=/src/modules/generator/generatorStore.js">live demo</a>, <a href="https://www.youtube.com/channel/UCzGMc0qjJMu7PnH4ZdHni2w">video</a>).</td>
+      <td>
+        <a href="https://codesandbox.io/s/1c8gs">
+          <img src="./docs/demo-client-js-1.png" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>[*alpha JS version] Name generation with Markov Chains.</td>
+      <td>
+        <a href="https://codesandbox.io/s/h4vr6">live demo</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ### Code
 
@@ -79,7 +116,7 @@ for (const system of world.generateSystems()) {
 const model = world.toModel();
 ```
 
-### Inspired by
+## Inspired by
 
 - [mainly] [Procedural Planet Generation](https://experilous.com/1/blog/post/procedural-planet-generation) by _Andy Gainey_
 - [Star-Citizen-WebGL-Map](https://github.com/Leeft/Star-Citizen-WebGL-Map) by _Lianna Eeftinck_
@@ -87,7 +124,7 @@ const model = world.toModel();
 - [Procedural Generation For Dummies](http://martindevans.me/game-development/2016/01/14/Procedural-Generation-For-Dummies-Galaxies/) by _Martin Evans_
 - [X game series](https://www.egosoft.com/games/x4/info_en.php) by Egosoft
 
-#### Other links
+### Other links
 
 - [4X games (Wikipedia)](https://en.wikipedia.org/wiki/4X)
 - [Stellar classification (Wikipedia)](https://en.wikipedia.org/wiki/Stellar_classification)
@@ -96,13 +133,6 @@ const model = world.toModel();
 - [Prosperous Universe](https://prosperousuniverse.com/)
 - [Astro Empires](https://www.astroempires.com/)
 
-#### Old Examples
-
-- [Generator - React client](https://codesandbox.io/s/1c8gs), [check on YouTube](https://www.youtube.com/channel/UCzGMc0qjJMu7PnH4ZdHni2w)
-  ![Image](https://uploads.codesandbox.io/uploads/user/c3b8ed92-ed1d-4bff-8894-710d6c229664/aEDM-thumbnail.png)
-- [Name generating - Markov Chains](https://codesandbox.io/s/h4vr6)
-- [Population and Resources Market simulation - node.js subproject](https://codesandbox.io/s/m1vh74)
-
-### todo
+## todo
 
 - [x] own tsconfig build, not from nx
