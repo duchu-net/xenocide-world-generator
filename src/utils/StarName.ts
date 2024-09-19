@@ -3,7 +3,7 @@ import { getStarsNames } from '../resources/STARS_NAMES';
 import { MarkovModel } from './MarkovNames/MarkovModel';
 import { capitalize } from './alphabet';
 import { MarkovModelBuilder } from './MarkovNames';
-import { RandomObject } from './RandomObject';
+import { RandomObject } from './random';
 
 export class StarName {
   private constructor() {}

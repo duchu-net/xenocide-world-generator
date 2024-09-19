@@ -119,5 +119,3 @@ export class RandomObject {
     return Math.floor(new Date().getTime() / Math.floor(Math.random() * 100 + 1));
   }
 }
-
-export default RandomObject;

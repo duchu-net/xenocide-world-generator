@@ -1,9 +1,9 @@
 import { getGalaxiesNames } from '../resources/GALAXIES_NAMES';
 import { getStarsNames } from '../resources/STARS_NAMES';
 
-import { MarkovModel,MarkovModelBuilder } from './MarkovNames';
+import { MarkovModel, MarkovModelBuilder } from './MarkovNames';
 // import PLANETS_NAMES from '../../resources/PLANETS_NAMES'
-import RandomObject from './RandomObject';
+import { RandomObject } from './random';
 
 export class Names {
   private constructor() {}
