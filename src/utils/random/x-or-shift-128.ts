@@ -1,17 +1,16 @@
-// export type Seed = string | number
-export type Seed = number;
+type Component = number | string;
 
 export class XorShift128 {
-  private x: Seed;
-  private y: Seed;
-  private z: Seed;
-  private w: Seed;
+  private x: number;
+  private y: number;
+  private z: number;
+  private w: number;
 
-  constructor(x?: Seed, y?: Seed, z?: Seed, w?: Seed) {
-    this.x = x ? x >>> 0 : 123456789;
-    this.y = y ? y >>> 0 : 362436069;
-    this.z = z ? z >>> 0 : 521288629;
-    this.w = w ? w >>> 0 : 88675123;
+  constructor(x?: Component, y?: Component, z?: Component, w?: Component) {
+    this.x = x ? (x as number) >>> 0 : 123456789;
+    this.y = y ? (y as number) >>> 0 : 362436069;
+    this.z = z ? (z as number) >>> 0 : 521288629;
+    this.w = w ? (w as number) >>> 0 : 88675123;
   }
 
   next() {
@@ -49,12 +48,10 @@ export class XorShift128 {
     return this.unitInclusive() * (max - min) + min;
   }
 
-  reseed(x: Seed, y: Seed, z: Seed, w: Seed) {
-    this.x = x ? x >>> 0 : 123456789;
-    this.y = y ? y >>> 0 : 362436069;
-    this.z = z ? z >>> 0 : 521288629;
-    this.w = w ? w >>> 0 : 88675123;
+  reseed(x: Component, y: Component, z: Component, w: Component) {
+    this.x = x ? (x as number) >>> 0 : 123456789;
+    this.y = y ? (y as number) >>> 0 : 362436069;
+    this.z = z ? (z as number) >>> 0 : 521288629;
+    this.w = w ? (w as number) >>> 0 : 88675123;
   }
 }
-
-export default XorShift128;

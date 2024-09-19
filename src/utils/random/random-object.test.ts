@@ -1,4 +1,4 @@
-import RandomObject from './random-object';
+import { RandomObject } from './random-object';
 
 /**
  * `npx nx run world-generator:test --testFile=random-object.test.ts`

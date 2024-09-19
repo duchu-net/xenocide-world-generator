@@ -1,5 +1,4 @@
-// @ts-nocheck
-import XorShift128 from './XorShift128';
+import { XorShift128 } from './x-or-shift-128';
 
 export class RandomObject {
   _random: XorShift128;
@@ -10,7 +9,7 @@ export class RandomObject {
     this._random = rand;
   }
 
-  constructor(random) {
+  constructor(random?: XorShift128 | string | number) {
     if (random == null) {
       this.random = new XorShift128();
       return this;
@@ -29,26 +28,25 @@ export class RandomObject {
     // this._random = random || new XorShift128(254158958941485)
   }
 
-  choice(list) {
+  choice<T>(list: T[]): T {
     if (!Array.isArray(list)) throw new TypeError('list must by an array');
     // console.log('@',this.next(list.length), list[this.next(list.length)]);
     return list[this.next(list.length - 1)];
   }
 
-  weighted(list: [] | {}) {
-    // weighted<T>(list: T[] | {}): T[1] {
+  weighted(list: [number, string][] | { [key: string]: number }): string {
     if (typeof list !== 'object') throw new TypeError('list must be array or object');
-    if (!Array.isArray(list)) {
-      list = Object.entries(list).map((e) => [e[1], e[0]]);
-    }
 
-    const sum = list.reduce((o, c) => (o += c[0]), 0);
+    const array = Array.isArray(list) ? list : Object.entries(list).map<[number, string]>((it) => [it[1], it[0]]);
+
+    const sum = array.reduce((prev, curr) => (prev += curr[0]), 0);
     let num = this.random.real(0, sum);
-    // console.log(sum, num)
-    for (let i = 0; i < list.length; i++) {
-      num -= list[i][0];
-      if (num < 0) return list[i][1];
+
+    for (let i = 0; i < array.length; i++) {
+      num -= array[i][0];
+      if (num < 0) return array[i][1];
     }
+    return '';
   }
 
   Next(max?: number) {
