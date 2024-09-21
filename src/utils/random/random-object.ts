@@ -1,31 +1,17 @@
 import { XorShift128 } from './x-or-shift-128';
 
 export class RandomObject {
-  _random: XorShift128;
+  private _random: XorShift128;
+
+  constructor(seed?: string | number) {
+    this._random = new XorShift128(seed);
+  }
+
   get random() {
     return this._random;
   }
   set random(rand: XorShift128) {
     this._random = rand;
-  }
-
-  constructor(random?: XorShift128 | string | number) {
-    if (random == null) {
-      this.random = new XorShift128();
-      return this;
-    }
-    switch (typeof random) {
-      case 'object':
-        this.random = random;
-        break;
-      case 'number':
-      case 'string':
-        this.random = new XorShift128(random);
-        break;
-      default:
-        this.random = new XorShift128();
-    }
-    // this._random = random || new XorShift128(254158958941485)
   }
 
   choice<T>(list: T[]): T {
@@ -34,10 +20,13 @@ export class RandomObject {
     return list[this.next(list.length - 1)];
   }
 
-  weighted(list: [number, string][] | { [key: string]: number }): string {
+  // weighted(list: [number, string][]): string;
+  // weighted(list: { [key: string]: number }): string;
+  weighted(list: any) {
     if (typeof list !== 'object') throw new TypeError('list must be array or object');
 
-    const array = Array.isArray(list) ? list : Object.entries(list).map<[number, string]>((it) => [it[1], it[0]]);
+    // const array = Array.isArray(list) ? list : Object.entries(list).map<[number, T]>((it) => [it[1], it[0] as T]);
+    const array = Array.isArray(list) ? list : Object.entries(list).map((it) => [it[1], it[0]]);
 
     const sum = array.reduce((prev, curr) => (prev += curr[0]), 0);
     let num = this.random.real(0, sum);
@@ -46,7 +35,7 @@ export class RandomObject {
       num -= array[i][0];
       if (num < 0) return array[i][1];
     }
-    return '';
+    throw new Error('weighted error');
   }
 
   Next(max?: number) {

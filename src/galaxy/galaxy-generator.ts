@@ -3,7 +3,6 @@ import { Vector3 } from 'three';
 import { BasicShape, Grid, Spiral } from '../galaxy-shape';
 import { GalaxyClass, GalaxyClassShape, Position } from '../interfaces';
 import { capitalize, codename } from '../utils';
-import { Names } from '../utils/Names';
 import { StarName } from '../utils/StarName';
 
 import { RandomGenerator, RandomGeneratorOptions } from './basic-generator';
@@ -39,7 +38,7 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
   constructor(model: GalaxyModel, options: Partial<GalaxyOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
-    if (!model.name) this.model.name = capitalize(Names.GenerateGalaxyName(this.random)); // todo name generator should be static inside Galaxy?
+    if (!model.name) this.model.name = capitalize(StarName.GenerateGalaxyName(this.random)); // todo name generator should be static inside Galaxy?
     if (!model.id) this.model.id = codename(this.model.name);
     if (!model.path) this.model.path = codename(this.model.name);
     if (!model.position) this.model.position = new Vector3();

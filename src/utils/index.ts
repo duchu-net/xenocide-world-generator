@@ -1,8 +1,8 @@
 export * from './MarkovNames';
-export * from './assignDeep';
+export * from './random';
 
 export * from './alphabet';
+export * from './assign-deep';
 export * from './math';
-export * from './random';
 export * from './weighted-random';
 export * from './world-path';
