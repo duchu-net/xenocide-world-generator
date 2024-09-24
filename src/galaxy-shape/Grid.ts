@@ -1,11 +1,11 @@
 import { Vector3 } from 'three';
 
 import { RandomObject } from '../utils';
-import { BasicShape } from './BasicShape';
+import { ShapeBase } from './shape.base';
 
-import { ShapeStar } from './ShapeStar';
+import { StarEssential } from './star-essential';
 
-export class Grid implements BasicShape {
+export class Grid implements ShapeBase {
   constructor(public readonly size: number = 5, public readonly spacing: number = 1) {}
 
   *Generate(random?: RandomObject) {
@@ -15,7 +15,7 @@ export class Grid implements BasicShape {
     for (let i = 0; i < count; i++) {
       for (let j = 0; j < count; j++) {
         for (let k = 0; k < count; k++) {
-          yield new ShapeStar({
+          yield new StarEssential({
             position: new Vector3(i * spacing, j * spacing, k * spacing),
             // .add(new Vector3(-size/2, -size/2, -size/2)),
             // temperature: null,

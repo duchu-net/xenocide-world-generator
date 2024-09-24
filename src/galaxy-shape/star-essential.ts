@@ -6,7 +6,7 @@ interface ShapeStarModel {
   galaxy_size?: number;
 }
 
-export class ShapeStar {
+export class StarEssential {
   position: Vector3;
   temperature?: number;
   galaxy_size?: number;

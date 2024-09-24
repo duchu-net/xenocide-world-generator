@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 
-import { BasicShape, Grid, Spiral } from '../galaxy-shape';
+import { ShapeBase, Grid, Spiral } from '../galaxy-shape';
 import { GalaxyClass, GalaxyClassShape, Position } from '../interfaces';
 import { capitalize, codename } from '../utils';
 import { StarName } from '../utils/StarName';
@@ -33,7 +33,7 @@ const defaultOptions: GalaxyOptions = {
 
 export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions> {
   override schemaName = 'GalaxyModel';
-  private readonly systems: SystemGenerator[] = [];
+  public readonly systems: SystemGenerator[] = [];
 
   constructor(model: GalaxyModel, options: Partial<GalaxyOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
@@ -51,12 +51,13 @@ export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions>
 
   setClassification(classification?: GalaxyClass) {
     if (!this.model.classification) {
-      const classificationT = this.random?.choice(Object.values(GalaxyClassShape));
+      // const classificationT = this.random?.choice(Object.values(GalaxyClassShape));
+      const classificationT = this.random?.choice(Object.values(GalaxyClass));
       this.model.classification = classification || classificationT;
     }
   }
 
-  getShape(): BasicShape {
+  getShape(): ShapeBase {
     switch (this.model.classification) {
       case 'spiral':
         return new Spiral(this.options.spiral);
