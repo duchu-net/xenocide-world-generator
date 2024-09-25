@@ -1,4 +1,4 @@
-import { RandomObject } from '../RandomObject';
+import { RandomObject } from '../random';
 
 export class MarkovModel {
   constructor(

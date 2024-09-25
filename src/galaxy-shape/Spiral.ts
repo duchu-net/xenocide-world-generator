@@ -2,7 +2,7 @@ import { Vector3 } from 'three';
 
 import { RandomObject } from '../utils';
 
-import { BasicShape } from './BasicShape';
+import { ShapeBase } from './shape.base';
 import { Cluster } from './Cluster';
 import { Sphere } from './Sphere';
 
@@ -52,15 +52,12 @@ const defaultOptions: SpiralShapeOptions = {
   centralVoidSizeDeviation: 7,
 };
 
-export class Spiral implements BasicShape {
+export class Spiral implements ShapeBase {
   public readonly options: SpiralShapeOptions;
   constructor(options: Partial<SpiralShapeOptions> = defaultOptions) {
     this.options = { ...defaultOptions, ...options };
   }
 
-  // * GenerateShape(random) {
-  //   return this.Generate(random)
-  // }
   *Generate(random: RandomObject) {
     const { centralVoidSizeDeviation, centralVoidSizeMean } = this.options;
 
@@ -85,9 +82,10 @@ export class Spiral implements BasicShape {
     }
   }
 
-  GenerateBackgroundStars(random: RandomObject) {
+  *GenerateBackgroundStars(random: RandomObject) {
     const { size } = this.options;
-    return new Sphere(size, 0.000001, 0.0000001, 0.35, 0.125, 0.35).Generate(random);
+    const stars = new Sphere(size, 0.000001, 0.0000001, 0.35, 0.125, 0.35).Generate(random);
+    for (const star of stars) yield star;
   }
 
   *GenerateArms(random: RandomObject) {

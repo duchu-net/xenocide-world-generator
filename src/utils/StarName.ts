@@ -1,9 +1,11 @@
-import { getStarsNames } from '../resources/STARS_NAMES';
+import { names, getAllStarNames } from '../resources/STARS_NAMES';
 
 import { MarkovModel } from './MarkovNames/MarkovModel';
 import { capitalize } from './alphabet';
 import { MarkovModelBuilder } from './MarkovNames';
-import { RandomObject } from './RandomObject';
+import { RandomObject } from './random';
+
+type StringGenerator = (random: RandomObject) => string | number;
 
 export class StarName {
   private constructor() {}
@@ -11,35 +13,10 @@ export class StarName {
   static getInstance() {
     if (StarName.instance) return StarName.instance;
     // console.log(STARS_NAMES);
-    StarName.instance = new MarkovModelBuilder(3).TeachArray(getStarsNames()).toModel();
+    StarName.instance = new MarkovModelBuilder(3).TeachArray(getAllStarNames()).toModel();
     return StarName.instance;
   }
 
-  static _prefixStrategies = [
-    // [1.0, StarName.Greek],
-    [1.0, StarName.Decorator],
-    [0.01, StarName.RomanNumeral],
-    [1.0, StarName.Letter],
-    [1.0, StarName.Integer],
-    [0.3, StarName.Decimal],
-    [0.0, () => 'Al'],
-    [0.0, () => 'San'],
-  ];
-  static _suffixStrategies = [
-    // [1.0, StarName.Greek],
-    [1.0, StarName.Decorator],
-    [1.0, StarName.RomanNumeral],
-    [1.0, StarName.Letter],
-    [1.0, StarName.Integer],
-    [0.3, StarName.Decimal],
-  ];
-  static _namingStrategies = [
-    [1, StarName.PlainMarkov],
-    [1, StarName.WithDecoration(1, StarName.WithDecoration(0.001, StarName.PlainMarkov))],
-    [0.05, (random: RandomObject) => StarName.Letter(random) + '-' + StarName.Integer(random)],
-    [0.01, StarName.NamedStar],
-    [0.01, (random: RandomObject) => random.choice(StarName.specialLocations)],
-  ];
   static specialLocations = [
     'Epsilon Eridani',
     'San Martin',
@@ -93,57 +70,57 @@ export class StarName {
     return StarName.ToRoman(random.unit() > 0.8 ? integer : bigInteger);
   }
   static Integer(random: RandomObject) {
-    // console.log('Integer');
     const number = random.NormallyDistributedSingle4(100, 5, 1, 1000);
     return Math.trunc(Math.abs(number));
   }
+
+  /**
+   * Generates a decimal number between 1 and 1000 with 2 decimal places
+   * @returns e.g. `123.45`
+   */
   static Decimal(random: RandomObject) {
-    // console.log('Decimal');
     const number = random.NormallyDistributedSingle4(100, 5, 1, 1000);
     return Math.abs(parseInt(number.toFixed(2)));
   }
+  /**
+   * Generates a random letter between A and Z
+   * @returns e.g. `A`
+   */
   static Letter(random: RandomObject) {
-    // console.log('Letter');
     return String.fromCharCode(random.integer(65, 90));
+  }
+
+  /**
+   * Generates a random star name based on a pattern
+   * @param pattern default: `AAA-000`
+   * @returns e.g. `XYZ-123`
+   */
+  static Pattern(random: RandomObject, pattern = 'AAA-000') {
+    const Digit = () => random.integer(0, 9);
+    const Letter = () => String.fromCharCode(random.integer(65, 90));
+    return pattern.replace(/A/g, () => Letter()).replace(/0/g, () => `${Digit()}`);
   }
 
   // static markovNameModel = new MarkovModelBuilder(3).TeachArray(STARS_NAMES).toModel();
   static PlainMarkov(random: RandomObject) {
-    // console.log('PlainMarkov');
     const str = StarName.getInstance().Generate(random); // todo capitalize?
     return capitalize(str);
   }
   static NamedStar(random: RandomObject) {
-    // console.log('NamedStar');
-    return random.choice(getStarsNames());
+    return random.choice(getAllStarNames());
   }
 
-  static WithDecoration(probability: number, func: (random: RandomObject) => string) {
+  static WithPrefixStrategy(func: StringGenerator, strategies = defaultPrefixStrategies) {
     return (random: RandomObject) => {
-      // console.log('WithDecoration');
-      const result = func(random);
-      if (random.unit() > probability) return result;
+      const prefix = random.weighted(strategies)(random);
+      return `${prefix} ${func(random)}`;
+    };
+  }
 
-      const prefix = random.weighted(StarName._prefixStrategies)(random) + ' ';
-      const suffix = ' ' + random.weighted(StarName._suffixStrategies)(random);
-
-      switch (
-        random.weighted([
-          [0.4, 'neither'],
-          [1.0, 'prefix'],
-          [1.0, 'suffix'],
-          [0.2, 'both'],
-        ])
-      ) {
-        case 'prefix':
-          return prefix + result;
-        case 'suffix':
-          return result + suffix;
-        case 'both':
-          return prefix + result + suffix;
-        default:
-          return result;
-      }
+  static WithSuffixStrategy(func: StringGenerator, strategies = defaultSuffixStrategies) {
+    return (random: RandomObject) => {
+      const suffix = random.weighted(strategies)(random);
+      return `${func(random)} ${suffix}`;
     };
   }
 
@@ -165,8 +142,22 @@ export class StarName {
     throw new RangeError();
   }
 
-  static Generate(random: RandomObject) {
-    return random.weighted(StarName._namingStrategies)(random).trim();
+  static GenerateGalaxyName(random: RandomObject): string {
+    return random.weighted([
+      [
+        1,
+        () =>
+          new MarkovModelBuilder(2)
+            .TeachArray([...getAllStarNames(), ...names.real.names])
+            .toModel()
+            .Generate(random),
+      ],
+      [0.1, () => StarName.Generate(random)],
+    ])(random);
+  }
+
+  static Generate(random: RandomObject, strategies = defaultNamingStrategies) {
+    return random.weighted(strategies)(random).trim();
   }
   static async GenerateCount(random: RandomObject, count = 1) {
     const names = [];
@@ -179,4 +170,37 @@ export class StarName {
   }
 }
 
-export default StarName;
+type Propability = number;
+
+const defaultPrefixStrategies: [Propability, StringGenerator][] = [
+  [0.01, StarName.Greek],
+  [0.2, StarName.Decorator],
+  [0.01, StarName.RomanNumeral],
+  [1.0, StarName.Letter],
+  [1.0, StarName.Integer],
+  [0.3, StarName.Decimal],
+  [0.01, () => 'Al'],
+  [0.01, () => 'San'],
+];
+
+const defaultSuffixStrategies: [Propability, StringGenerator][] = [
+  // [1.0, StarName.Greek],
+  [0.1, StarName.Decorator],
+  [1.0, StarName.RomanNumeral],
+  [1.0, StarName.Letter],
+  [1.0, StarName.Integer],
+  [0.3, StarName.Decimal],
+];
+
+const defaultNamingStrategies: [Propability, StringGenerator][] = [
+  [1, StarName.PlainMarkov],
+  [0.4, StarName.WithPrefixStrategy(StarName.PlainMarkov)],
+  [0.4, StarName.WithSuffixStrategy(StarName.PlainMarkov)],
+  [0.15, StarName.WithPrefixStrategy(StarName.WithSuffixStrategy(StarName.PlainMarkov))],
+  [0.8, (random) => StarName.Pattern(random, 'AAA-000')],
+  [0.2, (random) => StarName.Pattern(random, 'AAA-000-AA')],
+  [0.01, (random) => StarName.Pattern(random, '00-AA')],
+  [0.05, (random) => `${StarName.Letter(random)}-${StarName.Integer(random)}`],
+  [0.01, StarName.NamedStar],
+  [0.01, (random) => `${random.choice(StarName.specialLocations)} ${StarName.Pattern(random, 'A00')}`],
+];

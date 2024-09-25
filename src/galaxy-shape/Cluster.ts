@@ -1,10 +1,10 @@
 import { Vector3 } from 'three';
 import { RandomObject } from '../utils';
-import { BasicShape } from './BasicShape';
+import { ShapeBase } from './shape.base';
 
-export class Cluster implements BasicShape {
+export class Cluster implements ShapeBase {
   constructor(
-    public readonly basis: BasicShape,
+    public readonly basis: ShapeBase,
     public readonly countMean = 0.0000025,
     public readonly countDeviation = 0.000001,
     public readonly deviationX = 0.0000025,
