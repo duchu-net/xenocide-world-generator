@@ -1,23 +1,23 @@
 import { Vector3 } from 'three';
 
-interface ShapeStarModel {
+interface ProtostarModel {
   position: Vector3;
   temperature?: number;
   galaxy_size?: number;
 }
 
-export class StarEssential {
+export class Protostar {
   position: Vector3;
   temperature?: number;
   galaxy_size?: number;
 
-  constructor(model: ShapeStarModel) {
+  constructor(model: ProtostarModel) {
     this.position = model.position;
     this.temperature = model.temperature;
     this.galaxy_size = model.galaxy_size;
   }
 
-  Offset(offset: Vector3) {
+  offset(offset: Vector3) {
     this.position.add(offset);
     return this;
   }

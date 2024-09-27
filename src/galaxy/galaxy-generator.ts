@@ -1,7 +1,7 @@
 import { Vector3 } from 'three';
 
 import { ShapeBase, Grid, Spiral } from '../galaxy-shape';
-import { GalaxyClass, GalaxyClassShape, Position } from '../interfaces';
+import { galaxyClass, GalaxyClass, Position } from '../interfaces';
 import { capitalize, codename } from '../utils';
 import { StarName } from '../utils/StarName';
 
@@ -12,7 +12,7 @@ import { SystemGenerator, SystemModel } from './system';
 export interface GalaxyModel {
   id?: string;
   path?: string;
-  systemsSeed?: number; // todo
+  seedSystems?: number; // todo
   name?: string;
   position?: Position;
   classification?: GalaxyClass;
@@ -24,6 +24,7 @@ export interface GalaxyModel {
 export interface GalaxyOptions extends RandomGeneratorOptions {
   grid: { size: number; spacing: number }; // todo
   spiral: { size: number }; // todo
+  seedSystems?: number;
 }
 
 const defaultOptions: GalaxyOptions = {
@@ -31,55 +32,73 @@ const defaultOptions: GalaxyOptions = {
   spiral: { size: 400 },
 };
 
+const RegisteredGenerators = {
+  spiral: Spiral,
+  grid: Grid,
+} as const;
+
 export class GalaxyGenerator extends RandomGenerator<GalaxyModel, GalaxyOptions> {
   override schemaName = 'GalaxyModel';
   public readonly systems: SystemGenerator[] = [];
+  private galaxyShape: ShapeBase;
 
   constructor(model: GalaxyModel, options: Partial<GalaxyOptions> = defaultOptions) {
     super(model, { ...defaultOptions, ...model.options, ...options });
 
-    if (!model.name) this.model.name = capitalize(StarName.GenerateGalaxyName(this.random)); // todo name generator should be static inside Galaxy?
-    if (!model.id) this.model.id = codename(this.model.name);
-    if (!model.path) this.model.path = codename(this.model.name);
-    if (!model.position) this.model.position = new Vector3();
-
     // todo check that
     this.systems = model.systems?.map((system) => new SystemGenerator(system)) || [];
-
-    this.setClassification();
   }
 
-  setClassification(classification?: GalaxyClass) {
-    if (!this.model.classification) {
-      // const classificationT = this.random?.choice(Object.values(GalaxyClassShape));
-      const classificationT = this.random?.choice(Object.values(GalaxyClass));
-      this.model.classification = classification || classificationT;
-    }
+  public shape(galaxyShape: ShapeBase) {
+    this.galaxyShape = galaxyShape;
+    return this;
   }
+  // ?not working since we throw all options to model - all is already set after reseed
+  public reseed(seed: number) {
+    this.options.seed = seed;
+    this.random = this.random.instance(seed);
+    return this;
+  }
+  private isBuilded = false;
+  public build() {
+    // Starting seed for systems
+    if (!this.options.seedSystems) this.options.seedSystems = this.random.next();
+    // Model check
+    const { model } = this;
+    if (!model.name) model.name = capitalize(StarName.GenerateGalaxyName(this.random)); // todo name generator should be static inside Galaxy?
+    if (!model.id) model.id = codename(model.name);
+    if (!model.path) model.path = codename(model.name);
+    if (!model.position) model.position = new Vector3();
 
-  getShape(): ShapeBase {
-    switch (this.model.classification) {
-      case 'spiral':
-        return new Spiral(this.options.spiral);
-      case 'grid':
-      default:
-        return new Grid(this.options.grid.size, this.options.grid.spacing);
+    if (!model.classification && !this.galaxyShape) {
+      model.classification = this.random?.choice(Object.values(galaxyClass));
     }
+    if (model.classification && !this.galaxyShape) {
+      this.galaxyShape = new RegisteredGenerators[model.classification](this.options[model.classification]);
+    } else if (this.galaxyShape) {
+      model.classification = this.galaxyShape.constructor.name as GalaxyClass;
+    }
+
+    this.isBuilded = true;
   }
 
   *generateSystems() {
-    const shape = this.getShape();
-    for (const system of shape.Generate(this.random)) {
+    if (!this.isBuilded) this.build();
+
+    const shape = this.galaxyShape;
+    const random = this.random.instance(this.options.seedSystems);
+
+    for (const system of shape.Generate(random)) {
       // CHECK UNIQUE SEED
-      let systemSeed = this.random.next();
-      while (this.systems.find((system) => system.options.seed == systemSeed)) systemSeed = this.random.next();
-      let systemName = StarName.Generate(this.random);
+      let systemSeed = random.next();
+      while (this.systems.find((system) => system.options.seed == systemSeed)) systemSeed = random.next();
+      let systemName = StarName.Generate(random);
       while (
         this.systems.find((system) => {
           return system.model.name?.toLowerCase() == systemName.toLowerCase();
         })
       )
-        systemName = StarName.Generate(this.random);
+        systemName = StarName.Generate(random);
 
       const systemGenerator = new SystemGenerator(
         {

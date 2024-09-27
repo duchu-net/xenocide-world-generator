@@ -1,13 +1,14 @@
-export interface Position {
+export type Position = {
   x: number;
   y: number;
   z: number;
 }
 
-export enum GalaxyClass {
-  Spiral = 'spiral',
-  Grid = 'grid',
-}
+export const galaxyClass = {
+  Spiral: 'spiral',
+  Grid: 'grid',
+} as const;
+export type GalaxyClass = typeof galaxyClass[keyof typeof galaxyClass];
 
 export enum GalaxyAge {
   Young = 'young',

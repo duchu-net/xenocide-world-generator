@@ -102,6 +102,13 @@ export class RandomObject {
     return z * standardDeviation + mean;
   }
 
+  /**
+   * Return a new instance of RandomObject
+   */
+  public instance(seed?: string | number) {
+    return new RandomObject(seed);
+  }
+
   static randomSeed() {
     return Math.floor(new Date().getTime() / Math.floor(Math.random() * 100 + 1));
   }

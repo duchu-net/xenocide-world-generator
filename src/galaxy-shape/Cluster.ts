@@ -2,26 +2,31 @@ import { Vector3 } from 'three';
 import { RandomObject } from '../utils';
 import { ShapeBase } from './shape.base';
 
+type ClusterShapeOptions = {
+  countMean: number;
+  countDeviation: number;
+  deviationX: number;
+  deviationY: number;
+  deviationZ: number;
+};
+
+const defaultOptions: ClusterShapeOptions = {
+  countMean: 0.0000025,
+  countDeviation: 0.000001,
+  deviationX: 0.0000025,
+  deviationY: 0.0000025,
+  deviationZ: 0.0000025,
+};
+
 export class Cluster implements ShapeBase {
-  constructor(
-    public readonly basis: ShapeBase,
-    public readonly countMean = 0.0000025,
-    public readonly countDeviation = 0.000001,
-    public readonly deviationX = 0.0000025,
-    public readonly deviationY = 0.0000025,
-    public readonly deviationZ = 0.0000025
-  ) {}
+  public readonly options: ClusterShapeOptions;
+
+  constructor(public readonly basis: ShapeBase, options?: Partial<ClusterShapeOptions>) {
+    this.options = { ...defaultOptions, ...options };
+  }
 
   *Generate(random: RandomObject) {
-    const {
-      basis,
-      // size,
-      countDeviation,
-      countMean,
-      deviationX,
-      deviationY,
-      deviationZ,
-    } = this;
+    const { countMean, countDeviation, deviationX, deviationY, deviationZ } = this.options;
 
     try {
       const count = Math.max(0, random.NormallyDistributedSingle(countDeviation, countMean));
@@ -34,7 +39,7 @@ export class Cluster implements ShapeBase {
           random.NormallyDistributedSingle(deviationZ, 0)
         );
 
-        for (const star of basis.Generate(random)) yield star.Offset(center);
+        for (const star of this.basis.Generate(random)) yield star.offset(center);
       }
     } catch (err) {
       console.error('!', err);

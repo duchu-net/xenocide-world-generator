@@ -3,38 +3,52 @@ import { Vector3 } from 'three';
 import { RandomObject } from '../utils';
 
 import { ShapeBase } from './shape.base';
-import { StarEssential } from './star-essential';
+import { Protostar } from './protostar';
+
+type SphereShapeOptions = {
+  size: number;
+  densityMean: number;
+  densityDeviation: number;
+  deviationX: number;
+  deviationY: number;
+  deviationZ: number;
+};
+
+const defaultOptions: SphereShapeOptions = {
+  size: 750,
+  densityMean: 0.000001,
+  densityDeviation: 0.0000001,
+  deviationX: 0.35,
+  deviationY: 0.125,
+  deviationZ: 0.35,
+};
 
 export class Sphere implements ShapeBase {
-  constructor(
-    public readonly size: number = 750,
-    public readonly densityMean: number = 0.000001,
-    public readonly densityDeviation: number = 0.0000001,
-    public readonly deviationX: number = 0.35,
-    public readonly deviationY: number = 0.125,
-    public readonly deviationZ: number = 0.35
-  ) {}
+  public readonly options: SphereShapeOptions;
+
+  constructor(options?: Partial<SphereShapeOptions>) {
+    this.options = { ...defaultOptions, ...options };
+  }
 
   *Generate(random: RandomObject) {
-    const { size, densityDeviation, densityMean, deviationX, deviationY, deviationZ } = this;
+    const { size, densityDeviation, densityMean, deviationX, deviationY, deviationZ } = this.options;
     const density = Math.max(0, random.NormallyDistributedSingle(densityDeviation, densityMean));
     const countMax = Math.max(0, parseInt((size * size * size * density).toFixed()));
 
     if (countMax <= 0) return;
-    var count = random.Next(countMax);
+    const count = random.Next(countMax);
 
     for (let i = 0; i < count; i++) {
-      var pos = new Vector3(
+      const pos = new Vector3(
         random.NormallyDistributedSingle(deviationX * size, 0),
         random.NormallyDistributedSingle(deviationY * size, 0),
         random.NormallyDistributedSingle(deviationZ * size, 0)
       );
-      var d = pos.length() / size;
-      var m = d * 2000 + (1 - d) * 15000;
-      var t = random.NormallyDistributedSingle4(4000, m, 1000, 40000);
+      const d = pos.length() / size;
+      const m = d * 2000 + (1 - d) * 15000;
+      const t = random.NormallyDistributedSingle4(4000, m, 1000, 40000);
 
-      yield new StarEssential({
-        // name: StarName.Generate(random),
+      yield new Protostar({
         position: pos,
         temperature: t,
       });
