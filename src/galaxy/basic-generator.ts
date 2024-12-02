@@ -56,7 +56,7 @@ export class RandomGenerator<ObjectModel, Options extends RandomGeneratorOptions
   Options
 > {
   override readonly schemaName: string = 'unnamed-basic-model-generator';
-  protected readonly random: RandomObject;
+  protected random: RandomObject;
   constructor(model: ObjectModel, options: Options) {
     super(model, options);
 

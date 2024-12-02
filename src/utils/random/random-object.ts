@@ -1,8 +1,12 @@
-// @ts-nocheck
-import XorShift128 from './XorShift128';
+import { XorShift128 } from './x-or-shift-128';
 
 export class RandomObject {
-  _random: XorShift128;
+  private _random: XorShift128;
+
+  constructor(seed?: string | number) {
+    this._random = new XorShift128(seed);
+  }
+
   get random() {
     return this._random;
   }
@@ -10,45 +14,28 @@ export class RandomObject {
     this._random = rand;
   }
 
-  constructor(random) {
-    if (random == null) {
-      this.random = new XorShift128();
-      return this;
-    }
-    switch (typeof random) {
-      case 'object':
-        this.random = random;
-        break;
-      case 'number':
-      case 'string':
-        this.random = new XorShift128(random);
-        break;
-      default:
-        this.random = new XorShift128();
-    }
-    // this._random = random || new XorShift128(254158958941485)
-  }
-
-  choice(list) {
+  choice<T>(list: T[]): T {
     if (!Array.isArray(list)) throw new TypeError('list must by an array');
     // console.log('@',this.next(list.length), list[this.next(list.length)]);
     return list[this.next(list.length - 1)];
   }
 
-  weighted(list: [] | {}) {
-    // weighted<T>(list: T[] | {}): T[1] {
+  // weighted(list: [number, string][]): string;
+  // weighted(list: { [key: string]: number }): string;
+  weighted(list: any) {
     if (typeof list !== 'object') throw new TypeError('list must be array or object');
-    if (!Array.isArray(list)) {
-      list = Object.entries(list).map((e) => [e[1], e[0]]);
-    }
 
-    const sum = list.reduce((o, c) => (o += c[0]), 0);
+    // const array = Array.isArray(list) ? list : Object.entries(list).map<[number, T]>((it) => [it[1], it[0] as T]);
+    const array = Array.isArray(list) ? list : Object.entries(list).map((it) => [it[1], it[0]]);
+
+    const sum = array.reduce((prev, curr) => (prev += curr[0]), 0);
     let num = this.random.real(0, sum);
-    // console.log(sum, num)
-    for (let i = 0; i < list.length; i++) {
-      num -= list[i][0];
-      if (num < 0) return list[i][1];
+
+    for (let i = 0; i < array.length; i++) {
+      num -= array[i][0];
+      if (num < 0) return array[i][1];
     }
+    throw new Error('weighted error');
   }
 
   Next(max?: number) {
@@ -115,9 +102,14 @@ export class RandomObject {
     return z * standardDeviation + mean;
   }
 
+  /**
+   * Return a new instance of RandomObject
+   */
+  public instance(seed?: string | number) {
+    return new RandomObject(seed);
+  }
+
   static randomSeed() {
     return Math.floor(new Date().getTime() / Math.floor(Math.random() * 100 + 1));
   }
 }
-
-export default RandomObject;

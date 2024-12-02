@@ -1,13 +1,15 @@
 import { StarPath, SystemPath } from '../../global.types';
-import { StarPhysicModel,StarStellarClass } from '../physic/star-physic';
+import { StarPhysicModel, StarStellarClass } from '../physic/star-physic';
 
-export interface StarModel {
-  id?: string;
-  path?: StarPath;
-  parentPath?: SystemPath;
-  mass?: number;
-  spectralClass?: StarStellarClass;
-  name?: string;
-  physic?: StarPhysicModel;
-  options?: {};
-}
+type Star = {
+  id: string;
+  path: StarPath;
+  parentPath: SystemPath;
+  mass: number;
+  spectralClass: StarStellarClass;
+  name: string;
+  physic: StarPhysicModel;
+  options: {};
+};
+
+export type StarModel = Partial<Star>;

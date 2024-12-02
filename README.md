@@ -29,9 +29,9 @@ npm i @xenocide/world-generator@0.0.4
 ### Usage
 
 ```ts
-const { GalaxyGenerator, GalaxyClass } = require('@xenocide/world-generator');
+const { GalaxyGenerator, PlanetGenerator } = require('@xenocide/world-generator');
 // or
-import { GalaxyGenerator, GalaxyClass } from '@xenocide/world-generator';
+import { GalaxyGenerator, PlanetGenerator } from '@xenocide/world-generator';
 ```
 
 Supports ESM and CommonJS modules.
@@ -78,16 +78,16 @@ New examples coming soon...
 ### Code
 
 ```js
-import { GalaxyGenerator, GalaxyClass, PlanetGenerator } from '@xenocide/world-generator';
+import { GalaxyGenerator, PlanetGenerator } from '@xenocide/world-generator';
 
 // Spiral shape
 const world = new GalaxyGenerator(
-  { id: 'demo', classification: GalaxyClass.Spiral },
+  { id: 'demo', classification: 'spiral' },
   { seed: 123, spiral: { size: 500 } }
 );
 // Grid shape
 const world = new GalaxyGenerator(
-  { id: 'demo', classification: GalaxyClass.Grid },
+  { id: 'demo', classification: 'grid' },
   { seed: 123, grid: { size: 15, spacing: 5 } }
 );
 

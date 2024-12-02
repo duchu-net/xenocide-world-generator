@@ -2,7 +2,7 @@ import { Vector3 } from 'three';
 
 import { RandomObject } from '../utils';
 
-import { BasicShape } from './BasicShape';
+import { ShapeBase } from './shape.base';
 import { Cluster } from './Cluster';
 import { Sphere } from './Sphere';
 
@@ -52,15 +52,12 @@ const defaultOptions: SpiralShapeOptions = {
   centralVoidSizeDeviation: 7,
 };
 
-export class Spiral implements BasicShape {
+export class Spiral implements ShapeBase {
   public readonly options: SpiralShapeOptions;
-  constructor(options: Partial<SpiralShapeOptions> = defaultOptions) {
+  constructor(options?: Partial<SpiralShapeOptions>) {
     this.options = { ...defaultOptions, ...options };
   }
 
-  // * GenerateShape(random) {
-  //   return this.Generate(random)
-  // }
   *Generate(random: RandomObject) {
     const { centralVoidSizeDeviation, centralVoidSizeMean } = this.options;
 
@@ -85,9 +82,17 @@ export class Spiral implements BasicShape {
     }
   }
 
-  GenerateBackgroundStars(random: RandomObject) {
+  *GenerateBackgroundStars(random: RandomObject) {
     const { size } = this.options;
-    return new Sphere(size, 0.000001, 0.0000001, 0.35, 0.125, 0.35).Generate(random);
+    const stars = new Sphere({
+      size,
+      densityMean: 0.000001,
+      densityDeviation: 0.0000001,
+      deviationX: 0.35,
+      deviationY: 0.125,
+      deviationZ: 0.35,
+    }).Generate(random);
+    for (const star of stars) yield star;
   }
 
   *GenerateArms(random: RandomObject) {
@@ -114,16 +119,16 @@ export class Spiral implements BasicShape {
           random.NormallyDistributedSingle(maxClusters * clusterCountDeviation, maxClusters).toFixed()
         );
         for (let i = 0; i < clusters; i++) {
-          //Angle from center of this arm
+          // Angle from center of this arm
           const angle = random.NormallyDistributedSingle(0.5 * armAngle * clusterCenterDeviation, 0) + armAngle * arm;
-          //Distance along this arm
+          // Distance along this arm
           const dist = Math.abs(random.NormallyDistributedSingle(size * 0.4, 0));
-          //Center of the cluster
+          // Center of the cluster
           const center = new Vector3(0, 0, dist);
           center.applyAxisAngle(new Vector3(0, 1, 0), angle);
-          //const center = Vector3.Transform(new Vector3(0, 0, dist), Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), angle));
+          // const center = Vector3.Transform(new Vector3(0, 0, dist), Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), angle));
 
-          //size of the cluster
+          // size of the cluster
           const clsScaleDev = armClusterScaleDeviation * size;
           const clsScaleMin = minArmClusterScale * size;
           const clsScaleMax = maxArmClusterScale * size;
@@ -135,9 +140,16 @@ export class Spiral implements BasicShape {
           );
 
           const densityMean = 0.00025;
-          const stars = new Sphere(cSize, densityMean, undefined, 1, 1, 1).Generate(random);
-          for (const star of stars) {
-            yield star.Offset(center).swirl(new Vector3(0, 1, 0), swirl);
+          const stars = new Sphere({
+            size: cSize,
+            densityMean,
+            densityDeviation: undefined,
+            deviationX: 1,
+            deviationY: 1,
+            deviationZ: 1,
+          });
+          for (const star of stars.Generate(random)) {
+            yield star.offset(center).swirl(new Vector3(0, 1, 0), swirl);
           }
         }
       }
@@ -160,23 +172,22 @@ export class Spiral implements BasicShape {
 
     try {
       //Add a single central cluster
-      const sphere = new Sphere(
-        size * centerClusterScale, //size:
-        centerClusterDensityMean, //densityMean:
-        centerClusterDensityDeviation, //densityDeviation:
-        centerClusterScale, //deviationX:
-        centerClusterScale, //deviationY:
-        centerClusterScale //deviationZ:
-      );
+      const sphere = new Sphere({
+        size: size * centerClusterScale,
+        densityMean: centerClusterDensityMean,
+        densityDeviation: centerClusterDensityDeviation,
+        deviationX: centerClusterScale,
+        deviationY: centerClusterScale,
+        deviationZ: centerClusterScale,
+      });
 
-      const cluster = new Cluster(
-        sphere,
-        centerClusterCountMean,
-        centerClusterCountDeviation,
-        size * centerClusterPositionDeviation,
-        size * centerClusterPositionDeviation,
-        size * centerClusterPositionDeviation
-      );
+      const cluster = new Cluster(sphere, {
+        countMean: centerClusterCountMean,
+        countDeviation: centerClusterCountDeviation,
+        deviationX: centerClusterPositionDeviation,
+        deviationY: centerClusterPositionDeviation,
+        deviationZ: centerClusterPositionDeviation,
+      });
 
       for (const star of cluster.Generate(random)) {
         yield star.swirl(new Vector3(0, 1, 0), swirl * 5);

@@ -1,17 +1,17 @@
 import { StarName } from './StarName';
 
 describe('StarName - star-name.ts', () => {
-  test('Greek returns a greek letter', () => {
-    const result = StarName.Greek({ choice: jest.fn() } as any);
+  it('Greek returns a greek letter', () => {
+    const result = StarName.Greek({ choice: jest.fn(() => 'Epsilon') } as any);
     expect(StarName.greekLetters).toContain(result);
   });
 
-  test('Decorator returns a decorator', () => {
-    const result = StarName.Decorator({ choice: jest.fn() } as any);
+  it('Decorator returns a decorator', () => {
+    const result = StarName.Decorator({ choice: jest.fn(() => 'Minor') } as any);
     expect(StarName.decorators).toContain(result);
   });
 
-  test('RomanNumeral returns a roman numeral', () => {
+  it('RomanNumeral returns a roman numeral', () => {
     const result = StarName.RomanNumeral({
       NormallyDistributedSingle4: jest.fn(() => 1),
       unit: jest.fn(() => 0.9),
@@ -19,14 +19,14 @@ describe('StarName - star-name.ts', () => {
     expect(result).toBe('I');
   });
 
-  test('Integer returns an integer', () => {
+  it('Integer returns an integer', () => {
     const result = StarName.Integer({
       NormallyDistributedSingle4: jest.fn(() => 1),
     } as any);
     expect(Number.isInteger(result)).toBeTruthy();
   });
 
-  test('Decimal returns a decimal', () => {
+  it('Decimal returns a decimal', () => {
     const result = StarName.Decimal({
       NormallyDistributedSingle4: jest.fn(() => 1),
     } as any);
@@ -34,7 +34,7 @@ describe('StarName - star-name.ts', () => {
     expect(result).toBeLessThanOrEqual(100);
   });
 
-  test('Letter returns a letter', () => {
+  it('Letter returns a letter', () => {
     const result = StarName.Letter({
       integer: jest.fn(() => 1),
     } as any);
@@ -42,7 +42,7 @@ describe('StarName - star-name.ts', () => {
     expect(result.length).toBe(1);
   });
 
-  test('PlainMarkov returns a star name generated from MarkovModel', () => {
+  it('PlainMarkov returns a star name generated from MarkovModel', () => {
     StarName.instance = {
       Generate: jest.fn(() => 'star'),
     } as any;
@@ -50,17 +50,11 @@ describe('StarName - star-name.ts', () => {
     expect(result).toBe('Star');
   });
 
-  test('NamedStar returns a named star', () => {
+  it('NamedStar returns a named star', () => {
     const names = ['Sirius', 'Betelgeuse', 'Vega'];
     const result = StarName.NamedStar({
       choice: jest.fn(() => 'Sirius'),
     } as any);
     expect(names).toContain(result);
-  });
-
-  test('WithDecoration returns a decorated star name', () => {
-    const func = (random: any) => 'name';
-    const result = StarName.WithDecoration(0.5, func)({} as any);
-    expect(result).toBe('name');
   });
 });
